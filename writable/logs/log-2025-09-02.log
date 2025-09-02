@@ -1,0 +1,141 @@
+CRITICAL - 2025-09-02 15:13:47 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "login.php"
+[Method: GET, Route: /]
+in SYSTEMPATH\Exceptions\FrameworkException.php on line 39.
+ 1 SYSTEMPATH\View\View.php(214): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('login.php')
+ 2 SYSTEMPATH\Common.php(1167): CodeIgniter\View\View->render('login', [], true)
+ 3 APPPATH\Controllers\Home.php(9): view('login')
+ 4 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Home->index()
+ 5 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Home))
+ 6 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-09-02 15:13:49 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "login.php"
+[Method: GET, Route: /]
+in SYSTEMPATH\Exceptions\FrameworkException.php on line 39.
+ 1 SYSTEMPATH\View\View.php(214): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('login.php')
+ 2 SYSTEMPATH\Common.php(1167): CodeIgniter\View\View->render('login', [], true)
+ 3 APPPATH\Controllers\Home.php(9): view('login')
+ 4 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Home->index()
+ 5 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Home))
+ 6 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-09-02 15:13:57 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "login.php"
+[Method: GET, Route: /]
+in SYSTEMPATH\Exceptions\FrameworkException.php on line 39.
+ 1 SYSTEMPATH\View\View.php(214): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('login.php')
+ 2 SYSTEMPATH\Common.php(1167): CodeIgniter\View\View->render('login', [], true)
+ 3 APPPATH\Controllers\Home.php(9): view('login')
+ 4 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Home->index()
+ 5 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Home))
+ 6 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2025-09-02 15:56:10 --> Error connecting to the database: mysqli_sql_exception: Unknown database 'witms' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:201
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(201): mysqli->real_connect('localhost', 'root', Object(SensitiveParameterValue), 'WITMS', 3306, '', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(419): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(614): CodeIgniter\Database\BaseConnection->initialize()
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(1525): CodeIgniter\Database\BaseConnection->query('SHOW TABLES FRO...')
+#4 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(1545): CodeIgniter\Database\BaseConnection->listTables()
+#5 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(768): CodeIgniter\Database\BaseConnection->tableExists('migrations')
+#6 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(162): CodeIgniter\Database\MigrationRunner->ensureTable()
+#7 C:\xampp\htdocs\WITMS\system\Commands\Database\Migrate.php(85): CodeIgniter\Database\MigrationRunner->latest(NULL)
+#8 C:\xampp\htdocs\WITMS\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\Migrate->run(Array)
+#9 C:\xampp\htdocs\WITMS\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate', Array)
+#10 C:\xampp\htdocs\WITMS\system\Boot.php(388): CodeIgniter\CLI\Console->run()
+#11 C:\xampp\htdocs\WITMS\system\Boot.php(133): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#12 C:\xampp\htdocs\WITMS\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#13 {main}
+
+Next CodeIgniter\Database\Exceptions\DatabaseException: Unknown database 'witms' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:246
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(419): CodeIgniter\Database\MySQLi\Connection->connect(false)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(614): CodeIgniter\Database\BaseConnection->initialize()
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(1525): CodeIgniter\Database\BaseConnection->query('SHOW TABLES FRO...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(1545): CodeIgniter\Database\BaseConnection->listTables()
+#4 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(768): CodeIgniter\Database\BaseConnection->tableExists('migrations')
+#5 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(162): CodeIgniter\Database\MigrationRunner->ensureTable()
+#6 C:\xampp\htdocs\WITMS\system\Commands\Database\Migrate.php(85): CodeIgniter\Database\MigrationRunner->latest(NULL)
+#7 C:\xampp\htdocs\WITMS\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\Migrate->run(Array)
+#8 C:\xampp\htdocs\WITMS\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate', Array)
+#9 C:\xampp\htdocs\WITMS\system\Boot.php(388): CodeIgniter\CLI\Console->run()
+#10 C:\xampp\htdocs\WITMS\system\Boot.php(133): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#11 C:\xampp\htdocs\WITMS\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#12 {main}
+ERROR - 2025-09-02 16:02:36 --> mysqli_sql_exception: Unknown table 'witms_db.users' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('DROP TABLE `use...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('DROP TABLE `use...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('DROP TABLE `use...')
+#3 C:\xampp\htdocs\WITMS\system\Database\Forge.php(663): CodeIgniter\Database\BaseConnection->query('DROP TABLE `use...')
+#4 C:\xampp\htdocs\WITMS\app\Database\Migrations\2025-09-02-155514_CreateUsersTable.php(93): CodeIgniter\Database\Forge->dropTable('users')
+#5 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(876): App\Database\Migrations\CreateUsersTable->down()
+#6 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(289): CodeIgniter\Database\MigrationRunner->migrate('down', Object(stdClass))
+#7 C:\xampp\htdocs\WITMS\system\Commands\Database\MigrateRollback.php(101): CodeIgniter\Database\MigrationRunner->regress(0)
+#8 C:\xampp\htdocs\WITMS\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\MigrateRollback->run(Array)
+#9 C:\xampp\htdocs\WITMS\system\CLI\BaseCommand.php(119): CodeIgniter\CLI\Commands->run('migrate:rollbac...', Array)
+#10 C:\xampp\htdocs\WITMS\system\Commands\Database\MigrateRefresh.php(86): CodeIgniter\CLI\BaseCommand->call('migrate:rollbac...', Array)
+#11 C:\xampp\htdocs\WITMS\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\MigrateRefresh->run(Array)
+#12 C:\xampp\htdocs\WITMS\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate:refresh', Array)
+#13 C:\xampp\htdocs\WITMS\system\Boot.php(388): CodeIgniter\CLI\Console->run()
+#14 C:\xampp\htdocs\WITMS\system\Boot.php(133): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#15 C:\xampp\htdocs\WITMS\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#16 {main}
+ERROR - 2025-09-02 16:03:34 --> mysqli_sql_exception: Unknown table 'witms_db.users' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('DROP TABLE `use...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('DROP TABLE `use...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('DROP TABLE `use...')
+#3 C:\xampp\htdocs\WITMS\system\Database\Forge.php(663): CodeIgniter\Database\BaseConnection->query('DROP TABLE `use...')
+#4 C:\xampp\htdocs\WITMS\app\Database\Migrations\2025-09-02-155514_CreateUsersTable.php(93): CodeIgniter\Database\Forge->dropTable('users')
+#5 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(876): App\Database\Migrations\CreateUsersTable->down()
+#6 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(289): CodeIgniter\Database\MigrationRunner->migrate('down', Object(stdClass))
+#7 C:\xampp\htdocs\WITMS\system\Commands\Database\MigrateRollback.php(101): CodeIgniter\Database\MigrationRunner->regress(0)
+#8 C:\xampp\htdocs\WITMS\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\MigrateRollback->run(Array)
+#9 C:\xampp\htdocs\WITMS\system\CLI\BaseCommand.php(119): CodeIgniter\CLI\Commands->run('migrate:rollbac...', Array)
+#10 C:\xampp\htdocs\WITMS\system\Commands\Database\MigrateRefresh.php(86): CodeIgniter\CLI\BaseCommand->call('migrate:rollbac...', Array)
+#11 C:\xampp\htdocs\WITMS\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\MigrateRefresh->run(Array)
+#12 C:\xampp\htdocs\WITMS\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate:refresh', Array)
+#13 C:\xampp\htdocs\WITMS\system\Boot.php(388): CodeIgniter\CLI\Console->run()
+#14 C:\xampp\htdocs\WITMS\system\Boot.php(133): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#15 C:\xampp\htdocs\WITMS\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#16 {main}
+ERROR - 2025-09-02 16:05:31 --> mysqli_sql_exception: Unknown table 'witms_db.users' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('DROP TABLE `use...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('DROP TABLE `use...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('DROP TABLE `use...')
+#3 C:\xampp\htdocs\WITMS\system\Database\Forge.php(663): CodeIgniter\Database\BaseConnection->query('DROP TABLE `use...')
+#4 C:\xampp\htdocs\WITMS\app\Database\Migrations\2025-09-02-155514_CreateUsersTable.php(93): CodeIgniter\Database\Forge->dropTable('users')
+#5 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(876): App\Database\Migrations\CreateUsersTable->down()
+#6 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(289): CodeIgniter\Database\MigrationRunner->migrate('down', Object(stdClass))
+#7 C:\xampp\htdocs\WITMS\system\Commands\Database\MigrateRollback.php(101): CodeIgniter\Database\MigrationRunner->regress(0)
+#8 C:\xampp\htdocs\WITMS\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\MigrateRollback->run(Array)
+#9 C:\xampp\htdocs\WITMS\system\CLI\BaseCommand.php(119): CodeIgniter\CLI\Commands->run('migrate:rollbac...', Array)
+#10 C:\xampp\htdocs\WITMS\system\Commands\Database\MigrateRefresh.php(86): CodeIgniter\CLI\BaseCommand->call('migrate:rollbac...', Array)
+#11 C:\xampp\htdocs\WITMS\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\MigrateRefresh->run(Array)
+#12 C:\xampp\htdocs\WITMS\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate:refresh', Array)
+#13 C:\xampp\htdocs\WITMS\system\Boot.php(388): CodeIgniter\CLI\Console->run()
+#14 C:\xampp\htdocs\WITMS\system\Boot.php(133): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#15 C:\xampp\htdocs\WITMS\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#16 {main}
+ERROR - 2025-09-02 16:07:24 --> mysqli_sql_exception: Duplicate key name 'email' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('CREATE TABLE `u...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('CREATE TABLE `u...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('CREATE TABLE `u...')
+#3 C:\xampp\htdocs\WITMS\system\Database\Forge.php(570): CodeIgniter\Database\BaseConnection->query('CREATE TABLE `u...')
+#4 C:\xampp\htdocs\WITMS\app\Database\Migrations\2025-09-02-155514_CreateUsersTable.php(88): CodeIgniter\Database\Forge->createTable('users')
+#5 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(876): App\Database\Migrations\CreateUsersTable->up()
+#6 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(182): CodeIgniter\Database\MigrationRunner->migrate('up', Object(stdClass))
+#7 C:\xampp\htdocs\WITMS\system\Commands\Database\Migrate.php(85): CodeIgniter\Database\MigrationRunner->latest(NULL)
+#8 C:\xampp\htdocs\WITMS\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\Migrate->run(Array)
+#9 C:\xampp\htdocs\WITMS\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate', Array)
+#10 C:\xampp\htdocs\WITMS\system\Boot.php(388): CodeIgniter\CLI\Console->run()
+#11 C:\xampp\htdocs\WITMS\system\Boot.php(133): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#12 C:\xampp\htdocs\WITMS\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#13 {main}

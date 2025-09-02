@@ -1,0 +1,110 @@
+/* Custom theme styles for WITMS */
+@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css");
+
+:root {
+    --bs-primary: #1a365d;
+    --bs-primary-rgb: 26, 54, 93;
+}
+
+.btn-primary {
+    background-color: #1a365d;
+    border-color: #1a365d;
+    font-size: 0.8rem;
+    padding: 0.5rem 0.9rem;
+}
+
+.btn-primary:hover {
+    background-color: #153448;
+    border-color: #153448;
+}
+
+.btn-lg {
+    font-size: 0.85rem;
+    padding: 0.6rem 1rem;
+}
+
+.text-primary {
+    color: #1a365d !important;
+}
+
+.bg-primary {
+    background-color: #1a365d !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-size: calc(0.9rem + 0.4vw);
+}
+
+h3 {
+    font-size: 1.2rem;
+}
+
+h2 {
+    font-size: 1.4rem;
+}
+
+h5 {
+    font-size: 1rem;
+}
+
+.form-label {
+    font-size: 0.8rem;
+}
+
+.form-control, .form-select {
+    font-size: 0.8rem;
+}
+
+.form-control-lg, .form-select-lg {
+    font-size: 0.85rem;
+    padding: 0.6rem 0.9rem;
+}
+
+p, .text-muted {
+    font-size: 0.75rem;
+}
+
+.lead {
+    font-size: 0.9rem;
+}
+
+.fs-1 {
+    font-size: 2rem !important;
+}
+
+.small {
+    font-size: 0.7rem;
+}
+
+/* Form styling */
+.form-check-label {
+    font-size: 0.75rem;
+}
+
+/* Alert styling */
+.alert {
+    font-size: 0.8rem;
+}
+
+/* Card body padding adjustment for smaller content */
+.card-body {
+    padding: 2.5rem !important;
+}
+
+@media (max-width: 768px) {
+    .card-body {
+        padding: 1.5rem !important;
+    }
+    
+    h2 {
+        font-size: 1.2rem;
+    }
+    
+    h3 {
+        font-size: 1.1rem;
+    }
+    
+    .fs-1 {
+        font-size: 1.8rem !important;
+    }
+}

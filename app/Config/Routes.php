@@ -5,4 +5,7 @@ use CodeIgniter\Router\RouteCollection;
 /**
  * @var RouteCollection $routes
  */
-$routes->get('/', 'Home::index');
+$routes->get('/', 'Auth::login');
+$routes->get('/auth/login', 'Auth::login');
+$routes->get('/auth/reset-password', 'Auth::resetPassword');
+$routes->get('/auth/contact-admin', 'Auth::contactAdministrator');
