@@ -190,7 +190,7 @@
                                 </div>
                                 
                                 <div class="text-center mt-4">
-                                    <a href="<?= base_url('auth/login') ?>" class="text-decoration-none text-primary">
+                                    <a href="<?= base_url(relativePath: '/') ?>" class="text-decoration-none text-primary">
                                         <i class="bi bi-arrow-left me-2"></i>
                                         Back to Sign In
                                     </a>
