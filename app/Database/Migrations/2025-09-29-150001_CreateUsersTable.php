@@ -6,19 +6,18 @@ use CodeIgniter\Database\Migration;
 
 class CreateUsersTable extends Migration
 {
-    public function up(): void
+    public function up()
     {
-        $this->forge->addField(fields: [
+        $this->forge->addField([
             'id' => [
                 'type'           => 'INT',
                 'constraint'     => 11,
                 'unsigned'       => true,
                 'auto_increment' => true,
-            ],
+            ],            
             'email' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 255,
-                'unique'     => true,
             ],
             'password' => [
                 'type'       => 'VARCHAR',
@@ -34,13 +33,14 @@ class CreateUsersTable extends Migration
                     'Accounts Payable Clerk',
                     'Accounts Receivable Clerk',
                     'IT Administrator',
-                    'System Administrator'
+                    'Top Management'
                 ],
-                'default'    => 'Warehouse Staff',
+                'default' => 'Warehouse Staff',
             ],
-            'department' => [
-                'type'       => 'VARCHAR',
-                'constraint' => 100,
+            'department_id' => [
+                'type'       => 'INT',
+                'constraint' => 11,
+                'unsigned'   => true,
                 'null'       => true,
             ],
             'first_name' => [
@@ -81,9 +81,11 @@ class CreateUsersTable extends Migration
                 'type' => 'DATETIME',
                 'null' => true,
             ],
-        ]);
-
+        ]);        
+        
         $this->forge->addKey('id', true);
+        $this->forge->addUniqueKey(['email']);
+        $this->forge->addKey(['department_id'], false);
         $this->forge->createTable('users');
     }
 
