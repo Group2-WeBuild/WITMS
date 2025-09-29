@@ -25,21 +25,46 @@
                         
                         <!-- Right Side - Login Form -->
                         <div class="col-lg-7">
-                            <div class="card-body p-5">
-                                <div class="text-center mb-5">
+                            <div class="card-body p-5">                                <div class="text-center mb-5">
                                     <h3 class="fw-bold text-dark mb-2">Sign in your account</h3>
                                     <p class="text-muted">Welcome back! Please enter your credentials</p>
                                 </div>
-                                  <form>
+
+                                <?php if (session()->getFlashdata('error')): ?>
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                        <?= session()->getFlashdata('error') ?>
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php if (session()->getFlashdata('success')): ?>
+                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                        <i class="bi bi-check-circle-fill me-2"></i>
+                                        <?= session()->getFlashdata('success') ?>
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                <?php endif; ?>
+
+                                <form action="<?= base_url('auth/login') ?>" method="POST">
+                                    <?= csrf_field() ?>
+                                    
                                     <div class="mb-3">
                                         <label for="email" class="form-label fw-semibold text-dark">
                                             <i class="bi bi-envelope me-2"></i>Email Address
                                         </label>
                                         <input type="email" 
-                                               class="form-control form-control-lg border-2" 
+                                               class="form-control form-control-lg border-2 <?= (validation_show_error('email')) ? 'is-invalid' : '' ?>" 
                                                id="email" 
                                                name="email" 
-                                               placeholder="Enter your email address">
+                                               value="<?= old('email') ?>"
+                                               placeholder="Enter your email address"
+                                               required>
+                                        <?php if (validation_show_error('email')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= validation_show_error('email') ?>
+                                            </div>
+                                        <?php endif; ?>
                                     </div>
                                     
                                     <div class="mb-4">
@@ -47,23 +72,29 @@
                                             <i class="bi bi-lock me-2"></i>Password
                                         </label>
                                         <input type="password" 
-                                               class="form-control form-control-lg border-2" 
+                                               class="form-control form-control-lg border-2 <?= (validation_show_error('password')) ? 'is-invalid' : '' ?>" 
                                                id="password" 
                                                name="password" 
-                                               placeholder="Enter your password">
+                                               placeholder="Enter your password"
+                                               required>
+                                        <?php if (validation_show_error('password')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= validation_show_error('password') ?>
+                                            </div>
+                                        <?php endif; ?>
                                     </div>
                                     
                                     <div class="row mb-4">
                                         <div class="col-6">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="remember" name="remember">
+                                                <input class="form-check-input" type="checkbox" id="remember" name="remember" value="1">
                                                 <label class="form-check-label text-muted" for="remember">
                                                     Remember me
                                                 </label>
                                             </div>
                                         </div>                                        
                                         <div class="col-6 text-end">
-                                            <a href="<?= base_url(relativePath: 'auth/reset-password') ?>" class="text-decoration-none text-primary">
+                                            <a href="<?= base_url('auth/reset-password') ?>" class="text-decoration-none text-primary">
                                                 Forgot Password?
                                             </a>
                                         </div>
