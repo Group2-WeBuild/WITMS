@@ -12,8 +12,7 @@ class UserModel extends Model
     protected $returnType = 'array';
     protected $useSoftDeletes = false;
     protected $protectFields = true;
-    
-    protected $allowedFields = [
+      protected $allowedFields = [
         'email',
         'password',
         'role',
@@ -24,7 +23,9 @@ class UserModel extends Model
         'phone_number',
         'is_active',
         'last_login',
-        'email_verified_at'
+        'email_verified_at',
+        'reset_token',
+        'reset_token_expires'
     ];
     
     // Dates
@@ -334,7 +335,8 @@ class UserModel extends Model
     {
         return $this->update($userId, ['email_verified_at' => date('Y-m-d H:i:s')]);
     }
-      /**
+    
+    /**
      * Check if email is verified
      */
     public function isEmailVerified(int $userId): bool
@@ -344,5 +346,63 @@ class UserModel extends Model
                      ->first();
         
         return $user && !empty($user['email_verified_at']);
+    }
+
+    /**
+     * Set password reset token
+     */
+    public function setPasswordResetToken(int $userId, string $token, string $expiry): bool
+    {
+        return $this->update($userId, [
+            'reset_token' => $token,
+            'reset_token_expires' => $expiry
+        ]);
+    }
+
+    /**
+     * Find user by reset token
+     */
+    public function findByResetToken(string $token): array|null
+    {
+        return $this->where('reset_token', $token)
+                    ->where('is_active', 1)
+                    ->first();
+    }
+
+    /**
+     * Check if reset token is expired
+     */
+    public function isResetTokenExpired(int $userId): bool
+    {
+        $user = $this->select('reset_token_expires')
+                     ->where('id', $userId)
+                     ->first();
+        
+        if (!$user || empty($user['reset_token_expires'])) {
+            return true;
+        }
+        
+        return strtotime($user['reset_token_expires']) < time();
+    }
+
+    /**
+     * Clear password reset token
+     */
+    public function clearPasswordResetToken(int $userId): bool
+    {
+        return $this->update($userId, [
+            'reset_token' => null,
+            'reset_token_expires' => null
+        ]);
+    }
+
+    /**
+     * Find user by email for password reset (more secure)
+     */
+    public function findByEmailForReset(string $email): array|null
+    {
+        return $this->where('email', $email)
+                    ->where('is_active', 1)
+                    ->first();
     }
 }
