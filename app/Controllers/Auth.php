@@ -660,10 +660,14 @@ class Auth extends BaseController
             return $this->handleContactAdminRequest();
         }
 
+        // Get active departments for the dropdown
+        $departments = $this->departmentModel->getActiveDepartments();
+
         // Display contact admin form
         $data = [
             'title' => 'Contact Administrator - WeBuild WITMS',
-            'validation' => \Config\Services::validation()
+            'validation' => \Config\Services::validation(),
+            'departments' => $departments
         ];
 
         return view('auth/contact_admin', $data);
@@ -691,14 +695,13 @@ class Auth extends BaseController
             'phone' => [
                 'label' => 'Phone Number',
                 'rules' => 'permit_empty|max_length[20]|regex_match[/^[\+]?[0-9\s\-\(\)]+$/]'
-            ],
-            'department' => [
+            ],            'department' => [
                 'label' => 'Department',
-                'rules' => 'required|in_list[construction,project_management,site_supervision,administration,logistics,safety,finance,other]'
+                'rules' => 'required|integer|greater_than[0]'
             ],
             'role' => [
                 'label' => 'Requested Role',
-                'rules' => 'required|in_list[worker,supervisor,manager,coordinator,admin,viewer]'
+                'rules' => 'required|in_list[Warehouse Manager,Warehouse Staff,Inventory Auditor,Procurement Officer,Accounts Payable Clerk,Accounts Receivable Clerk,IT Administrator,Top Management]'
             ],
             'employee_id' => [
                 'label' => 'Employee ID',
@@ -822,35 +825,24 @@ class Auth extends BaseController
             log_message('error', "Contact admin confirmation error: " . $e->getMessage());
             return false;
         }
-    }
-
-    /**
+    }    /**
      * Build email template for IT administrator notification
      */
     private function buildContactAdminEmailTemplate(array $requestData): string
     {
-        $departmentNames = [
-            'construction' => 'Construction',
-            'project_management' => 'Project Management',
-            'site_supervision' => 'Site Supervision',
-            'administration' => 'Administration',
-            'logistics' => 'Logistics',
-            'safety' => 'Safety & Compliance',
-            'finance' => 'Finance',
-            'other' => 'Other'
-        ];
+        // Get department name from ID
+        $departmentName = 'Unknown Department';
+        if (!empty($requestData['department'])) {
+            $department = $this->departmentModel->find($requestData['department']);
+            if ($department) {
+                $departmentName = $department['name'];
+                if (!empty($department['warehouse_location']) && $department['warehouse_location'] !== 'All Warehouses') {
+                    $departmentName .= ' (' . $department['warehouse_location'] . ')';
+                }
+            }
+        }
 
-        $roleNames = [
-            'worker' => 'Construction Worker',
-            'supervisor' => 'Site Supervisor',
-            'manager' => 'Project Manager',
-            'coordinator' => 'Project Coordinator',
-            'admin' => 'Administrative Staff',
-            'viewer' => 'View Only Access'
-        ];
-
-        $departmentName = $departmentNames[$requestData['department']] ?? $requestData['department'];
-        $roleName = $roleNames[$requestData['role']] ?? $requestData['role'];
+        $roleName = $requestData['role'] ?? 'Unknown Role';
 
         return "
         <!DOCTYPE html>

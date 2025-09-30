@@ -86,7 +86,8 @@
                                         <div class="col-md-6 mb-3">
                                             <label for="lastName" class="form-label fw-semibold text-dark">
                                                 <i class="bi bi-person me-2"></i>Last Name *
-                                            </label>                                            <input type="text" 
+                                            </label>                                            
+                                            <input type="text" 
                                                    class="form-control form-control-lg border-2 <?= (validation_show_error('last_name')) ? 'is-invalid' : '' ?>" 
                                                    id="lastName" 
                                                    name="last_name" 
@@ -144,14 +145,18 @@
                                                     name="department" 
                                                     required>
                                                 <option value="">Select your department</option>
-                                                <option value="construction" <?= (old('department') == 'construction') ? 'selected' : '' ?>>Construction</option>
-                                                <option value="project_management" <?= (old('department') == 'project_management') ? 'selected' : '' ?>>Project Management</option>
-                                                <option value="site_supervision" <?= (old('department') == 'site_supervision') ? 'selected' : '' ?>>Site Supervision</option>
-                                                <option value="administration" <?= (old('department') == 'administration') ? 'selected' : '' ?>>Administration</option>
-                                                <option value="logistics" <?= (old('department') == 'logistics') ? 'selected' : '' ?>>Logistics</option>
-                                                <option value="safety" <?= (old('department') == 'safety') ? 'selected' : '' ?>>Safety & Compliance</option>
-                                                <option value="finance" <?= (old('department') == 'finance') ? 'selected' : '' ?>>Finance</option>
-                                                <option value="other" <?= (old('department') == 'other') ? 'selected' : '' ?>>Other</option>
+                                                <?php if (isset($departments) && !empty($departments)): ?>
+                                                    <?php foreach ($departments as $dept): ?>
+                                                        <option value="<?= $dept['id'] ?>" <?= (old('department') == $dept['id']) ? 'selected' : '' ?>>
+                                                            <?= esc($dept['name']) ?> 
+                                                            <?php if (!empty($dept['warehouse_location']) && $dept['warehouse_location'] !== 'All Warehouses'): ?>
+                                                                - <?= esc($dept['warehouse_location']) ?>
+                                                            <?php endif; ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                                <?php else: ?>
+                                                    <option value="">No departments available</option>
+                                                <?php endif; ?>
                                             </select>
                                             <?php if (validation_show_error('department')): ?>
                                                 <div class="invalid-feedback">
@@ -166,13 +171,31 @@
                                                     id="role" 
                                                     name="role" 
                                                     required>
-                                                <option value="">Select your role</option>
-                                                <option value="worker" <?= (old('role') == 'worker') ? 'selected' : '' ?>>Construction Worker</option>
-                                                <option value="supervisor" <?= (old('role') == 'supervisor') ? 'selected' : '' ?>>Site Supervisor</option>
-                                                <option value="manager" <?= (old('role') == 'manager') ? 'selected' : '' ?>>Project Manager</option>
-                                                <option value="coordinator" <?= (old('role') == 'coordinator') ? 'selected' : '' ?>>Project Coordinator</option>
-                                                <option value="admin" <?= (old('role') == 'admin') ? 'selected' : '' ?>>Administrative Staff</option>
-                                                <option value="viewer" <?= (old('role') == 'viewer') ? 'selected' : '' ?>>View Only Access</option>
+                                                <option value="">Select your requested role</option>
+                                                <option value="Warehouse Manager" <?= (old('role') == 'Warehouse Manager') ? 'selected' : '' ?>>
+                                                    Warehouse Manager - Oversee warehouse operations and staff
+                                                </option>
+                                                <option value="Warehouse Staff" <?= (old('role') == 'Warehouse Staff') ? 'selected' : '' ?>>
+                                                    Warehouse Staff - Handle inventory and daily warehouse tasks
+                                                </option>
+                                                <option value="Inventory Auditor" <?= (old('role') == 'Inventory Auditor') ? 'selected' : '' ?>>
+                                                    Inventory Auditor - Conduct inventory audits and reconciliation
+                                                </option>
+                                                <option value="Procurement Officer" <?= (old('role') == 'Procurement Officer') ? 'selected' : '' ?>>
+                                                    Procurement Officer - Manage purchasing and supplier relations
+                                                </option>
+                                                <option value="Accounts Payable Clerk" <?= (old('role') == 'Accounts Payable Clerk') ? 'selected' : '' ?>>
+                                                    Accounts Payable Clerk - Process vendor payments and invoices
+                                                </option>
+                                                <option value="Accounts Receivable Clerk" <?= (old('role') == 'Accounts Receivable Clerk') ? 'selected' : '' ?>>
+                                                    Accounts Receivable Clerk - Manage customer billing and payments
+                                                </option>
+                                                <option value="IT Administrator" <?= (old('role') == 'IT Administrator') ? 'selected' : '' ?>>
+                                                    IT Administrator - Manage system administration and user access
+                                                </option>
+                                                <option value="Top Management" <?= (old('role') == 'Top Management') ? 'selected' : '' ?>>
+                                                    Top Management - Executive level access to all reports
+                                                </option>
                                             </select>
                                             <?php if (validation_show_error('role')): ?>
                                                 <div class="invalid-feedback">
