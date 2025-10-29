@@ -4,16 +4,19 @@ namespace App\Controllers;
 
 use App\Models\UserModel;
 use App\Models\DepartmentModel;
+use App\Models\RoleModel;
 
 class Auth extends BaseController
 {
     protected $userModel;
     protected $departmentModel;
+    protected $roleModel;
 
     public function __construct()
     {
         $this->userModel = new UserModel();
         $this->departmentModel = new DepartmentModel();
+        $this->roleModel = new RoleModel();
         helper(['form', 'url']);
     }
 
@@ -91,16 +94,20 @@ class Auth extends BaseController
                 return redirect()->back()
                                ->withInput()
                                ->with('error', 'Invalid password. Please try again.');
-            }
-
-            // Get department information
+            }            // Get department information
             $department = null;
             if (!empty($user['department_id'])) {
                 $department = $this->departmentModel->find($user['department_id']);
             }
 
+            // Get role information
+            $role = null;
+            if (!empty($user['role_id'])) {
+                $role = $this->roleModel->find($user['role_id']);
+            }
+
             // Prepare session data based on user role
-            $sessionData = $this->prepareSessionData($user, $department);
+            $sessionData = $this->prepareSessionData($user, $department, $role);
 
             // Set session data
             session()->set($sessionData);
@@ -114,10 +121,10 @@ class Auth extends BaseController
             }
 
             // Log successful login
-            log_message('info', "User {$user['email']} ({$user['role']}) logged in successfully");
+            log_message('info', "User {$user['email']} ({$role['name']}) logged in successfully");
 
             // Redirect to appropriate dashboard based on role
-            return $this->redirectToDashboard($user['role']);
+            return $this->redirectToDashboard($role['name']);
 
         } catch (\Exception $e) {
             log_message('error', 'Login error: ' . $e->getMessage());
@@ -125,21 +132,22 @@ class Auth extends BaseController
                            ->withInput()
                            ->with('error', 'An error occurred during login. Please try again.');
         }
-    }
-
-    /**
+    }    /**
      * Prepare comprehensive session data based on user role
      */
-    private function prepareSessionData(array $user, ?array $department): array
+    private function prepareSessionData(array $user, ?array $department, ?array $role): array
     {
         $fullName = $this->userModel->getFullName($user);
+        $roleName = $role['name'] ?? 'Unknown';
         
         // Base session data for all users
         $sessionData = [
             'isLoggedIn' => true,
             'user_id' => $user['id'],
             'user_email' => $user['email'],
-            'user_role' => $user['role'],
+            'user_role' => $roleName,
+            'role_id' => $user['role_id'],
+            'role_description' => $role['description'] ?? null,
             'first_name' => $user['first_name'],
             'middle_name' => $user['middle_name'],
             'last_name' => $user['last_name'],
@@ -153,7 +161,7 @@ class Auth extends BaseController
         ];
 
         // Add role-specific permissions and data
-        switch ($user['role']) {
+        switch ($roleName) {
             case 'Warehouse Manager':
                 $sessionData = array_merge($sessionData, [
                     'permissions' => [
@@ -662,22 +670,27 @@ class Auth extends BaseController
 
         // Get active departments for the dropdown
         $departments = $this->departmentModel->getActiveDepartments();
+        
+        // Get active roles for the dropdown
+        $roles = $this->roleModel->getActiveRoles();
 
         // Display contact admin form
         $data = [
             'title' => 'Contact Administrator - WeBuild WITMS',
             'validation' => \Config\Services::validation(),
-            'departments' => $departments
+            'departments' => $departments,
+            'roles' => $roles
         ];
 
         return view('auth/contact_admin', $data);
-    }
-
-    /**
+    }    /**
      * Handle contact admin form submission
      */
     private function handleContactAdminRequest()
     {
+        // Get all active role names for validation
+        $roleNames = $this->roleModel->getAllRoleNames();
+        
         // Validation rules
         $rules = [
             'first_name' => [
@@ -695,13 +708,14 @@ class Auth extends BaseController
             'phone' => [
                 'label' => 'Phone Number',
                 'rules' => 'permit_empty|max_length[20]|regex_match[/^[\+]?[0-9\s\-\(\)]+$/]'
-            ],            'department' => [
+            ],
+            'department' => [
                 'label' => 'Department',
-                'rules' => 'required|integer|greater_than[0]'
+                'rules' => 'required|integer|greater_than[0]|is_not_unique[departments.id]'
             ],
             'role' => [
                 'label' => 'Requested Role',
-                'rules' => 'required|in_list[Warehouse Manager,Warehouse Staff,Inventory Auditor,Procurement Officer,Accounts Payable Clerk,Accounts Receivable Clerk,IT Administrator,Top Management]'
+                'rules' => 'required|in_list[' . implode(',', $roleNames) . ']'
             ],
             'employee_id' => [
                 'label' => 'Employee ID',
@@ -755,15 +769,13 @@ class Auth extends BaseController
                            ->withInput()
                            ->with('error', 'An error occurred while submitting your request. Please try again or contact IT support directly.');
         }
-    }
-
-    /**
+    }    /**
      * Send contact admin notification email to IT administrators
      */
     private function sendContactAdminNotification(array $requestData): bool
     {
         try {
-            // Get IT administrators
+            // Get IT administrators using UserModel
             $itAdministrators = $this->userModel->getITAdministrators();
             
             if (empty($itAdministrators)) {
@@ -779,16 +791,18 @@ class Auth extends BaseController
             // Email content
             $message = $this->buildContactAdminEmailTemplate($requestData);
 
+            $emailsSent = 0;
             foreach ($itAdministrators as $admin) {
                 $email->clear();
-                $email->setFrom(
-                    config('Email')->fromEmail, 
-                    config('Email')->fromName
-                );                $email->setTo($admin['email']);
+                $email->setFrom('noreply@webuild.com', 'WeBuild WITMS System');
+                $email->setTo($admin['email']);
                 $email->setSubject($subject);
                 $email->setMessage($message);
 
-                if (!$email->send()) {
+                if ($email->send()) {
+                    $emailsSent++;
+                    log_message('info', "Contact admin notification sent to: {$admin['email']}");
+                } else {
                     log_message('error', "Failed to send contact admin notification to: {$admin['email']}");
                 }
             }
@@ -796,7 +810,7 @@ class Auth extends BaseController
             // Send confirmation email to requester
             $this->sendContactAdminConfirmation($requestData);
 
-            return true;
+            return $emailsSent > 0;
 
         } catch (\Exception $e) {
             log_message('error', "Contact admin notification error: " . $e->getMessage());
@@ -812,14 +826,18 @@ class Auth extends BaseController
         try {
             $email = \Config\Services::email();
             
-            $email->setFrom(
-                config('Email')->fromEmail, 
-                config('Email')->fromName
-            );            $email->setTo($requestData['email']);
+            $email->setFrom('noreply@webuild.com', 'WeBuild WITMS System');
+            $email->setTo($requestData['email']);
             $email->setSubject('Account Access Request Received - WeBuild WITMS');
             $email->setMessage($this->buildContactAdminConfirmationTemplate($requestData));
 
-            return $email->send();
+            if ($email->send()) {
+                log_message('info', "Confirmation email sent to: {$requestData['email']}");
+                return true;
+            } else {
+                log_message('error', "Failed to send confirmation email to: {$requestData['email']}");
+                return false;
+            }
 
         } catch (\Exception $e) {
             log_message('error', "Contact admin confirmation error: " . $e->getMessage());
@@ -830,19 +848,29 @@ class Auth extends BaseController
      */
     private function buildContactAdminEmailTemplate(array $requestData): string
     {
-        // Get department name from ID
+        // Get department name from ID using DepartmentModel
         $departmentName = 'Unknown Department';
+        $departmentLocation = '';
+        
         if (!empty($requestData['department'])) {
             $department = $this->departmentModel->find($requestData['department']);
             if ($department) {
                 $departmentName = $department['name'];
                 if (!empty($department['warehouse_location']) && $department['warehouse_location'] !== 'All Warehouses') {
-                    $departmentName .= ' (' . $department['warehouse_location'] . ')';
+                    $departmentLocation = $department['warehouse_location'];
+                    $departmentName .= ' (' . $departmentLocation . ')';
                 }
             }
         }
 
+        // Get role details from RoleModel
         $roleName = $requestData['role'] ?? 'Unknown Role';
+        $roleDescription = '';
+        
+        $role = $this->roleModel->getRoleByName($roleName);
+        if ($role && !empty($role['description'])) {
+            $roleDescription = $role['description'];
+        }
 
         return "
         <!DOCTYPE html>
@@ -979,7 +1007,7 @@ class Auth extends BaseController
                         </div>
                         <div class='info-row'>
                             <div class='info-label'>Requested Role:</div>
-                            <div class='info-value'>{$roleName}</div>
+                            <div class='info-value'>{$roleName}" . ($roleDescription ? "<br><small style='color: #6c757d;'>{$roleDescription}</small>" : "") . "</div>
                         </div>
                     </div>
 
@@ -1014,6 +1042,8 @@ class Auth extends BaseController
                         <li>Review the request details above</li>
                         <li>Verify the requester's identity and authorization</li>
                         <li>Create the user account in WITMS if approved</li>
+                        <li>Assign appropriate role: <strong>{$roleName}</strong></li>
+                        <li>Assign to department: <strong>{$departmentName}</strong></li>
                         <li>Send login credentials to the new user</li>
                         <li>Contact the requester with the account status</li>
                     </ol>

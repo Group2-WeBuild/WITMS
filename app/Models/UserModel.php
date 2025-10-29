@@ -11,11 +11,10 @@ class UserModel extends Model
     protected $useAutoIncrement = true;
     protected $returnType = 'array';
     protected $useSoftDeletes = false;
-    protected $protectFields = true;
-      protected $allowedFields = [
+    protected $protectFields = true;      protected $allowedFields = [
         'email',
         'password',
-        'role',
+        'role_id',
         'department_id',
         'first_name',
         'middle_name',
@@ -40,14 +39,13 @@ class UserModel extends Model
         'email' => [
             'label' => 'Email Address',
             'rules' => 'required|valid_email|is_unique[users.email,id,{id}]'
-        ],
-        'password' => [
+        ],        'password' => [
             'label' => 'Password',
             'rules' => 'required|min_length[8]|regex_match[/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/]'
         ],
-        'role' => [
+        'role_id' => [
             'label' => 'Role',
-            'rules' => 'required|in_list[Warehouse Manager,Warehouse Staff,Inventory Auditor,Procurement Officer,Accounts Payable Clerk,Accounts Receivable Clerk,IT Administrator,Top Management]'
+            'rules' => 'required|integer|greater_than[0]|is_not_unique[roles.id]'
         ],
         'first_name' => [
             'label' => 'First Name',
@@ -78,13 +76,13 @@ class UserModel extends Model
     protected $validationMessages = [
         'email' => [
             'is_unique' => 'This email address is already registered in WeBuild system.'
-        ],
-        'password' => [
+        ],        'password' => [
             'min_length' => 'Password must be at least 8 characters long.',
             'regex_match' => 'Password must contain uppercase, lowercase, number, and special character.'
         ],
-        'role' => [
-            'in_list' => 'Please select a valid WeBuild role.'
+        'role_id' => [
+            'required' => 'Please select a valid role.',
+            'is_not_unique' => 'The selected role does not exist.'
         ]
     ];
     
@@ -133,6 +131,39 @@ class UserModel extends Model
     }
     
     /**
+     * Get user with role details
+     */
+    public function getUserWithRole(int $userId)
+    {
+        return $this->select('users.*, roles.name as role_name, roles.description as role_description')
+                    ->join('roles', 'roles.id = users.role_id', 'left')
+                    ->where('users.id', $userId)
+                    ->first();
+    }
+    
+    /**
+     * Get user with role and department details
+     */
+    public function getUserWithDetails(int $userId)
+    {
+        return $this->select('users.*, roles.name as role_name, roles.description as role_description, departments.name as department_name')
+                    ->join('roles', 'roles.id = users.role_id', 'left')
+                    ->join('departments', 'departments.id = users.department_id', 'left')
+                    ->where('users.id', $userId)
+                    ->first();
+    }
+    
+    /**
+     * Get all users with role details
+     */
+    public function getAllUsersWithRoles()
+    {
+        return $this->select('users.*, roles.name as role_name')
+                    ->join('roles', 'roles.id = users.role_id', 'left')
+                    ->findAll();
+    }
+    
+    /**
      * Get active users only
      */
     public function getActiveUsers()
@@ -143,9 +174,21 @@ class UserModel extends Model
     /**
      * Get users by role
      */
-    public function getUsersByRole(string $role)
+    public function getUsersByRole(int $roleId)
     {
-        return $this->where('role', $role)->where('is_active', 1)->findAll();
+        return $this->where('role_id', $roleId)->where('is_active', 1)->findAll();
+    }
+    
+    /**
+     * Get users by role name
+     */
+    public function getUsersByRoleName(string $roleName)
+    {
+        return $this->select('users.*')
+                    ->join('roles', 'roles.id = users.role_id')
+                    ->where('roles.name', $roleName)
+                    ->where('users.is_active', 1)
+                    ->findAll();
     }
     
     /**
@@ -163,8 +206,10 @@ class UserModel extends Model
      */
     public function getITAdministrators()
     {
-        return $this->where('role', 'IT Administrator')
-                    ->where('is_active', 1)
+        return $this->select('users.*')
+                    ->join('roles', 'roles.id = users.role_id')
+                    ->where('roles.name', 'IT Administrator')
+                    ->where('users.is_active', 1)
                     ->findAll();
     }
     
@@ -205,8 +250,7 @@ class UserModel extends Model
                     ->where('is_active', 1)
                     ->findAll();
     }
-    
-    /**
+      /**
      * Get user statistics
      */
     public function getUserStats(): array
@@ -217,39 +261,37 @@ class UserModel extends Model
             'inactive_users' => $this->where('is_active', 0)->countAllResults(false),
         ];
         
-        // Get role distribution
-        $roles = [
-            'Warehouse Manager',
-            'Warehouse Staff',
-            'Inventory Auditor',
-            'Procurement Officer',
-            'Accounts Payable Clerk',
-            'Accounts Receivable Clerk',
-            'IT Administrator',
-            'Top Management'
-        ];
+        // Get role distribution using JOIN
+        $roleModel = new \App\Models\RoleModel();
+        $roles = $roleModel->findAll();
         
         foreach ($roles as $role) {
-            $stats['role_counts'][str_replace(' ', '_', strtolower($role))] = 
-                $this->where('role', $role)->where('is_active', 1)->countAllResults(false);
+            $stats['role_counts'][str_replace(' ', '_', strtolower($role['name']))] = 
+                $this->where('role_id', $role['id'])->where('is_active', 1)->countAllResults(false);
         }
         
         return $stats;
     }
-    
-    /**
+      /**
      * Create new user
      */
     public function createUser(array $userData): bool
     {
         // Set default values
         $userData['is_active'] = $userData['is_active'] ?? 1;
-        $userData['role'] = $userData['role'] ?? 'Warehouse Staff';
+        
+        // Set default role to Warehouse Staff if not provided
+        if (!isset($userData['role_id'])) {
+            $roleModel = new \App\Models\RoleModel();
+            $defaultRole = $roleModel->getRoleByName('Warehouse Staff');
+            if ($defaultRole) {
+                $userData['role_id'] = $defaultRole['id'];
+            }
+        }
         
         return $this->insert($userData);
     }
-    
-    /**
+      /**
      * Check if user has warehouse access permissions
      */
     public function hasWarehouseAccess(int $userId): bool
@@ -261,9 +303,11 @@ class UserModel extends Model
             'Procurement Officer'
         ];
         
-        $count = $this->where('id', $userId)
-                    ->where('is_active', 1)
-                    ->whereIn('role', $warehouseRoles)
+        $count = $this->select('users.id')
+                    ->join('roles', 'roles.id = users.role_id')
+                    ->where('users.id', $userId)
+                    ->where('users.is_active', 1)
+                    ->whereIn('roles.name', $warehouseRoles)
                     ->countAllResults();
         
         return $count > 0;
@@ -280,9 +324,11 @@ class UserModel extends Model
             'Top Management'
         ];
         
-        $count = $this->where('id', $userId)
-                    ->where('is_active', 1)
-                    ->whereIn('role', $financialRoles)
+        $count = $this->select('users.id')
+                    ->join('roles', 'roles.id = users.role_id')
+                    ->where('users.id', $userId)
+                    ->where('users.is_active', 1)
+                    ->whereIn('roles.name', $financialRoles)
                     ->countAllResults();
         
         return $count > 0;
@@ -299,9 +345,11 @@ class UserModel extends Model
             'Top Management'
         ];
         
-        $count = $this->where('id', $userId)
-                    ->where('is_active', 1)
-                    ->whereIn('role', $managementRoles)
+        $count = $this->select('users.id')
+                    ->join('roles', 'roles.id = users.role_id')
+                    ->where('users.id', $userId)
+                    ->where('users.is_active', 1)
+                    ->whereIn('roles.name', $managementRoles)
                     ->countAllResults();
         
         return $count > 0;
