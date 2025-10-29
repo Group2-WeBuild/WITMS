@@ -13,13 +13,25 @@
         <div class="row justify-content-center">
             <div class="col-lg-11 col-xl-10">
                 <div class="card shadow-lg border-0 rounded-4">
-                    <div class="row g-0">                   
-                         <div class="col-lg-4 d-none d-lg-block">
+                    <div class="row g-0">                        <div class="col-lg-4 d-none d-lg-block">
                             <div class="bg-primary text-white p-5 h-100 d-flex flex-column justify-content-center rounded-start-4">
                                 <div class="text-center">
                                     <i class="bi bi-boxes fs-1 mb-4"></i>
                                     <h2 class="fw-bold mb-3">WeBuild Company</h2>
                                     <p class="lead opacity-75 mb-4">Request access to our Warehouse Inventory and Tracking Management System</p>
+                                    
+                                    <div class="mt-5 text-start">
+                                        <h5 class="fw-bold mb-3">📋 What You'll Need:</h5>
+                                        <ul class="list-unstyled">
+                                            <li class="mb-2"><i class="bi bi-check-circle me-2"></i>Full Name</li>
+                                            <li class="mb-2"><i class="bi bi-check-circle me-2"></i>Email Address</li>
+                                            <li class="mb-2"><i class="bi bi-check-circle me-2"></i>Phone Number</li>
+                                            <li class="mb-2"><i class="bi bi-check-circle me-2"></i>Department</li>
+                                            <li class="mb-2"><i class="bi bi-check-circle me-2"></i>Role</li>
+                                            <li class="mb-2"><i class="bi bi-check-circle me-2"></i>Employee ID (optional)</li>
+                                            <li class="mb-2"><i class="bi bi-check-circle me-2"></i>Reason for Access</li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -163,39 +175,27 @@
                                                     <?= validation_show_error('department') ?>
                                                 </div>
                                             <?php endif; ?>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
+                                        </div>                                        <div class="col-md-6 mb-3">
                                             <label for="role" class="form-label fw-semibold text-dark">
                                                 <i class="bi bi-person-badge me-2"></i>Requested Role *
-                                            </label>                                            <select class="form-select form-select-lg border-2 <?= (validation_show_error('role')) ? 'is-invalid' : '' ?>" 
+                                            </label>
+                                            <select class="form-select form-select-lg border-2 <?= (validation_show_error('role')) ? 'is-invalid' : '' ?>" 
                                                     id="role" 
                                                     name="role" 
                                                     required>
                                                 <option value="">Select your requested role</option>
-                                                <option value="Warehouse Manager" <?= (old('role') == 'Warehouse Manager') ? 'selected' : '' ?>>
-                                                    Warehouse Manager - Oversee warehouse operations and staff
-                                                </option>
-                                                <option value="Warehouse Staff" <?= (old('role') == 'Warehouse Staff') ? 'selected' : '' ?>>
-                                                    Warehouse Staff - Handle inventory and daily warehouse tasks
-                                                </option>
-                                                <option value="Inventory Auditor" <?= (old('role') == 'Inventory Auditor') ? 'selected' : '' ?>>
-                                                    Inventory Auditor - Conduct inventory audits and reconciliation
-                                                </option>
-                                                <option value="Procurement Officer" <?= (old('role') == 'Procurement Officer') ? 'selected' : '' ?>>
-                                                    Procurement Officer - Manage purchasing and supplier relations
-                                                </option>
-                                                <option value="Accounts Payable Clerk" <?= (old('role') == 'Accounts Payable Clerk') ? 'selected' : '' ?>>
-                                                    Accounts Payable Clerk - Process vendor payments and invoices
-                                                </option>
-                                                <option value="Accounts Receivable Clerk" <?= (old('role') == 'Accounts Receivable Clerk') ? 'selected' : '' ?>>
-                                                    Accounts Receivable Clerk - Manage customer billing and payments
-                                                </option>
-                                                <option value="IT Administrator" <?= (old('role') == 'IT Administrator') ? 'selected' : '' ?>>
-                                                    IT Administrator - Manage system administration and user access
-                                                </option>
-                                                <option value="Top Management" <?= (old('role') == 'Top Management') ? 'selected' : '' ?>>
-                                                    Top Management - Executive level access to all reports
-                                                </option>
+                                                <?php if (isset($roles) && !empty($roles)): ?>
+                                                    <?php foreach ($roles as $r): ?>
+                                                        <option value="<?= esc($r['name']) ?>" <?= (old('role') == $r['name']) ? 'selected' : '' ?>>
+                                                            <?= esc($r['name']) ?>
+                                                            <?php if (!empty($r['description'])): ?>
+                                                                - <?= esc($r['description']) ?>
+                                                            <?php endif; ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                                <?php else: ?>
+                                                    <option value="">No roles available</option>
+                                                <?php endif; ?>
                                             </select>
                                             <?php if (validation_show_error('role')): ?>
                                                 <div class="invalid-feedback">
