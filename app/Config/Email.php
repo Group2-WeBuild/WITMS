@@ -5,9 +5,19 @@ namespace Config;
 use CodeIgniter\Config\BaseConfig;
 
 class Email extends BaseConfig
-{
-    public string $fromEmail  = '';
-    public string $fromName   = '';
+{    /**
+     * Default From Email Address
+     */
+    public string $fromEmail  = 'marjovicalejado123@gmail.com';
+    
+    /**
+     * Default From Name
+     */
+    public string $fromName   = 'WeBuild WITMS System';
+    
+    /**
+     * Default Recipients (comma-separated for multiple)
+     */
     public string $recipients = '';
 
     /**
@@ -18,7 +28,7 @@ class Email extends BaseConfig
     /**
      * The mail sending protocol: mail, sendmail, smtp
      */
-    public string $protocol = 'mail';
+    public string $protocol = 'smtp';
 
     /**
      * The server path to Sendmail.
@@ -27,28 +37,32 @@ class Email extends BaseConfig
 
     /**
      * SMTP Server Hostname
+     * Gmail SMTP Server
      */
-    public string $SMTPHost = '';
+    public string $SMTPHost = 'smtp.gmail.com';
 
     /**
      * SMTP Username
+     * Your Gmail address
      */
-    public string $SMTPUser = '';
+    public string $SMTPUser = 'marjovicalejado123@gmail.com';
 
     /**
      * SMTP Password
+     * Gmail App Password (NOT your regular Gmail password)
      */
-    public string $SMTPPass = '';
+    public string $SMTPPass = 'fbaktngqfyubcddq';
 
     /**
      * SMTP Port
+     * 587 for TLS, 465 for SSL
      */
-    public int $SMTPPort = 25;
+    public int $SMTPPort = 587;
 
     /**
      * SMTP Timeout (in seconds)
      */
-    public int $SMTPTimeout = 5;
+    public int $SMTPTimeout = 30;
 
     /**
      * Enable persistent SMTP connections
@@ -72,12 +86,10 @@ class Email extends BaseConfig
     /**
      * Character count to wrap at
      */
-    public int $wrapChars = 76;
-
-    /**
+    public int $wrapChars = 76;    /**
      * Type of mail, either 'text' or 'html'
      */
-    public string $mailType = 'text';
+    public string $mailType = 'html';
 
     /**
      * Character set (utf-8, iso-8859-1, etc.)

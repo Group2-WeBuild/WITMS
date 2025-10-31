@@ -468,20 +468,10 @@ class Auth extends BaseController
 
     /**
      * Send password reset email
-     */
-    private function sendPasswordResetEmail(array $user, string $token, ?string $employeeId)
+     */    private function sendPasswordResetEmail(array $user, string $token, ?string $employeeId)
     {
-        // Email configuration
+        // Initialize email service (uses config from Email.php)
         $email = \Config\Services::email();
-        
-        $config = [
-            'protocol' => 'mail', // You can change this to 'smtp' for production
-            'mailType' => 'html',
-            'charset'  => 'utf-8',
-            'newline'  => "\r\n"
-        ];
-        
-        $email->initialize($config);
 
         // Email content
         $resetLink = base_url("auth/reset-password-confirm/{$token}");
@@ -489,10 +479,9 @@ class Auth extends BaseController
         
         $subject = 'Password Reset Request - WeBuild WITMS';
         
-        $message = $this->buildPasswordResetEmailTemplate($fullName, $resetLink, $user['role'], $employeeId);
+        $message = $this->buildPasswordResetEmailTemplate($fullName, $resetLink, $user['role_id'], $employeeId);
 
         // Set email parameters
-        $email->setFrom('noreply@webuild.com', 'WeBuild WITMS System');
         $email->setTo($user['email']);
         $email->setSubject($subject);
         $email->setMessage($message);
@@ -500,77 +489,27 @@ class Auth extends BaseController
         // Send email
         if ($email->send()) {
             log_message('info', "Password reset email sent to: {$user['email']}");
+            return true;
         } else {
-            log_message('error', "Failed to send password reset email to: {$user['email']}");
-            // For development, we'll just log the reset link
+            $error = $email->printDebugger(['headers', 'subject', 'body']);
+            log_message('error', "Failed to send password reset email to: {$user['email']}. Error: {$error}");
+            // For development, log the reset link
             log_message('info', "Password reset link for {$user['email']}: {$resetLink}");
+            return false;
         }
-    }
-
-    /**
+    }    /**
      * Build password reset email template
      */
     private function buildPasswordResetEmailTemplate(string $fullName, string $resetLink, string $role, ?string $employeeId): string
     {
-        return "
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset='utf-8'>
-            <style>
-                .email-container { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; }
-                .header { background-color: #1a365d; color: white; padding: 20px; text-align: center; }
-                .content { padding: 30px; background-color: #f8f9fa; }
-                .button { display: inline-block; padding: 12px 24px; background-color: #1a365d; color: white; text-decoration: none; border-radius: 5px; }
-                .footer { padding: 20px; text-align: center; color: #666; font-size: 12px; }
-                .warning { background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; margin: 20px 0; border-radius: 5px; }
-            </style>
-        </head>
-        <body>
-            <div class='email-container'>
-                <div class='header'>
-                    <h1>🏗️ WeBuild Company</h1>
-                    <p>Warehouse Inventory & Tracking Management System</p>
-                </div>
-                
-                <div class='content'>
-                    <h2>Password Reset Request</h2>
-                    <p>Hello <strong>{$fullName}</strong>,</p>
-                    <p>We received a request to reset the password for your WeBuild WITMS account.</p>
-                    
-                    <div style='margin: 20px 0;'>
-                        <strong>Account Details:</strong><br>
-                        Role: {$role}<br>
-                        " . ($employeeId ? "Employee ID: {$employeeId}<br>" : "") . "
-                        Request Time: " . date('M d, Y H:i:s') . "
-                    </div>
-                    
-                    <p>Click the button below to reset your password:</p>
-                    <p style='text-align: center; margin: 30px 0;'>
-                        <a href='{$resetLink}' class='button'>Reset Password</a>
-                    </p>
-                    
-                    <div class='warning'>
-                        <strong>⚠️ Security Notice:</strong>
-                        <ul>
-                            <li>This link will expire in <strong>1 hour</strong></li>
-                            <li>If you didn't request this reset, please ignore this email</li>
-                            <li>Never share this link with anyone</li>
-                            <li>Contact IT Administrator if you have concerns</li>
-                        </ul>
-                    </div>
-                    
-                    <p>If the button doesn't work, copy and paste this link into your browser:</p>
-                    <p style='word-break: break-all; color: #666;'>{$resetLink}</p>
-                </div>
-                
-                <div class='footer'>
-                    <p>This is an automated message from WeBuild WITMS System</p>
-                    <p>© " . date('Y') . " WeBuild Construction Company. All rights reserved.</p>
-                </div>
-            </div>
-        </body>
-        </html>";
+        $data = [
+            'fullName' => $fullName,
+            'resetLink' => $resetLink,
+            'role' => $role,
+            'employeeId' => $employeeId
+        ];
+
+        return view('emails/password_reset', $data);
     }
 
     /**
@@ -586,9 +525,7 @@ class Auth extends BaseController
         // Handle password reset confirmation form submission
         if ($this->request->getMethod() === 'POST') {
             return $this->handlePasswordResetConfirm($token);
-        }
-
-        // Verify token and show password reset form
+        }        // Verify token and show password reset form
         $user = $this->userModel->findByResetToken($token);
         
         if (!$user || $this->userModel->isResetTokenExpired($user['id'])) {
@@ -596,10 +533,13 @@ class Auth extends BaseController
                            ->with('error', 'Password reset link has expired or is invalid. Please request a new one.');
         }
 
+        // Get user with role details for display
+        $userWithRole = $this->userModel->getUserWithRole($user['id']);
+        
         $data = [
             'title' => 'Set New Password - WeBuild WITMS',
             'token' => $token,
-            'user' => $user,
+            'user' => $userWithRole ?? $user,
             'validation' => \Config\Services::validation()
         ];
 
@@ -658,7 +598,8 @@ class Auth extends BaseController
             return redirect()->back()
                            ->with('error', 'An error occurred while resetting your password. Please try again.');
         }
-    }    /**
+    }    
+    /**
      * Display contact administrator page or handle contact form submission
      */
     public function contactAdministrator()
@@ -689,25 +630,49 @@ class Auth extends BaseController
     private function handleContactAdminRequest()
     {
         // Get all active role names for validation
-        $roleNames = $this->roleModel->getAllRoleNames();
+        $roleNames = $this->roleModel->getAllRoleNames();        // Validation rules
+        // Regex pattern: accepts letters (including ñÑ), spaces, dots, and "Jr."
+        // Pattern explanation: ^[a-zA-ZñÑ]+(\s[a-zA-ZñÑ]+)*(\sJr\.?)?$
+        // - Starts with letters (including ñÑ)
+        // - Can have additional words separated by spaces
+        // - Optionally ends with " Jr." or " Jr"
+        $namePattern = '/^[a-zA-ZñÑ]+(\s[a-zA-ZñÑ]+)*(\sJr\.?)?$/';
         
-        // Validation rules
         $rules = [
             'first_name' => [
                 'label' => 'First Name',
-                'rules' => 'required|max_length[100]|alpha_space'
+                'rules' => 'required|max_length[100]|regex_match[' . $namePattern . ']',
+                'errors' => [
+                    'regex_match' => 'First Name can only contain letters, spaces, "Jr.", and Spanish characters (ñ, Ñ).'
+                ]
             ],
-            'last_name' => [
+            'middle_name' => [
+                'label' => 'Middle Name',
+                'rules' => 'permit_empty|max_length[100]|regex_match[' . $namePattern . ']',
+                'errors' => [
+                    'regex_match' => 'Middle Name can only contain letters, spaces, "Jr.", and Spanish characters (ñ, Ñ).'
+                ]
+            ],            'last_name' => [
                 'label' => 'Last Name', 
-                'rules' => 'required|max_length[100]|alpha_space'
+                'rules' => 'required|max_length[100]|regex_match[' . $namePattern . ']',
+                'errors' => [
+                    'regex_match' => 'Last Name can only contain letters, spaces, "Jr.", and Spanish characters (ñ, Ñ).'
+                ]
             ],
             'email' => [
                 'label' => 'Email Address',
-                'rules' => 'required|valid_email|max_length[255]'
+                'rules' => 'required|valid_email|max_length[255]|regex_match[/^[a-zA-Z0-9._]+@gmail\.com$/]',
+                'errors' => [
+                    'valid_email' => 'Please enter a valid email address.',
+                    'regex_match' => 'Only Gmail addresses (@gmail.com) are accepted. Special characters like quotes or symbols (except . _ % + -) are not allowed.'
+                ]
             ],
             'phone' => [
                 'label' => 'Phone Number',
-                'rules' => 'permit_empty|max_length[20]|regex_match[/^[\+]?[0-9\s\-\(\)]+$/]'
+                'rules' => 'permit_empty|max_length[20]|regex_match[/^(\+639|09)\d{9}$/]',
+                'errors' => [
+                    'regex_match' => 'Phone number must be in the format +639XXXXXXXXX or 09XXXXXXXXX (11 digits).'
+                ]
             ],
             'department' => [
                 'label' => 'Department',
@@ -736,12 +701,11 @@ class Auth extends BaseController
             return redirect()->back()
                            ->withInput()
                            ->with('error', 'Please check your input and try again.');
-        }
-
-        try {
+        }        try {
             // Get form data
             $requestData = [
                 'first_name' => $this->request->getPost('first_name'),
+                'middle_name' => $this->request->getPost('middle_name'),
                 'last_name' => $this->request->getPost('last_name'),
                 'email' => $this->request->getPost('email'),
                 'phone' => $this->request->getPost('phone'),
@@ -757,8 +721,11 @@ class Auth extends BaseController
             // Send notification email to IT administrators
             $this->sendContactAdminNotification($requestData);
 
+            // Build full name for logging
+            $fullName = trim($requestData['first_name'] . ' ' . ($requestData['middle_name'] ?? '') . ' ' . $requestData['last_name']);
+
             // Log the request
-            log_message('info', "Account access request submitted by: {$requestData['email']} ({$requestData['first_name']} {$requestData['last_name']})");
+            log_message('info', "Account access request submitted by: {$requestData['email']} ({$fullName})");
 
             return redirect()->back()
                            ->with('success', 'Your request has been submitted successfully! Our IT Administrator will review your request and contact you within 24 hours during business days.');
@@ -769,7 +736,8 @@ class Auth extends BaseController
                            ->withInput()
                            ->with('error', 'An error occurred while submitting your request. Please try again or contact IT support directly.');
         }
-    }    /**
+    }    
+    /**
      * Send contact admin notification email to IT administrators
      */
     private function sendContactAdminNotification(array $requestData): bool
@@ -789,12 +757,9 @@ class Auth extends BaseController
             $subject = 'New Account Access Request - WeBuild WITMS';
             
             // Email content
-            $message = $this->buildContactAdminEmailTemplate($requestData);
-
-            $emailsSent = 0;
+            $message = $this->buildContactAdminEmailTemplate($requestData);            $emailsSent = 0;
             foreach ($itAdministrators as $admin) {
                 $email->clear();
-                $email->setFrom('noreply@webuild.com', 'WeBuild WITMS System');
                 $email->setTo($admin['email']);
                 $email->setSubject($subject);
                 $email->setMessage($message);
@@ -803,7 +768,8 @@ class Auth extends BaseController
                     $emailsSent++;
                     log_message('info', "Contact admin notification sent to: {$admin['email']}");
                 } else {
-                    log_message('error', "Failed to send contact admin notification to: {$admin['email']}");
+                    $error = $email->printDebugger(['headers']);
+                    log_message('error', "Failed to send contact admin notification to: {$admin['email']}. Error: {$error}");
                 }
             }
 
@@ -820,13 +786,12 @@ class Auth extends BaseController
 
     /**
      * Send confirmation email to the person who submitted the request
-     */
+     */   
     private function sendContactAdminConfirmation(array $requestData): bool
     {
         try {
             $email = \Config\Services::email();
             
-            $email->setFrom('noreply@webuild.com', 'WeBuild WITMS System');
             $email->setTo($requestData['email']);
             $email->setSubject('Account Access Request Received - WeBuild WITMS');
             $email->setMessage($this->buildContactAdminConfirmationTemplate($requestData));
@@ -835,7 +800,8 @@ class Auth extends BaseController
                 log_message('info', "Confirmation email sent to: {$requestData['email']}");
                 return true;
             } else {
-                log_message('error', "Failed to send confirmation email to: {$requestData['email']}");
+                $error = $email->printDebugger(['headers']);
+                log_message('error', "Failed to send confirmation email to: {$requestData['email']}. Error: {$error}");
                 return false;
             }
 
@@ -872,315 +838,43 @@ class Auth extends BaseController
             $roleDescription = $role['description'];
         }
 
-        return "
-        <!DOCTYPE html>
-        <html lang='en'>
-        <head>
-            <meta charset='UTF-8'>
-            <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-            <title>New Account Access Request</title>
-            <style>
-                body { 
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-                    line-height: 1.6; 
-                    color: #333; 
-                    margin: 0; 
-                    padding: 0; 
-                    background-color: #f8f9fa;
-                }
-                .container { 
-                    max-width: 700px; 
-                    margin: 20px auto; 
-                    background: white;
-                    border-radius: 10px;
-                    overflow: hidden;
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                }
-                .header { 
-                    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-                    color: white; 
-                    padding: 30px 20px; 
-                    text-align: center; 
-                }
-                .header h1 {
-                    margin: 0;
-                    font-size: 24px;
-                    font-weight: bold;
-                }
-                .content { 
-                    padding: 40px 30px; 
-                    background: white;
-                }
-                .info-section {
-                    background: #f8f9fa;
-                    padding: 20px;
-                    border-radius: 8px;
-                    margin: 20px 0;
-                    border-left: 4px solid #0d6efd;
-                }
-                .info-row {
-                    display: flex;
-                    margin-bottom: 10px;
-                }
-                .info-label {
-                    font-weight: bold;
-                    width: 150px;
-                    color: #495057;
-                }
-                .info-value {
-                    flex: 1;
-                    color: #212529;
-                }
-                .reason-section {
-                    background: #fff3cd;
-                    border: 1px solid #ffeaa7;
-                    padding: 20px;
-                    border-radius: 8px;
-                    margin: 20px 0;
-                }
-                .action-buttons {
-                    text-align: center;
-                    margin: 30px 0;
-                }
-                .btn {
-                    display: inline-block;
-                    padding: 12px 24px;
-                    margin: 0 10px;
-                    text-decoration: none;
-                    border-radius: 6px;
-                    font-weight: bold;
-                    font-size: 14px;
-                }
-                .btn-primary {
-                    background: #0d6efd;
-                    color: white;
-                }
-                .btn-success {
-                    background: #198754;
-                    color: white;
-                }
-                .footer { 
-                    text-align: center; 
-                    padding: 30px 20px; 
-                    background: #f8f9fa;
-                    color: #6c757d; 
-                    font-size: 14px;
-                    border-top: 1px solid #dee2e6;
-                }
-            </style>
-        </head>
-        <body>
-            <div class='container'>
-                <div class='header'>
-                    <h1>🔔 New Account Access Request</h1>
-                    <p>WeBuild WITMS - IT Administrator Alert</p>
-                </div>
-                
-                <div class='content'>
-                    <h2>Account Access Request Details</h2>
-                    
-                    <div class='info-section'>
-                        <h4>👤 Personal Information</h4>
-                        <div class='info-row'>
-                            <div class='info-label'>Full Name:</div>
-                            <div class='info-value'>{$requestData['first_name']} {$requestData['last_name']}</div>
-                        </div>
-                        <div class='info-row'>
-                            <div class='info-label'>Email:</div>
-                            <div class='info-value'>{$requestData['email']}</div>
-                        </div>
-                        <div class='info-row'>
-                            <div class='info-label'>Phone:</div>
-                            <div class='info-value'>" . ($requestData['phone'] ?: 'Not provided') . "</div>
-                        </div>
-                        <div class='info-row'>
-                            <div class='info-label'>Employee ID:</div>
-                            <div class='info-value'>" . ($requestData['employee_id'] ?: 'Not provided') . "</div>
-                        </div>
-                    </div>
+        // Build full name
+        $fullName = trim($requestData['first_name'] . ' ' . ($requestData['middle_name'] ?? '') . ' ' . $requestData['last_name']);
 
-                    <div class='info-section'>
-                        <h4>🏢 Work Information</h4>
-                        <div class='info-row'>
-                            <div class='info-label'>Department:</div>
-                            <div class='info-value'>{$departmentName}</div>
-                        </div>
-                        <div class='info-row'>
-                            <div class='info-label'>Requested Role:</div>
-                            <div class='info-value'>{$roleName}" . ($roleDescription ? "<br><small style='color: #6c757d;'>{$roleDescription}</small>" : "") . "</div>
-                        </div>
-                    </div>
+        $data = [
+            'requestData' => $requestData,
+            'departmentName' => $departmentName,
+            'roleName' => $roleName,
+            'roleDescription' => $roleDescription,
+            'fullName' => $fullName
+        ];
 
-                    <div class='reason-section'>
-                        <h4>📝 Reason for Access Request</h4>
-                        <p>{$requestData['reason']}</p>
-                    </div>
-
-                    <div class='info-section'>
-                        <h4>🔍 Request Metadata</h4>
-                        <div class='info-row'>
-                            <div class='info-label'>Submitted:</div>
-                            <div class='info-value'>{$requestData['requested_at']}</div>
-                        </div>
-                        <div class='info-row'>
-                            <div class='info-label'>IP Address:</div>
-                            <div class='info-value'>{$requestData['ip_address']}</div>
-                        </div>
-                    </div>
-
-                    <div class='action-buttons'>
-                        <a href='mailto:{$requestData['email']}?subject=WeBuild WITMS Account - Follow Up' class='btn btn-primary'>
-                            📧 Contact Requester
-                        </a>
-                        <a href='" . base_url('dashboard/it-administrator') . "' class='btn btn-success'>
-                            🏗️ Access Admin Panel
-                        </a>
-                    </div>
-
-                    <p><strong>Next Steps:</strong></p>
-                    <ol>
-                        <li>Review the request details above</li>
-                        <li>Verify the requester's identity and authorization</li>
-                        <li>Create the user account in WITMS if approved</li>
-                        <li>Assign appropriate role: <strong>{$roleName}</strong></li>
-                        <li>Assign to department: <strong>{$departmentName}</strong></li>
-                        <li>Send login credentials to the new user</li>
-                        <li>Contact the requester with the account status</li>
-                    </ol>
-                </div>
-                
-                <div class='footer'>
-                    <p><strong>WeBuild Company</strong> - IT Department</p>
-                    <p>This is an automated notification from the WITMS system.</p>
-                    <p>Please process this request within 24 hours during business days.</p>
-                </div>
-            </div>
-        </body>
-        </html>
-        ";
-    }
-
-    /**
+        return view('emails/contact_admin_notification', $data);
+    }    /**
      * Build confirmation email template for the requester
      */
     private function buildContactAdminConfirmationTemplate(array $requestData): string
     {
-        return "
-        <!DOCTYPE html>
-        <html lang='en'>
-        <head>
-            <meta charset='UTF-8'>
-            <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-            <title>Request Received - WeBuild WITMS</title>
-            <style>
-                body { 
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-                    line-height: 1.6; 
-                    color: #333; 
-                    margin: 0; 
-                    padding: 0; 
-                    background-color: #f8f9fa;
-                }
-                .container { 
-                    max-width: 600px; 
-                    margin: 20px auto; 
-                    background: white;
-                    border-radius: 10px;
-                    overflow: hidden;
-                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                }
-                .header { 
-                    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-                    color: white; 
-                    padding: 30px 20px; 
-                    text-align: center; 
-                }
-                .content { 
-                    padding: 40px 30px; 
-                    background: white;
-                }
-                .success-box {
-                    background: #d4edda;
-                    border: 1px solid #c3e6cb;
-                    color: #155724;
-                    padding: 20px;
-                    border-radius: 8px;
-                    margin: 20px 0;
-                    text-align: center;
-                }
-                .info-box {
-                    background: #f8f9fa;
-                    padding: 20px;
-                    border-radius: 8px;
-                    margin: 20px 0;
-                    border-left: 4px solid #0d6efd;
-                }
-                .footer { 
-                    text-align: center; 
-                    padding: 30px 20px; 
-                    background: #f8f9fa;
-                    color: #6c757d; 
-                    font-size: 14px;
-                    border-top: 1px solid #dee2e6;
-                }
-            </style>
-        </head>
-        <body>
-            <div class='container'>
-                <div class='header'>
-                    <h1>✅ Request Received Successfully</h1>
-                    <p>WeBuild WITMS - Account Access Request</p>
-                </div>
-                
-                <div class='content'>
-                    <div class='success-box'>
-                        <h3>Thank You, {$requestData['first_name']}!</h3>
-                        <p>Your account access request has been received and is being reviewed by our IT Administrator.</p>
-                    </div>
+        // Get department name from ID using DepartmentModel
+        $departmentName = 'Unknown Department';
+        
+        if (!empty($requestData['department'])) {
+            $department = $this->departmentModel->find($requestData['department']);
+            if ($department) {
+                $departmentName = $department['name'];
+            }
+        }
 
-                    <p>Hello <strong>{$requestData['first_name']} {$requestData['last_name']}</strong>,</p>
-                    
-                    <p>We have successfully received your request for access to the WeBuild Warehouse Inventory and Tracking Management System (WITMS).</p>
+        // Build full name
+        $fullName = trim($requestData['first_name'] . ' ' . ($requestData['middle_name'] ?? '') . ' ' . $requestData['last_name']);
 
-                    <div class='info-box'>
-                        <h4>📋 Your Request Summary</h4>
-                        <p><strong>Email:</strong> {$requestData['email']}<br>
-                        <strong>Department:</strong> {$requestData['department']}<br>
-                        <strong>Requested Role:</strong> {$requestData['role']}<br>
-                        <strong>Submitted:</strong> {$requestData['requested_at']}</p>
-                    </div>
+        $data = [
+            'requestData' => $requestData,
+            'departmentName' => $departmentName,
+            'roleName' => $requestData['role'],
+            'fullName' => $fullName
+        ];
 
-                    <h4>🕐 What Happens Next?</h4>
-                    <ol>
-                        <li><strong>Review Process:</strong> Our IT Administrator will review your request within 24 hours during business days</li>
-                        <li><strong>Verification:</strong> We may contact you to verify your identity and authorization</li>
-                        <li><strong>Account Creation:</strong> If approved, your account will be created with appropriate permissions</li>
-                        <li><strong>Credentials:</strong> You'll receive your login credentials via email</li>
-                        <li><strong>Welcome:</strong> We'll provide system orientation and training resources</li>
-                    </ol>
-
-                    <div class='info-box'>
-                        <h4>📞 Need Immediate Assistance?</h4>
-                        <p>If you have urgent questions or need immediate assistance, please contact our IT support team:</p>
-                        <p><strong>Email:</strong> <a href='mailto:it-support@webuild.com'>it-support@webuild.com</a><br>
-                        <strong>Phone:</strong> (123) 456-7890 ext. 2<br>
-                        <strong>Hours:</strong> Monday - Friday, 8:00 AM - 5:00 PM</p>
-                    </div>
-
-                    <p>We appreciate your interest in using our WITMS system and look forward to providing you with access soon.</p>
-                    
-                    <p>Best regards,<br>
-                    <strong>WeBuild IT Support Team</strong><br>
-                    Information Technology Department</p>
-                </div>
-                
-                <div class='footer'>
-                    <p><strong>WeBuild Company</strong> - Building Excellence Together</p>
-                    <p>This is an automated confirmation email. Please do not reply directly to this message.</p>
-                </div>
-            </div>
-        </body>
-        </html>
-        ";
+        return view('emails/contact_admin_confirmation', $data);
     }
 }
