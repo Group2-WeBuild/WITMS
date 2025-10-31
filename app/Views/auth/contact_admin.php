@@ -19,11 +19,12 @@
                                     <i class="bi bi-boxes fs-1 mb-4"></i>
                                     <h2 class="fw-bold mb-3">WeBuild Company</h2>
                                     <p class="lead opacity-75 mb-4">Request access to our Warehouse Inventory and Tracking Management System</p>
-                                    
-                                    <div class="mt-5 text-start">
+                                      <div class="mt-5 text-start">
                                         <h5 class="fw-bold mb-3">📋 What You'll Need:</h5>
                                         <ul class="list-unstyled">
-                                            <li class="mb-2"><i class="bi bi-check-circle me-2"></i>Full Name</li>
+                                            <li class="mb-2"><i class="bi bi-check-circle me-2"></i>First Name</li>
+                                            <li class="mb-2"><i class="bi bi-check-circle me-2"></i>Middle Name (optional)</li>
+                                            <li class="mb-2"><i class="bi bi-check-circle me-2"></i>Last Name</li>
                                             <li class="mb-2"><i class="bi bi-check-circle me-2"></i>Email Address</li>
                                             <li class="mb-2"><i class="bi bi-check-circle me-2"></i>Phone Number</li>
                                             <li class="mb-2"><i class="bi bi-check-circle me-2"></i>Department</li>
@@ -77,9 +78,8 @@
                                 
                                 <form id="contactForm" action="<?= base_url('auth/contact-admin') ?>" method="POST">
                                     <?= csrf_field() ?>
-                                    
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
+                                      <div class="row">
+                                        <div class="col-md-4 mb-3">
                                             <label for="firstName" class="form-label fw-semibold text-dark">
                                                 <i class="bi bi-person me-2"></i>First Name *
                                             </label>                                            <input type="text" 
@@ -95,7 +95,23 @@
                                                 </div>
                                             <?php endif; ?>
                                         </div>
-                                        <div class="col-md-6 mb-3">
+                                        <div class="col-md-4 mb-3">
+                                            <label for="middleName" class="form-label fw-semibold text-dark">
+                                                <i class="bi bi-person me-2"></i>Middle Name
+                                            </label>                                            
+                                            <input type="text" 
+                                                   class="form-control form-control-lg border-2 <?= (validation_show_error('middle_name')) ? 'is-invalid' : '' ?>" 
+                                                   id="middleName" 
+                                                   name="middle_name" 
+                                                   value="<?= old('middle_name') ?>"
+                                                   placeholder="Enter your middle name">
+                                            <?php if (validation_show_error('middle_name')): ?>
+                                                <div class="invalid-feedback">
+                                                    <?= validation_show_error('middle_name') ?>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
                                             <label for="lastName" class="form-label fw-semibold text-dark">
                                                 <i class="bi bi-person me-2"></i>Last Name *
                                             </label>                                            
@@ -288,11 +304,11 @@
     
     <!-- Bootstrap 5.3.3 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOAE8ZvarG9voXn55vfS1sMG" crossorigin="anonymous"></script>
-      <script>
-        // Enhanced client-side validation before form submission
+      <script>        // Enhanced client-side validation before form submission
         document.getElementById('contactForm').addEventListener('submit', function(e) {
             // Get form values
             const firstName = document.getElementById('firstName').value.trim();
+            const middleName = document.getElementById('middleName').value.trim();
             const lastName = document.getElementById('lastName').value.trim();
             const email = document.getElementById('email').value.trim();
             const department = document.getElementById('department').value;
@@ -310,6 +326,8 @@
                 showFieldError('firstName', 'First name is required.');
                 hasErrors = true;
             }
+            
+            // Middle name is optional, no validation needed
             
             if (!lastName) {
                 showFieldError('lastName', 'Last name is required.');
