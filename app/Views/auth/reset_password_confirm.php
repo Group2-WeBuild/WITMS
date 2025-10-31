@@ -47,13 +47,12 @@
                                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                                     </div>
                                 <?php endif; ?>
-                                
-                                <!-- User Info -->
+                                  <!-- User Info -->
                                 <div class="bg-light p-3 rounded mb-4">
                                     <h6 class="mb-2">Resetting password for:</h6>
                                     <p class="mb-1"><strong><?= esc($user['first_name'] . ' ' . $user['last_name']) ?></strong></p>
                                     <p class="mb-1 text-muted"><?= esc($user['email']) ?></p>
-                                    <small class="text-muted">Role: <?= esc(ucwords(str_replace('-', ' ', $user['role']))) ?></small>
+                                    <small class="text-muted">Role: <?= esc($user['role_name'] ?? 'User') ?></small>
                                 </div>
                                   <form action="<?= base_url('auth/reset-password-confirm/' . $token) ?>" method="POST" id="resetPasswordForm">
                                     <?= csrf_field() ?>
@@ -151,8 +150,7 @@
     
     <!-- Bootstrap 5.3.3 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOAE8ZvarG9voXn55vfS1sMG" crossorigin="anonymous"></script>
-    
-    <script>
+      <script>
         // Password visibility toggles
         document.getElementById('togglePassword').addEventListener('click', function() {
             const password = document.getElementById('password');
@@ -184,11 +182,34 @@
             }
         });
 
-        // Password strength checker
+        // Check password match function
+        function checkPasswordMatch() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('password_confirm').value;
+            const confirmField = document.getElementById('password_confirm');
+            
+            // Only validate if confirm password field has value
+            if (confirmPassword.length > 0) {
+                if (password === confirmPassword) {
+                    confirmField.classList.remove('is-invalid');
+                    confirmField.classList.add('is-valid');
+                } else {
+                    confirmField.classList.remove('is-valid');
+                    confirmField.classList.add('is-invalid');
+                }
+            } else {
+                // If empty, remove both classes
+                confirmField.classList.remove('is-invalid', 'is-valid');
+            }
+        }        // Password strength checker
         document.getElementById('password').addEventListener('input', function() {
             const password = this.value;
             const strengthBar = document.getElementById('passwordStrength');
             const strengthText = document.getElementById('strengthText');
+            const passwordField = this;
+            
+            // Remove any invalid class when user is typing (give them a chance!)
+            passwordField.classList.remove('is-invalid');
             
             let strength = 0;
             let strengthLabel = '';
@@ -230,24 +251,25 @@
             strengthBar.style.width = percentage + '%';
             strengthBar.className = 'progress-bar ' + strengthClass;
             strengthText.textContent = strengthLabel;
+            
+            // Also check password match when password changes
+            checkPasswordMatch();
         });
 
-        // Password confirmation validation
+        // Password confirmation validation - check on every keystroke
         document.getElementById('password_confirm').addEventListener('input', function() {
-            const password = document.getElementById('password').value;
-            const confirmPassword = this.value;
-            
-            if (confirmPassword && password !== confirmPassword) {
-                this.classList.add('is-invalid');
-            } else {
-                this.classList.remove('is-invalid');
-            }
+            checkPasswordMatch();
         });
 
         // Form validation
         document.getElementById('resetPasswordForm').addEventListener('submit', function(e) {
             const password = document.getElementById('password').value;
             const confirmPassword = document.getElementById('password_confirm').value;
+            const passwordField = document.getElementById('password');
+            const confirmField = document.getElementById('password_confirm');
+            
+            let isValid = true;
+            let errorMessage = '';
             
             // Check password requirements
             const hasMinLength = password.length >= 8;
@@ -257,16 +279,38 @@
             const hasSpecialChar = /[@$!%*?&]/.test(password);
             
             if (!hasMinLength || !hasLowercase || !hasUppercase || !hasNumber || !hasSpecialChar) {
+                passwordField.classList.add('is-invalid');
+                errorMessage = 'Password must be at least 8 characters and contain:\n- Uppercase letter (A-Z)\n- Lowercase letter (a-z)\n- Number (0-9)\n- Special character (@$!%*?&)';
+                isValid = false;
+            } else {
+                passwordField.classList.remove('is-invalid');
+            }
+            
+            // Check if passwords match
+            if (password !== confirmPassword) {
+                confirmField.classList.add('is-invalid');
+                confirmField.classList.remove('is-valid');
+                if (errorMessage) errorMessage += '\n\n';
+                errorMessage += 'Passwords do not match!';
+                isValid = false;
+            } else if (password === confirmPassword && password.length > 0) {
+                confirmField.classList.remove('is-invalid');
+                confirmField.classList.add('is-valid');
+            }
+            
+            if (!isValid) {
                 e.preventDefault();
-                alert('Password must be at least 8 characters and contain uppercase, lowercase, number, and special character.');
+                alert(errorMessage);
                 return false;
             }
             
-            if (password !== confirmPassword) {
-                e.preventDefault();
-                alert('Passwords do not match.');
-                return false;
-            }
+            return true;
+        });
+
+        // Initialize - remove any existing validation classes on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('password').classList.remove('is-invalid', 'is-valid');
+            document.getElementById('password_confirm').classList.remove('is-invalid', 'is-valid');
         });
     </script>
 </body>
