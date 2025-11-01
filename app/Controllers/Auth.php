@@ -319,8 +319,7 @@ class Auth extends BaseController
         }
 
         return $sessionData;
-    }
-
+    }    
     /**
      * Redirect user to appropriate dashboard based on role
      */

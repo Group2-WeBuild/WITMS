@@ -61,10 +61,8 @@ class Dashboard extends BaseController
             'team_members' => $this->getUsersByCurrentRole()
         ];
         
-        return view('dashboard/warehouse_manager', $data);
-    }
-
-    /**
+        return view('users/warehouse_manager/dashboard', $data);
+    }    /**
      * Warehouse Staff Dashboard
      */
     public function warehouseStaff()
@@ -77,10 +75,8 @@ class Dashboard extends BaseController
             'department_stats' => $this->getDepartmentStats()
         ];
         
-        return view('dashboard/warehouse_staff', $data);
-    }
-
-    /**
+        return view('users/warehouse_staff/dashboard', $data);
+    }    /**
      * Inventory Auditor Dashboard
      */
     public function inventoryAuditor()
@@ -94,10 +90,8 @@ class Dashboard extends BaseController
             'warehouse_stats' => $this->getWarehouseStats()
         ];
         
-        return view('dashboard/inventory_auditor', $data);
-    }
-
-    /**
+        return view('users/inventory_auditor/dashboard', $data);
+    }    /**
      * Procurement Officer Dashboard
      */
     public function procurementOfficer()
@@ -110,10 +104,8 @@ class Dashboard extends BaseController
             'department_stats' => $this->getDepartmentStats()
         ];
         
-        return view('dashboard/procurement_officer', $data);
-    }
-
-    /**
+        return view('users/procurement_officer/dashboard', $data);
+    }    /**
      * Accounts Payable Clerk Dashboard
      */
     public function accountsPayable()
@@ -126,10 +118,8 @@ class Dashboard extends BaseController
             'department_stats' => $this->getDepartmentStats()
         ];
         
-        return view('dashboard/accounts_payable', $data);
-    }
-
-    /**
+        return view('users/accounts_payable/dashboard', $data);
+    }    /**
      * Accounts Receivable Clerk Dashboard
      */
     public function accountsReceivable()
@@ -142,7 +132,7 @@ class Dashboard extends BaseController
             'department_stats' => $this->getDepartmentStats()
         ];
         
-        return view('dashboard/accounts_receivable', $data);
+        return view('users/accounts_receivable/dashboard', $data);
     }/**
      * IT Administrator Dashboard
      */
@@ -159,10 +149,8 @@ class Dashboard extends BaseController
             'roles' => $this->roleModel->getActiveRoles()
         ];
         
-        return view('dashboard/it_administrator', $data);
-    }
-
-    /**
+        return view('users/it_administrator/dashboard', $data);
+    }    /**
      * Top Management Dashboard
      */
     public function topManagement()
@@ -175,7 +163,7 @@ class Dashboard extends BaseController
             'company_stats' => $this->getCompanyStats()
         ];
         
-        return view('dashboard/top_management', $data);
+        return view('users/top_management/dashboard', $data);
     }
 
     /**
