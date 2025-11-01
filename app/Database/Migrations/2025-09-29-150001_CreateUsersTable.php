@@ -36,7 +36,8 @@ class CreateUsersTable extends Migration
                 'unsigned'   => true,
                 'null'       => true,
                 'comment'    => 'Foreign key to departments table',
-            ],            'first_name' => [
+            ],            
+            'first_name' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 100,
                 'comment'    => 'User first name',
