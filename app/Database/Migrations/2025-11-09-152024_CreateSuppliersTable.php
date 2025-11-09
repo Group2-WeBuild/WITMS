@@ -4,7 +4,7 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreateDepartmentsTable extends Migration
+class CreateSuppliersTable extends Migration
 {
     public function up()
     {
@@ -14,36 +14,50 @@ class CreateDepartmentsTable extends Migration
                 'constraint'     => 11,
                 'unsigned'       => true,
                 'auto_increment' => true,
-            ],            'name' => [
-                'type'       => 'VARCHAR',
-                'constraint' => 100,
-                'null'       => false,
             ],
-            'description' => [
-                'type' => 'TEXT',
-                'null' => true,
-            ],
-            'warehouse_id' => [
-                'type'       => 'INT',
-                'constraint' => 11,
-                'unsigned'   => true,
-                'null'       => true,
-                'comment'    => 'Foreign key to warehouses table (null for Central Office)',
-            ],
-            'department_head' => [
+            'name' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 200,
-                'null'       => true,
+                'null'       => false,
+                'comment'    => 'Supplier company name',
             ],
-            'contact_email' => [
+            'code' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 50,
+                'null'       => false,
+                'comment'    => 'Supplier code',
+            ],
+            'contact_person' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 150,
+                'null'       => true,
+                'comment'    => 'Primary contact person',
+            ],
+            'email' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 255,
                 'null'       => true,
             ],
-            'contact_phone' => [
+            'phone' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 20,
                 'null'       => true,
+            ],
+            'address' => [
+                'type' => 'TEXT',
+                'null' => true,
+            ],
+            'payment_terms' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 100,
+                'null'       => true,
+                'comment'    => 'Payment terms (e.g., Net 30, Net 60)',
+            ],
+            'tax_id' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 50,
+                'null'       => true,
+                'comment'    => 'Tax identification number',
             ],
             'is_active' => [
                 'type'    => 'BOOLEAN',
@@ -58,14 +72,14 @@ class CreateDepartmentsTable extends Migration
                 'null' => true,
             ],
         ]);
+
         $this->forge->addKey('id', true);
-        $this->forge->addKey(['warehouse_id'], false);
-        $this->forge->addForeignKey('warehouse_id', 'warehouses', 'id', 'SET NULL', 'CASCADE');
-        $this->forge->createTable('departments');
+        $this->forge->addUniqueKey(['code']);
+        $this->forge->createTable('suppliers');
     }
 
     public function down()
     {
-        $this->forge->dropTable('departments');
+        $this->forge->dropTable('suppliers');
     }
 }

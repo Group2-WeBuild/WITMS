@@ -12,11 +12,10 @@ class DepartmentModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    
-    protected $allowedFields    = [
+      protected $allowedFields    = [
         'name',
         'description',
-        'warehouse_location',
+        'warehouse_id',
         'department_head',
         'contact_email',
         'contact_phone',
@@ -34,9 +33,7 @@ class DepartmentModel extends Model
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
-    protected $deletedField  = 'deleted_at';
-
-    // Validation
+    protected $deletedField  = 'deleted_at';    // Validation
     protected $validationRules = [
         'name' => [
             'label' => 'Department Name',
@@ -46,9 +43,9 @@ class DepartmentModel extends Model
             'label' => 'Description',
             'rules' => 'permit_empty|max_length[500]'
         ],
-        'warehouse_location' => [
-            'label' => 'Warehouse Location',
-            'rules' => 'required|in_list[Central Office,Warehouse A,Warehouse B,Warehouse C,All Warehouses]'
+        'warehouse_id' => [
+            'label' => 'Warehouse',
+            'rules' => 'permit_empty|is_natural_no_zero|is_not_unique[warehouses.id]'
         ],
         'department_head' => [
             'label' => 'Department Head',
@@ -94,14 +91,12 @@ class DepartmentModel extends Model
     public function getActiveDepartments()
     {
         return $this->where('is_active', 1)->findAll();
-    }
-
-    /**
-     * Get departments by warehouse location
+    }    /**
+     * Get departments by warehouse ID
      */
-    public function getDepartmentsByLocation(string $location)
+    public function getDepartmentsByWarehouse(int $warehouseId)
     {
-        return $this->where('warehouse_location', $location)
+        return $this->where('warehouse_id', $warehouseId)
                     ->where('is_active', 1)
                     ->findAll();
     }
@@ -111,7 +106,7 @@ class DepartmentModel extends Model
      */
     public function getWarehouseDepartments()
     {
-        return $this->whereNotIn('warehouse_location', ['Central Office'])
+        return $this->where('warehouse_id IS NOT NULL')
                     ->where('is_active', 1)
                     ->findAll();
     }
@@ -121,7 +116,7 @@ class DepartmentModel extends Model
      */
     public function getCentralOfficeDepartments()
     {
-        return $this->where('warehouse_location', 'Central Office')
+        return $this->where('warehouse_id IS NULL')
                     ->where('is_active', 1)
                     ->findAll();
     }
@@ -132,14 +127,13 @@ class DepartmentModel extends Model
     public function findByName(string $name)
     {
         return $this->where('name', $name)->first();
-    }
-
-    /**
+    }    /**
      * Get departments with user count
      */
     public function getDepartmentsWithUserCount()
     {
-        return $this->select('departments.*, COUNT(users.id) as user_count')
+        return $this->select('departments.*, warehouses.name as warehouse_name, COUNT(users.id) as user_count')
+                    ->join('warehouses', 'warehouses.id = departments.warehouse_id', 'left')
                     ->join('users', 'users.department_id = departments.id', 'left')
                     ->where('departments.is_active', 1)
                     ->groupBy('departments.id')
@@ -171,9 +165,7 @@ class DepartmentModel extends Model
     public function updateDepartment(int $departmentId, array $departmentData): bool
     {
         return $this->update($departmentId, $departmentData);
-    }
-
-    /**
+    }    /**
      * Get department statistics
      */
     public function getDepartmentStats(): array
@@ -182,22 +174,26 @@ class DepartmentModel extends Model
             'total_departments' => $this->countAll(),
             'active_departments' => $this->where('is_active', 1)->countAllResults(false),
             'inactive_departments' => $this->where('is_active', 0)->countAllResults(false),
+            'central_office_departments' => $this->where('warehouse_id IS NULL')
+                                                 ->where('is_active', 1)
+                                                 ->countAllResults(false),
+            'warehouse_departments' => $this->where('warehouse_id IS NOT NULL')
+                                            ->where('is_active', 1)
+                                            ->countAllResults(false),
         ];
 
-        // Get location distribution
-        $locations = [
-            'Central Office',
-            'Warehouse A',
-            'Warehouse B', 
-            'Warehouse C',
-            'All Warehouses'
-        ];
-
-        foreach ($locations as $location) {
-            $stats['location_counts'][str_replace(' ', '_', strtolower($location))] = 
-                $this->where('warehouse_location', $location)
-                     ->where('is_active', 1)
-                     ->countAllResults(false);
+        // Get distribution by warehouse
+        $warehouseModel = model('WarehouseModel');
+        $warehouses = $warehouseModel->where('is_active', 1)->findAll();
+        
+        $stats['warehouse_distribution'] = [];
+        foreach ($warehouses as $warehouse) {
+            $stats['warehouse_distribution'][$warehouse['id']] = [
+                'warehouse_name' => $warehouse['name'],
+                'department_count' => $this->where('warehouse_id', $warehouse['id'])
+                                          ->where('is_active', 1)
+                                          ->countAllResults(false)
+            ];
         }
 
         return $stats;
@@ -228,5 +224,62 @@ class DepartmentModel extends Model
                     ->groupEnd()
                     ->where('is_active', 1)
                     ->findAll();
+    }
+
+    /**
+     * Get department with warehouse details
+     */
+    public function getDepartmentWithWarehouse(int $departmentId)
+    {
+        return $this->select('departments.*, warehouses.name as warehouse_name, warehouses.code as warehouse_code, warehouses.location as warehouse_location')
+                    ->join('warehouses', 'warehouses.id = departments.warehouse_id', 'left')
+                    ->where('departments.id', $departmentId)
+                    ->first();
+    }
+
+    /**
+     * Get all departments with warehouse details
+     */
+    public function getAllDepartmentsWithWarehouse()
+    {
+        return $this->select('departments.*, warehouses.name as warehouse_name, warehouses.code as warehouse_code')
+                    ->join('warehouses', 'warehouses.id = departments.warehouse_id', 'left')
+                    ->where('departments.is_active', 1)
+                    ->findAll();
+    }
+
+    /**
+     * Assign department to warehouse
+     */
+    public function assignToWarehouse(int $departmentId, ?int $warehouseId): bool
+    {
+        return $this->update($departmentId, ['warehouse_id' => $warehouseId]);
+    }
+
+    /**
+     * Remove department from warehouse (assign to Central Office)
+     */
+    public function removeFromWarehouse(int $departmentId): bool
+    {
+        return $this->update($departmentId, ['warehouse_id' => null]);
+    }
+
+    /**
+     * Check if department belongs to warehouse
+     */
+    public function belongsToWarehouse(int $departmentId, int $warehouseId): bool
+    {
+        $department = $this->find($departmentId);
+        return $department && $department['warehouse_id'] == $warehouseId;
+    }
+
+    /**
+     * Get departments count by warehouse
+     */
+    public function getDepartmentCountByWarehouse(int $warehouseId): int
+    {
+        return $this->where('warehouse_id', $warehouseId)
+                    ->where('is_active', 1)
+                    ->countAllResults();
     }
 }

@@ -628,8 +628,12 @@ class Auth extends BaseController
      */
     private function handleContactAdminRequest()
     {
+        // Check if this is an AJAX request
+        $isAjax = $this->request->isAJAX() || $this->request->getHeaderLine('X-Requested-With') === 'XMLHttpRequest';
+        
         // Get all active role names for validation
-        $roleNames = $this->roleModel->getAllRoleNames();        // Validation rules
+        $roleNames = $this->roleModel->getAllRoleNames();        
+        // Validation rules
         // Regex pattern: accepts letters (including ñÑ), spaces, dots, and "Jr."
         // Pattern explanation: ^[a-zA-ZñÑ]+(\s[a-zA-ZñÑ]+)*(\sJr\.?)?$
         // - Starts with letters (including ñÑ)
@@ -651,19 +655,19 @@ class Auth extends BaseController
                 'errors' => [
                     'regex_match' => 'Middle Name can only contain letters, spaces, "Jr.", and Spanish characters (ñ, Ñ).'
                 ]
-            ],            'last_name' => [
+            ],            
+            'last_name' => [
                 'label' => 'Last Name', 
                 'rules' => 'required|max_length[100]|regex_match[' . $namePattern . ']',
                 'errors' => [
                     'regex_match' => 'Last Name can only contain letters, spaces, "Jr.", and Spanish characters (ñ, Ñ).'
                 ]
-            ],
-            'email' => [
+            ],            'email' => [
                 'label' => 'Email Address',
-                'rules' => 'required|valid_email|max_length[255]|regex_match[/^[a-zA-Z0-9._]+@gmail\.com$/]',
+                'rules' => 'required|valid_email|max_length[255]|regex_match[/^[a-zA-Z][a-zA-Z0-9._]*@gmail\.com$/]',
                 'errors' => [
                     'valid_email' => 'Please enter a valid email address.',
-                    'regex_match' => 'Only Gmail addresses (@gmail.com) are accepted. Special characters like quotes or symbols (except . _ % + -) are not allowed.'
+                    'regex_match' => 'Only Gmail addresses are accepted. Email must start with a letter, followed by letters, numbers, dots, or underscores.'
                 ]
             ],
             'phone' => [
@@ -684,10 +688,12 @@ class Auth extends BaseController
             'employee_id' => [
                 'label' => 'Employee ID',
                 'rules' => 'permit_empty|max_length[50]|alpha_numeric_space'
-            ],
-            'reason' => [
+            ],            'reason' => [
                 'label' => 'Reason for Access Request',
-                'rules' => 'required|min_length[20]|max_length[1000]'
+                'rules' => 'required|min_length[20]|max_length[1000]|regex_match[/^[a-zA-Z0-9\s.,;:!?()\-\'"ñÑ]+$/]',
+                'errors' => [
+                    'regex_match' => 'Reason can only contain letters, numbers, spaces, and basic punctuation (.,;:!?()-\'"). No special characters or code allowed.'
+                ]
             ],
             'agreement' => [
                 'label' => 'Agreement',
@@ -697,6 +703,14 @@ class Auth extends BaseController
 
         // Validate input
         if (!$this->validate($rules)) {
+            if ($isAjax) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Please check your input and try again.',
+                    'errors' => $this->validator->getErrors()
+                ]);
+            }
+            
             return redirect()->back()
                            ->withInput()
                            ->with('error', 'Please check your input and try again.');
@@ -726,11 +740,26 @@ class Auth extends BaseController
             // Log the request
             log_message('info', "Account access request submitted by: {$requestData['email']} ({$fullName})");
 
+            if ($isAjax) {
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'Your request has been submitted successfully! Our IT Administrator will review your request and contact you within 24 hours during business days.'
+                ]);
+            }
+
             return redirect()->back()
                            ->with('success', 'Your request has been submitted successfully! Our IT Administrator will review your request and contact you within 24 hours during business days.');
 
         } catch (\Exception $e) {
             log_message('error', 'Contact admin request error: ' . $e->getMessage());
+            
+            if ($isAjax) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'An error occurred while submitting your request. Please try again or contact IT support directly.'
+                ]);
+            }
+            
             return redirect()->back()
                            ->withInput()
                            ->with('error', 'An error occurred while submitting your request. Please try again or contact IT support directly.');

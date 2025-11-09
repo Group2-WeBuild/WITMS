@@ -272,7 +272,8 @@ class UserModel extends Model
         
         return $stats;
     }
-      /**
+      
+    /**
      * Create new user
      */
     public function createUser(array $userData): bool

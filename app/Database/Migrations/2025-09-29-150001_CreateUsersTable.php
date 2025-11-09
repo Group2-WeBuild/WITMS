@@ -14,11 +14,13 @@ class CreateUsersTable extends Migration
                 'constraint'     => 11,
                 'unsigned'       => true,
                 'auto_increment' => true,
-            ],              'email' => [
+            ],              
+            'email' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 255,
                 'comment'    => 'User email address',
-            ],'password' => [
+            ],
+            'password' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 255,
                 'comment'    => 'Hashed password',
@@ -73,7 +75,8 @@ class CreateUsersTable extends Migration
                 'type'    => 'DATETIME',
                 'null'    => true,
                 'comment' => 'Email verification timestamp',
-            ],            'reset_token' => [
+            ],            
+            'reset_token' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 100,
                 'null'       => true,
@@ -93,7 +96,8 @@ class CreateUsersTable extends Migration
                 'null' => true,
             ],
         ]);        
-          $this->forge->addKey('id', true);
+          
+        $this->forge->addKey('id', true);
         $this->forge->addUniqueKey(['email']);
         $this->forge->addKey(['role_id'], false);
         $this->forge->addKey(['department_id'], false);

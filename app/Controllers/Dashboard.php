@@ -176,7 +176,8 @@ class Dashboard extends BaseController
         if (!in_array($userRole, $allowedRoles)) {
             throw new \CodeIgniter\Exceptions\PageNotFoundException('Access denied for your role.');
         }
-    }    /**
+    }    
+    /**
      * Get current user data from session
      */
     private function getUserData(): array

@@ -4,7 +4,7 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class CreateDepartmentsTable extends Migration
+class CreateMaterialCategoriesTable extends Migration
 {
     public function up()
     {
@@ -14,36 +14,30 @@ class CreateDepartmentsTable extends Migration
                 'constraint'     => 11,
                 'unsigned'       => true,
                 'auto_increment' => true,
-            ],            'name' => [
+            ],
+            'name' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 100,
                 'null'       => false,
+                'comment'    => 'Category name',
+            ],
+            'code' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 20,
+                'null'       => false,
+                'comment'    => 'Category code',
             ],
             'description' => [
-                'type' => 'TEXT',
-                'null' => true,
+                'type'    => 'TEXT',
+                'null'    => true,
+                'comment' => 'Category description',
             ],
-            'warehouse_id' => [
+            'parent_id' => [
                 'type'       => 'INT',
                 'constraint' => 11,
                 'unsigned'   => true,
                 'null'       => true,
-                'comment'    => 'Foreign key to warehouses table (null for Central Office)',
-            ],
-            'department_head' => [
-                'type'       => 'VARCHAR',
-                'constraint' => 200,
-                'null'       => true,
-            ],
-            'contact_email' => [
-                'type'       => 'VARCHAR',
-                'constraint' => 255,
-                'null'       => true,
-            ],
-            'contact_phone' => [
-                'type'       => 'VARCHAR',
-                'constraint' => 20,
-                'null'       => true,
+                'comment'    => 'Parent category for hierarchical structure',
             ],
             'is_active' => [
                 'type'    => 'BOOLEAN',
@@ -58,14 +52,16 @@ class CreateDepartmentsTable extends Migration
                 'null' => true,
             ],
         ]);
+
         $this->forge->addKey('id', true);
-        $this->forge->addKey(['warehouse_id'], false);
-        $this->forge->addForeignKey('warehouse_id', 'warehouses', 'id', 'SET NULL', 'CASCADE');
-        $this->forge->createTable('departments');
+        $this->forge->addUniqueKey(['code']);
+        $this->forge->addKey(['parent_id'], false);
+        $this->forge->addForeignKey('parent_id', 'material_categories', 'id', 'SET NULL', 'CASCADE');
+        $this->forge->createTable('material_categories');
     }
 
     public function down()
     {
-        $this->forge->dropTable('departments');
+        $this->forge->dropTable('material_categories');
     }
 }
