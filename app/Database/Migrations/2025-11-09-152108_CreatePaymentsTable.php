@@ -70,7 +70,9 @@ class CreatePaymentsTable extends Migration
         $this->forge->addUniqueKey(['payment_number']);
         $this->forge->addKey(['accounts_payable_id'], false);
         $this->forge->addKey(['processed_by'], false);
-        $this->forge->addForeignKey('accounts_payable_id', 'accounts_payable', 'id', 'CASCADE', 'CASCADE');
+        
+        // foreign keys
+        $this->forge->addForeignKey('accounts_payable_id', 'accounts_payable', 'id', 'RESTRICT', 'CASCADE');
         $this->forge->addForeignKey('processed_by', 'users', 'id', 'RESTRICT', 'CASCADE');
         $this->forge->createTable('payments');
     }

@@ -68,9 +68,12 @@ class CreateAuditLogsTable extends Migration
 
         $this->forge->addKey('id', true);
         $this->forge->addKey(['user_id'], false);
-        $this->forge->addKey(['table_name', 'record_id'], false);
+        $this->forge->addKey(['table_name'], false);
         $this->forge->addKey(['created_at'], false);
+        
+        // foreign key
         $this->forge->addForeignKey('user_id', 'users', 'id', 'SET NULL', 'CASCADE');
+        
         $this->forge->createTable('audit_logs');
     }
 

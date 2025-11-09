@@ -69,8 +69,11 @@ class CreateReceiptsTable extends Migration
         $this->forge->addUniqueKey(['receipt_number']);
         $this->forge->addKey(['accounts_receivable_id'], false);
         $this->forge->addKey(['processed_by'], false);
-        $this->forge->addForeignKey('accounts_receivable_id', 'accounts_receivable', 'id', 'CASCADE', 'CASCADE');
+        
+        // foreign keys
+        $this->forge->addForeignKey('accounts_receivable_id', 'accounts_receivable', 'id', 'RESTRICT', 'CASCADE');
         $this->forge->addForeignKey('processed_by', 'users', 'id', 'RESTRICT', 'CASCADE');
+        
         $this->forge->createTable('receipts');
     }
 

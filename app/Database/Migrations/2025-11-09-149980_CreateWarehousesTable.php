@@ -64,7 +64,7 @@ class CreateWarehousesTable extends Migration
         $this->forge->addKey('id', true);
         $this->forge->addUniqueKey(['code']);
         $this->forge->addKey(['manager_id'], false);
-        $this->forge->addForeignKey('manager_id', 'users', 'id', 'SET NULL', 'CASCADE');
+
         $this->forge->createTable('warehouses');
     }
 

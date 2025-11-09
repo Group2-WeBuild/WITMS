@@ -17,6 +17,10 @@ class MainSeeder extends Seeder
         echo "\n👥 Seeding users...\n";
         // Step 2: Seed users (depends on departments)
         $this->call('UserSeeder');
+        $this->call('WarehouseSeeder');
+        $this->call('UnitsOfMeasureSeeder');
+        $this->call('MaterialCategorySeeder');
+        $this->call('DepartmentSeeder');
         
         echo "\n✅ WeBuild WITMS database seeding completed successfully!\n";
         echo "🎯 You can now test the login system with the provided credentials.\n\n";
