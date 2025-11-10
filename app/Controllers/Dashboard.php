@@ -28,25 +28,27 @@ class Dashboard extends BaseController
         
         switch ($userRole) {
             case 'Warehouse Manager':
-                return redirect()->to('/dashboard/warehouse-manager');
+                return redirect()->to('/warehouse-manager/dashboard');
             case 'Warehouse Staff':
-                return redirect()->to('/dashboard/warehouse-staff');
+                return redirect()->to('/warehouse-staff/dashboard');
             case 'Inventory Auditor':
-                return redirect()->to('/dashboard/inventory-auditor');
+                return redirect()->to('/inventory-auditor/dashboard');
             case 'Procurement Officer':
-                return redirect()->to('/dashboard/procurement-officer');
+                return redirect()->to('/procurement-officer/dashboard');
             case 'Accounts Payable Clerk':
-                return redirect()->to('/dashboard/accounts-payable');
+                return redirect()->to('/accounts-payable/dashboard');
             case 'Accounts Receivable Clerk':
-                return redirect()->to('/dashboard/accounts-receivable');
+                return redirect()->to('/accounts-receivable/dashboard');
             case 'IT Administrator':
-                return redirect()->to('/dashboard/it-administrator');
+                return redirect()->to('/it-administrator/dashboard');
             case 'Top Management':
-                return redirect()->to('/dashboard/top-management');
+                return redirect()->to('/top-management/dashboard');
             default:
                 return redirect()->to('/auth/login');
         }
-    }    /**
+    }    
+    
+    /**
      * Warehouse Manager Dashboard
      */
     public function warehouseManager()
@@ -62,7 +64,9 @@ class Dashboard extends BaseController
         ];
         
         return view('users/warehouse_manager/dashboard', $data);
-    }    /**
+    }    
+    
+    /**
      * Warehouse Staff Dashboard
      */
     public function warehouseStaff()
@@ -76,7 +80,9 @@ class Dashboard extends BaseController
         ];
         
         return view('users/warehouse_staff/dashboard', $data);
-    }    /**
+    }    
+    
+    /**
      * Inventory Auditor Dashboard
      */
     public function inventoryAuditor()
@@ -91,7 +97,9 @@ class Dashboard extends BaseController
         ];
         
         return view('users/inventory_auditor/dashboard', $data);
-    }    /**
+    }    
+    
+    /**
      * Procurement Officer Dashboard
      */
     public function procurementOfficer()
@@ -105,7 +113,9 @@ class Dashboard extends BaseController
         ];
         
         return view('users/procurement_officer/dashboard', $data);
-    }    /**
+    }    
+    
+    /**
      * Accounts Payable Clerk Dashboard
      */
     public function accountsPayable()
@@ -119,9 +129,11 @@ class Dashboard extends BaseController
         ];
         
         return view('users/accounts_payable/dashboard', $data);
-    }    /**
+    }    
+    
+    /**
      * Accounts Receivable Clerk Dashboard
-     */
+    */
     public function accountsReceivable()
     {
         $this->checkRoleAccess(['Accounts Receivable Clerk']);
@@ -133,7 +145,9 @@ class Dashboard extends BaseController
         ];
         
         return view('users/accounts_receivable/dashboard', $data);
-    }/**
+    }
+    
+    /**
      * IT Administrator Dashboard
      */
     public function itAdministrator()
@@ -150,7 +164,9 @@ class Dashboard extends BaseController
         ];
         
         return view('users/it_administrator/dashboard', $data);
-    }    /**
+    }    
+    
+    /**
      * Top Management Dashboard
      */
     public function topManagement()
@@ -177,6 +193,7 @@ class Dashboard extends BaseController
             throw new \CodeIgniter\Exceptions\PageNotFoundException('Access denied for your role.');
         }
     }    
+    
     /**
      * Get current user data from session
      */
@@ -263,11 +280,11 @@ class Dashboard extends BaseController
      * Get company-wide statistics for executives using all models
      */
     private function getCompanyStats(): array
-    {
-        // Get user statistics from UserModel
+    {        // Get user statistics from UserModel
         $userStats = $this->userModel->getUserStats();
         
-        // Get all departments from DepartmentModel
+        // Get all departments with warehouse details from DepartmentModel
+        $allDepartmentsWithWarehouse = $this->departmentModel->getAllDepartmentsWithWarehouse();
         $allDepartments = $this->departmentModel->findAll();
         $activeDepartments = $this->departmentModel->getActiveDepartments();
         
@@ -297,18 +314,31 @@ class Dashboard extends BaseController
             }
         }
         
-        // Get location distribution
-        $locationStats = [];
-        foreach ($allDepartments as $dept) {
-            $location = $dept['warehouse_location'];
-            if (!isset($locationStats[$location])) {
-                $locationStats[$location] = [
-                    'count' => 0,
-                    'departments' => []
-                ];
+        // Get location distribution by warehouse (using warehouse_id instead of warehouse_location)
+        $locationStats = [
+            'Central Office' => [
+                'count' => 0,
+                'departments' => []
+            ]
+        ];
+        
+        foreach ($allDepartmentsWithWarehouse as $dept) {
+            // If warehouse_id is null, it's a Central Office department
+            if (empty($dept['warehouse_id'])) {
+                $locationStats['Central Office']['count']++;
+                $locationStats['Central Office']['departments'][] = $dept['name'];
+            } else {
+                // Use warehouse name from joined data
+                $location = $dept['warehouse_name'] ?? 'Unknown Warehouse';
+                if (!isset($locationStats[$location])) {
+                    $locationStats[$location] = [
+                        'count' => 0,
+                        'departments' => []
+                    ];
+                }
+                $locationStats[$location]['count']++;
+                $locationStats[$location]['departments'][] = $dept['name'];
             }
-            $locationStats[$location]['count']++;
-            $locationStats[$location]['departments'][] = $dept['name'];
         }
         
         return [

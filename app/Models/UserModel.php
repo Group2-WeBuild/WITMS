@@ -39,7 +39,8 @@ class UserModel extends Model
         'email' => [
             'label' => 'Email Address',
             'rules' => 'required|valid_email|is_unique[users.email,id,{id}]'
-        ],        'password' => [
+        ],        
+        'password' => [
             'label' => 'Password',
             'rules' => 'required|min_length[8]|regex_match[/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/]'
         ],
@@ -76,7 +77,8 @@ class UserModel extends Model
     protected $validationMessages = [
         'email' => [
             'is_unique' => 'This email address is already registered in WeBuild system.'
-        ],        'password' => [
+        ],        
+        'password' => [
             'min_length' => 'Password must be at least 8 characters long.',
             'regex_match' => 'Password must contain uppercase, lowercase, number, and special character.'
         ],
@@ -249,25 +251,30 @@ class UserModel extends Model
                     ->groupEnd()
                     ->where('is_active', 1)
                     ->findAll();
-    }
-      /**
+    }    
+    
+    /**
      * Get user statistics
      */
     public function getUserStats(): array
     {
+        // Use a fresh instance for each query to avoid stacking WHERE clauses
+        $builder = $this->db->table($this->table);
+        
         $stats = [
-            'total_users' => $this->countAll(),
-            'active_users' => $this->where('is_active', 1)->countAllResults(false),
-            'inactive_users' => $this->where('is_active', 0)->countAllResults(false),
+            'total_users' => $builder->countAll(),
+            'active_users' => $this->where('is_active', 1)->countAllResults(),
+            'inactive_users' => $this->where('is_active', 0)->countAllResults(),
         ];
         
         // Get role distribution using JOIN
         $roleModel = new \App\Models\RoleModel();
         $roles = $roleModel->findAll();
         
+        $stats['role_counts'] = [];
         foreach ($roles as $role) {
             $stats['role_counts'][str_replace(' ', '_', strtolower($role['name']))] = 
-                $this->where('role_id', $role['id'])->where('is_active', 1)->countAllResults(false);
+                $this->where('role_id', $role['id'])->where('is_active', 1)->countAllResults();
         }
         
         return $stats;
@@ -292,7 +299,9 @@ class UserModel extends Model
         
         return $this->insert($userData);
     }
-      /**
+      
+    
+    /**
      * Check if user has warehouse access permissions
      */
     public function hasWarehouseAccess(int $userId): bool

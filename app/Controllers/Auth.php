@@ -132,7 +132,9 @@ class Auth extends BaseController
                            ->withInput()
                            ->with('error', 'An error occurred during login. Please try again.');
         }
-    }    /**
+    }    
+    
+    /**
      * Prepare comprehensive session data based on user role
      */
     private function prepareSessionData(array $user, ?array $department, ?array $role): array
@@ -319,21 +321,22 @@ class Auth extends BaseController
         }
 
         return $sessionData;
-    }    
+    }  
+
     /**
      * Redirect user to appropriate dashboard based on role
      */
     private function redirectToDashboard(string $role)
     {
         $dashboardRoutes = [
-            'Warehouse Manager' => '/dashboard/warehouse-manager',
-            'Warehouse Staff' => '/dashboard/warehouse-staff',
-            'Inventory Auditor' => '/dashboard/inventory-auditor',
-            'Procurement Officer' => '/dashboard/procurement-officer',
-            'Accounts Payable Clerk' => '/dashboard/accounts-payable',
-            'Accounts Receivable Clerk' => '/dashboard/accounts-receivable',
-            'IT Administrator' => '/dashboard/it-administrator',
-            'Top Management' => '/dashboard/top-management'
+            'Warehouse Manager' => '/warehouse-manager/dashboard',
+            'Warehouse Staff' => '/warehouse-staff/dashboard',
+            'Inventory Auditor' => '/inventory-auditor/dashboard',
+            'Procurement Officer' => '/procurement-officer/dashboard',
+            'Accounts Payable Clerk' => '/accounts-payable/dashboard',
+            'Accounts Receivable Clerk' => '/accounts-receivable/dashboard',
+            'IT Administrator' => '/it-administrator/dashboard',
+            'Top Management' => '/top-management/dashboard'
         ];
 
         $route = $dashboardRoutes[$role] ?? '/dashboard';
@@ -349,8 +352,7 @@ class Auth extends BaseController
         $token = bin2hex(random_bytes(32));
         $expiry = time() + (30 * 24 * 60 * 60); // 30 days
         
-        // Store token in database (you'd need a remember_tokens table)
-        // For now, just set a simple cookie
+        // Store token in database 
         setcookie('remember_token', $token, $expiry, '/', '', false, true);
     }
 
@@ -372,7 +374,9 @@ class Auth extends BaseController
         setcookie('remember_token', '', time() - 3600, '/');
         
         return redirect()->to('/auth/login')->with('success', 'You have been logged out successfully.');
-    }    /**
+    }    
+    
+    /**
      * Handle password reset request
      */
     public function resetPassword()
@@ -467,7 +471,8 @@ class Auth extends BaseController
 
     /**
      * Send password reset email
-     */    private function sendPasswordResetEmail(array $user, string $token, ?string $employeeId)
+     */    
+    private function sendPasswordResetEmail(array $user, string $token, ?string $employeeId)
     {
         // Initialize email service (uses config from Email.php)
         $email = \Config\Services::email();
@@ -496,7 +501,9 @@ class Auth extends BaseController
             log_message('info', "Password reset link for {$user['email']}: {$resetLink}");
             return false;
         }
-    }    /**
+    }    
+    
+    /**
      * Build password reset email template
      */
     private function buildPasswordResetEmailTemplate(string $fullName, string $resetLink, string $role, ?string $employeeId): string
@@ -597,7 +604,8 @@ class Auth extends BaseController
             return redirect()->back()
                            ->with('error', 'An error occurred while resetting your password. Please try again.');
         }
-    }    
+    } 
+
     /**
      * Display contact administrator page or handle contact form submission
      */
@@ -623,7 +631,9 @@ class Auth extends BaseController
         ];
 
         return view('auth/contact_admin', $data);
-    }    /**
+    }    
+    
+    /**
      * Handle contact admin form submission
      */
     private function handleContactAdminRequest()
@@ -634,11 +644,7 @@ class Auth extends BaseController
         // Get all active role names for validation
         $roleNames = $this->roleModel->getAllRoleNames();        
         // Validation rules
-        // Regex pattern: accepts letters (including ñÑ), spaces, dots, and "Jr."
-        // Pattern explanation: ^[a-zA-ZñÑ]+(\s[a-zA-ZñÑ]+)*(\sJr\.?)?$
-        // - Starts with letters (including ñÑ)
-        // - Can have additional words separated by spaces
-        // - Optionally ends with " Jr." or " Jr"
+
         $namePattern = '/^[a-zA-ZñÑ]+(\s[a-zA-ZñÑ]+)*(\sJr\.?)?$/';
         
         $rules = [
@@ -662,7 +668,8 @@ class Auth extends BaseController
                 'errors' => [
                     'regex_match' => 'Last Name can only contain letters, spaces, "Jr.", and Spanish characters (ñ, Ñ).'
                 ]
-            ],            'email' => [
+            ],            
+            'email' => [
                 'label' => 'Email Address',
                 'rules' => 'required|valid_email|max_length[255]|regex_match[/^[a-zA-Z][a-zA-Z0-9._]*@gmail\.com$/]',
                 'errors' => [
@@ -714,7 +721,8 @@ class Auth extends BaseController
             return redirect()->back()
                            ->withInput()
                            ->with('error', 'Please check your input and try again.');
-        }        try {
+        }        
+        try {
             // Get form data
             $requestData = [
                 'first_name' => $this->request->getPost('first_name'),
@@ -837,7 +845,9 @@ class Auth extends BaseController
             log_message('error', "Contact admin confirmation error: " . $e->getMessage());
             return false;
         }
-    }    /**
+    }    
+    
+    /**
      * Build email template for IT administrator notification
      */
     private function buildContactAdminEmailTemplate(array $requestData): string
@@ -878,7 +888,9 @@ class Auth extends BaseController
         ];
 
         return view('emails/contact_admin_notification', $data);
-    }    /**
+    }    
+    
+    /**
      * Build confirmation email template for the requester
      */
     private function buildContactAdminConfirmationTemplate(array $requestData): string

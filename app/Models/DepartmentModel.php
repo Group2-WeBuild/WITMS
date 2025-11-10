@@ -91,7 +91,9 @@ class DepartmentModel extends Model
     public function getActiveDepartments()
     {
         return $this->where('is_active', 1)->findAll();
-    }    /**
+    }    
+    
+    /**
      * Get departments by warehouse ID
      */
     public function getDepartmentsByWarehouse(int $warehouseId)
@@ -170,16 +172,18 @@ class DepartmentModel extends Model
      */
     public function getDepartmentStats(): array
     {
+        $builder = $this->db->table($this->table);
+        
         $stats = [
-            'total_departments' => $this->countAll(),
-            'active_departments' => $this->where('is_active', 1)->countAllResults(false),
-            'inactive_departments' => $this->where('is_active', 0)->countAllResults(false),
+            'total_departments' => $builder->countAll(),
+            'active_departments' => $this->where('is_active', 1)->countAllResults(),
+            'inactive_departments' => $this->where('is_active', 0)->countAllResults(),
             'central_office_departments' => $this->where('warehouse_id IS NULL')
                                                  ->where('is_active', 1)
-                                                 ->countAllResults(false),
+                                                 ->countAllResults(),
             'warehouse_departments' => $this->where('warehouse_id IS NOT NULL')
                                             ->where('is_active', 1)
-                                            ->countAllResults(false),
+                                            ->countAllResults(),
         ];
 
         // Get distribution by warehouse
@@ -192,7 +196,7 @@ class DepartmentModel extends Model
                 'warehouse_name' => $warehouse['name'],
                 'department_count' => $this->where('warehouse_id', $warehouse['id'])
                                           ->where('is_active', 1)
-                                          ->countAllResults(false)
+                                          ->countAllResults()
             ];
         }
 

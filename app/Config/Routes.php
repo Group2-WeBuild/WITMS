@@ -30,15 +30,14 @@ $routes->post('/auth/contact-admin', 'Auth::contactAdministrator');
 // ==========================================
 // Main dashboard (redirects based on role)
 $routes->get('/dashboard', 'Dashboard::index');
-$routes->get('/dashboard/index', 'Dashboard::index');
 
 // Role-specific dashboard routes
-$routes->get('/dashboard/warehouse-manager', 'Dashboard::warehouseManager');
-$routes->get('/dashboard/warehouse-staff', 'Dashboard::warehouseStaff');
-$routes->get('/dashboard/inventory-auditor', 'Dashboard::inventoryAuditor');
-$routes->get('/dashboard/procurement-officer', 'Dashboard::procurementOfficer');
-$routes->get('/dashboard/accounts-payable', 'Dashboard::accountsPayable');
-$routes->get('/dashboard/accounts-receivable', 'Dashboard::accountsReceivable');
-$routes->get('/dashboard/it-administrator', 'Dashboard::itAdministrator');
-$routes->get('/dashboard/top-management', 'Dashboard::topManagement');
+$routes->get('/warehouse-manager/dashboard', 'Dashboard::warehouseManager');
+$routes->get('/warehouse-staff/dashboard', 'Dashboard::warehouseStaff');
+$routes->get('/inventory-auditor/dashboard', 'Dashboard::inventoryAuditor');
+$routes->get('/procurement-officer/dashboard', 'Dashboard::procurementOfficer');
+$routes->get('/accounts-payable/dashboard', 'Dashboard::accountsPayable');
+$routes->get('/accounts-receivable/dashboard', 'Dashboard::accountsReceivable');
+$routes->get('/it-administrator/dashboard', 'Dashboard::itAdministrator');
+$routes->get('/top-management/dashboard', 'Dashboard::topManagement');
 
