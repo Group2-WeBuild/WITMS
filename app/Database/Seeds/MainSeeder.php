@@ -5,8 +5,7 @@ namespace App\Database\Seeds;
 use CodeIgniter\Database\Seeder;
 
 class MainSeeder extends Seeder
-{
-    public function run()
+{    public function run()
     {
         echo "\n Starting WeBuild WITMS Database Seeding...\n\n";
         
@@ -15,6 +14,8 @@ class MainSeeder extends Seeder
         $this->call('WarehouseSeeder');
         $this->call('UnitsOfMeasureSeeder');
         $this->call('MaterialCategorySeeder');
+        $this->call('MaterialSeeder');
+        $this->call('InventorySeeder');
         
         echo "\n WeBuild WITMS database seeding completed successfully!\n";
         echo "You can now test the login system with the provided credentials.\n\n";

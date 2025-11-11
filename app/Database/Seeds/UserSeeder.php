@@ -65,7 +65,7 @@ class UserSeeder extends Seeder
 
             // Warehouse Manager
             [
-                'email'              => 'cyrylljoyadejado@gmail.com',
+                'email'              => 'cyrylljoyalejado@gmail.com',
                 'password'           => 'Alejado@123',  
                 'role_id'            => $roleMap['Warehouse Manager'] ?? 1,
                 'department_id'      => $deptMap['Warehouse Operations'],

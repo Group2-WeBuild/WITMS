@@ -35,8 +35,6 @@ class WarehouseSeeder extends Seeder
             ],
         ];
 
-        /** @var \CodeIgniter\Database\BaseBuilder $builder */
-        $builder = $this->db->table('warehouses');
-        $builder->insertBatch($data);
+         $this->db->table('warehouses')->insertBatch($data);
     }
 }

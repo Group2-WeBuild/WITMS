@@ -27,11 +27,11 @@ class CreateMaterialsTable extends Migration
                 'null'       => false,
                 'comment'    => 'Unique material code',
             ],
-            'barcode' => [
+            'qrcode' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 100,
                 'null'       => true,
-                'comment'    => 'Barcode/QR code',
+                'comment'    => 'QR code',
             ],
             'category_id' => [
                 'type'       => 'INT',
@@ -96,11 +96,10 @@ class CreateMaterialsTable extends Migration
                 'type' => 'DATETIME',
                 'null' => true,
             ],
-        ]);
-
+        ]);        
         $this->forge->addKey('id', true);
         $this->forge->addUniqueKey(['code']);
-        $this->forge->addUniqueKey(['barcode']);
+        $this->forge->addUniqueKey(['qrcode']);
         $this->forge->addKey(['category_id'], false);
         $this->forge->addKey(['unit_id'], false);
         $this->forge->addForeignKey('category_id', 'material_categories', 'id', 'RESTRICT', 'CASCADE');

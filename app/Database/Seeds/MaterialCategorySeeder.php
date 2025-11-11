@@ -5,20 +5,23 @@ namespace App\Database\Seeds;
 use CodeIgniter\Database\Seeder;
 
 class MaterialCategorySeeder extends Seeder
-{
-    public function run()
+{    public function run()
     {
+        $timestamp = date('Y-m-d H:i:s');
+        
         $data = [
-            ['name' => 'Cement & Aggregates', 'code' => 'CAT-001', 'description' => 'Cement, sand, gravel, etc.', 'parent_id' => null, 'is_active' => true],
-            ['name' => 'Steel & Metal', 'code' => 'CAT-002', 'description' => 'Rebars, steel bars, metal sheets', 'parent_id' => null, 'is_active' => true],
-            ['name' => 'Wood & Lumber', 'code' => 'CAT-003', 'description' => 'Plywood, lumber, wooden boards', 'parent_id' => null, 'is_active' => true],
-            ['name' => 'Electrical', 'code' => 'CAT-004', 'description' => 'Wires, cables, switches', 'parent_id' => null, 'is_active' => true],
-            ['name' => 'Plumbing', 'code' => 'CAT-005', 'description' => 'Pipes, fittings, valves', 'parent_id' => null, 'is_active' => true],
-            ['name' => 'Paint & Finishing', 'code' => 'CAT-006', 'description' => 'Paints, varnish, sealants', 'parent_id' => null, 'is_active' => true],
-            ['name' => 'Hardware', 'code' => 'CAT-007', 'description' => 'Nails, screws, bolts, hinges', 'parent_id' => null, 'is_active' => true],
-            ['name' => 'Safety Equipment', 'code' => 'CAT-008', 'description' => 'Helmets, gloves, safety gear', 'parent_id' => null, 'is_active' => true],
+            ['name' => 'Steel', 'code' => 'STEEL', 'description' => 'Steel products and rebars', 'parent_id' => null, 'is_active' => true, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['name' => 'Cement', 'code' => 'CEM', 'description' => 'Cement and concrete products', 'parent_id' => null, 'is_active' => true, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['name' => 'Aggregates', 'code' => 'AGG', 'description' => 'Sand, gravel, and aggregates', 'parent_id' => null, 'is_active' => true, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['name' => 'Wood Products', 'code' => 'WOOD', 'description' => 'Plywood and lumber', 'parent_id' => null, 'is_active' => true, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['name' => 'Paints', 'code' => 'PAINT', 'description' => 'Paints and coatings', 'parent_id' => null, 'is_active' => true, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['name' => 'Electrical', 'code' => 'ELEC', 'description' => 'Electrical supplies', 'parent_id' => null, 'is_active' => true, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['name' => 'Plumbing', 'code' => 'PLUMB', 'description' => 'Plumbing supplies', 'parent_id' => null, 'is_active' => true, 'created_at' => $timestamp, 'updated_at' => $timestamp],
+            ['name' => 'Hardware', 'code' => 'HARD', 'description' => 'Hardware and tools', 'parent_id' => null, 'is_active' => true, 'created_at' => $timestamp, 'updated_at' => $timestamp],
         ];
 
         $this->db->table('material_categories')->insertBatch($data);
+        
+        echo "✓ Created " . count($data) . " material categories\n";
     }
 }
