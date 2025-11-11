@@ -17,6 +17,13 @@ $pageTitle = $page_title ?? 'WITMS Dashboard';
         background-color: #1a365d;
         padding: 15px 20px;
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        position: fixed;
+        top: 0;
+        right: 0;
+        left: 250px; /* Start exactly where sidebar ends */
+        z-index: 999;
+        margin-left: 0; /* Remove margin to eliminate gap */
+        margin-bottom: 0 !important; /* Remove bottom margin */
     }
     
     .top-navbar .navbar-brand {
@@ -72,6 +79,31 @@ $pageTitle = $page_title ?? 'WITMS Dashboard';
     
     .btn-logout-top i {
         margin-right: 5px;
+    }    /* Adjust main content to account for fixed navbar */
+    .main-content {
+        padding-top: 90px !important; /* Space for fixed navbar + gap */
+    }
+    
+    /* Add spacing to container inside main-content */
+    .main-content > .container-fluid {
+        padding-top: 20px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .top-navbar {
+            margin-left: 0;
+            left: 0;
+            position: relative;
+        }
+        
+        .main-content {
+            padding-top: 20px !important;
+        }
+        
+        .main-content > .container-fluid {
+            padding-top: 0;
+        }
     }
 </style>
 
@@ -79,7 +111,7 @@ $pageTitle = $page_title ?? 'WITMS Dashboard';
     <div class="container-fluid">
         <a class="navbar-brand" href="<?= base_url('/dashboard') ?>">
             <i class="bi bi-building"></i>
-            WITMS - <?= esc($pageTitle) ?>
+            <?= esc($pageTitle) ?>
         </a>
         
         <div class="d-flex align-items-center">

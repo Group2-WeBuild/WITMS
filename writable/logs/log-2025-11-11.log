@@ -1,0 +1,191 @@
+CRITICAL - 2025-11-11 16:06:11 --> CodeIgniter\Exceptions\InvalidArgumentException: Field "created_at" is not nullable, but null was passed.
+[Method: GET, Route: warehouse-manager/materials/add]
+in SYSTEMPATH\DataCaster\DataCaster.php on line 144.
+ 1 SYSTEMPATH\DataConverter\DataConverter.php(80): CodeIgniter\DataCaster\DataCaster->castAs(null, 'created_at', 'get')
+ 2 SYSTEMPATH\BaseModel.php(1934): CodeIgniter\DataConverter\DataConverter->fromDataSource([...])
+ 3 SYSTEMPATH\Model.php(291): CodeIgniter\BaseModel->convertToReturnType([...], 'array')
+ 4 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 5 APPPATH\Models\MaterialCategoryModel.php(94): CodeIgniter\BaseModel->findAll()
+ 6 APPPATH\Controllers\WarehouseManagerController.php(291): App\Models\MaterialCategoryModel->getActiveCategories()
+ 7 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->materialsAdd()
+ 8 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 9 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+11 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+12 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-11-11 16:06:23 --> CodeIgniter\Exceptions\InvalidArgumentException: Field "created_at" is not nullable, but null was passed.
+[Method: GET, Route: warehouse-manager/materials/add]
+in SYSTEMPATH\DataCaster\DataCaster.php on line 144.
+ 1 SYSTEMPATH\DataConverter\DataConverter.php(80): CodeIgniter\DataCaster\DataCaster->castAs(null, 'created_at', 'get')
+ 2 SYSTEMPATH\BaseModel.php(1934): CodeIgniter\DataConverter\DataConverter->fromDataSource([...])
+ 3 SYSTEMPATH\Model.php(291): CodeIgniter\BaseModel->convertToReturnType([...], 'array')
+ 4 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 5 APPPATH\Models\MaterialCategoryModel.php(94): CodeIgniter\BaseModel->findAll()
+ 6 APPPATH\Controllers\WarehouseManagerController.php(291): App\Models\MaterialCategoryModel->getActiveCategories()
+ 7 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->materialsAdd()
+ 8 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 9 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+10 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+11 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+12 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2025-11-11 16:10:57 --> mysqli_sql_exception: Duplicate entry 'WH-001' for key 'warehouses.code' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('INSERT INTO `wa...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `wa...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `wa...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(1841): CodeIgniter\Database\BaseConnection->query('INSERT INTO `wa...', NULL, false)
+#4 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(2230): CodeIgniter\Database\BaseBuilder->batchExecute('_insertBatch', 100)
+#5 C:\xampp\htdocs\WITMS\app\Database\Seeds\WarehouseSeeder.php(38): CodeIgniter\Database\BaseBuilder->insertBatch(Array)
+#6 C:\xampp\htdocs\WITMS\system\Database\Seeder.php(149): App\Database\Seeds\WarehouseSeeder->run()
+#7 C:\xampp\htdocs\WITMS\app\Database\Seeds\MainSeeder.php(14): CodeIgniter\Database\Seeder->call('App\\Database\\Se...')
+#8 C:\xampp\htdocs\WITMS\system\Database\Seeder.php(149): App\Database\Seeds\MainSeeder->run()
+#9 C:\xampp\htdocs\WITMS\system\Commands\Database\Seed.php(79): CodeIgniter\Database\Seeder->call('App\\Database\\Se...')
+#10 C:\xampp\htdocs\WITMS\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\Seed->run(Array)
+#11 C:\xampp\htdocs\WITMS\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('db:seed', Array)
+#12 C:\xampp\htdocs\WITMS\system\Boot.php(388): CodeIgniter\CLI\Console->run()
+#13 C:\xampp\htdocs\WITMS\system\Boot.php(133): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#14 C:\xampp\htdocs\WITMS\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#15 {main}
+ERROR - 2025-11-11 16:16:21 --> mysqli_sql_exception: Table 'witms_db.warehouses' doesn't exist in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT *\nFROM `...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT *\nFROM `...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT *\nFROM `...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT *\nFROM `...', Array, false)
+#4 C:\xampp\htdocs\WITMS\system\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\WITMS\system\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+#6 C:\xampp\htdocs\WITMS\app\Database\Seeds\DepartmentSeeder.php(32): CodeIgniter\BaseModel->findAll()
+#7 C:\xampp\htdocs\WITMS\system\Database\Seeder.php(149): App\Database\Seeds\DepartmentSeeder->run()
+#8 C:\xampp\htdocs\WITMS\app\Database\Seeds\MainSeeder.php(12): CodeIgniter\Database\Seeder->call('App\\Database\\Se...')
+#9 C:\xampp\htdocs\WITMS\system\Database\Seeder.php(149): App\Database\Seeds\MainSeeder->run()
+#10 C:\xampp\htdocs\WITMS\system\Commands\Database\Seed.php(79): CodeIgniter\Database\Seeder->call('App\\Database\\Se...')
+#11 C:\xampp\htdocs\WITMS\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\Seed->run(Array)
+#12 C:\xampp\htdocs\WITMS\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('db:seed', Array)
+#13 C:\xampp\htdocs\WITMS\system\Boot.php(388): CodeIgniter\CLI\Console->run()
+#14 C:\xampp\htdocs\WITMS\system\Boot.php(133): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#15 C:\xampp\htdocs\WITMS\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#16 {main}
+ERROR - 2025-11-11 16:16:55 --> mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '),
+	KEY `category_id` (`category_id`),
+	KEY `unit_id` (`unit_id`)
+) DEFAULT CHAR' at line 21 in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('CREATE TABLE `m...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('CREATE TABLE `m...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('CREATE TABLE `m...')
+#3 C:\xampp\htdocs\WITMS\system\Database\Forge.php(570): CodeIgniter\Database\BaseConnection->query('CREATE TABLE `m...')
+#4 C:\xampp\htdocs\WITMS\app\Database\Migrations\2025-11-09-152018_CreateMaterialsTable.php(108): CodeIgniter\Database\Forge->createTable('materials')
+#5 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(876): App\Database\Migrations\CreateMaterialsTable->up()
+#6 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(182): CodeIgniter\Database\MigrationRunner->migrate('up', Object(stdClass))
+#7 C:\xampp\htdocs\WITMS\system\Commands\Database\Migrate.php(85): CodeIgniter\Database\MigrationRunner->latest(NULL)
+#8 C:\xampp\htdocs\WITMS\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\Migrate->run(Array)
+#9 C:\xampp\htdocs\WITMS\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate', Array)
+#10 C:\xampp\htdocs\WITMS\system\Boot.php(388): CodeIgniter\CLI\Console->run()
+#11 C:\xampp\htdocs\WITMS\system\Boot.php(133): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#12 C:\xampp\htdocs\WITMS\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#13 {main}
+CRITICAL - 2025-11-11 16:46:28 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "users/warehouse_manager/inventory_view.php"
+[Method: GET, Route: warehouse-manager/inventory/view/30]
+in SYSTEMPATH\Exceptions\FrameworkException.php on line 39.
+ 1 SYSTEMPATH\View\View.php(214): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('users/warehouse_manager/inventory_view.php')
+ 2 SYSTEMPATH\Common.php(1167): CodeIgniter\View\View->render('users/warehouse_manager/inventory_view', [], true)
+ 3 APPPATH\Controllers\WarehouseManagerController.php(209): view('users/warehouse_manager/inventory_view', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->inventoryView('30')
+ 5 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 6 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-11-11 16:46:33 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "users/warehouse_manager/inventory_edit.php"
+[Method: GET, Route: warehouse-manager/inventory/edit/30]
+in SYSTEMPATH\Exceptions\FrameworkException.php on line 39.
+ 1 SYSTEMPATH\View\View.php(214): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('users/warehouse_manager/inventory_edit.php')
+ 2 SYSTEMPATH\Common.php(1167): CodeIgniter\View\View->render('users/warehouse_manager/inventory_edit', [], true)
+ 3 APPPATH\Controllers\WarehouseManagerController.php(162): view('users/warehouse_manager/inventory_edit', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->inventoryEdit('30')
+ 5 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 6 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-11-11 16:46:58 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "users/warehouse_manager/materials_view.php"
+[Method: GET, Route: warehouse-manager/materials/view/1]
+in SYSTEMPATH\Exceptions\FrameworkException.php on line 39.
+ 1 SYSTEMPATH\View\View.php(214): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('users/warehouse_manager/materials_view.php')
+ 2 SYSTEMPATH\Common.php(1167): CodeIgniter\View\View->render('users/warehouse_manager/materials_view', [], true)
+ 3 APPPATH\Controllers\WarehouseManagerController.php(403): view('users/warehouse_manager/materials_view', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->materialsView('1')
+ 5 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 6 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-11-11 16:57:49 --> CodeIgniter\Exceptions\LogicException: No validation rules for the placeholder: "id". You must set the validation rules for the field. See <https://codeigniter4.github.io/userguide/libraries/validation.html#validation-placeholders>.
+[Method: POST, Route: warehouse-manager/materials/update/3]
+in SYSTEMPATH\Validation\Validation.php on line 803.
+ 1 SYSTEMPATH\Validation\Validation.php(155): CodeIgniter\Validation\Validation->fillPlaceholders([...], [...])
+ 2 SYSTEMPATH\BaseModel.php(1570): CodeIgniter\Validation\Validation->run([...], null, null)
+ 3 APPPATH\Models\MaterialModel.php(237): CodeIgniter\BaseModel->validate([...])
+ 4 APPPATH\Controllers\WarehouseManagerController.php(371): App\Models\MaterialModel->updateMaterial('3', [...])
+ 5 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->materialsUpdate('3')
+ 6 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 7 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-11-11 17:18:30 --> ErrorException: Undefined array key "unit_abbreviation"
+[Method: GET, Route: warehouse-manager/inventory]
+in APPPATH\Views\users\warehouse_manager\inventory.php on line 195.
+ 1 APPPATH\Views\users\warehouse_manager\inventory.php(195): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "unit_abbreviation"', 'C:\\xampp\\htdocs\\WITMS\\app\\Views\\users\\warehouse_manager\\inventory.php', 195)
+ 2 SYSTEMPATH\View\View.php(226): include('C:\\xampp\\htdocs\\WITMS\\app\\Views\\users\\warehouse_manager\\inventory.php')
+ 3 SYSTEMPATH\View\View.php(229): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1167): CodeIgniter\View\View->render('users/warehouse_manager/inventory', [], true)
+ 5 APPPATH\Controllers\WarehouseManagerController.php(84): view('users/warehouse_manager/inventory', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->inventory()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-11-11 17:18:33 --> ErrorException: Undefined array key "unit_abbreviation"
+[Method: GET, Route: warehouse-manager/inventory]
+in APPPATH\Views\users\warehouse_manager\inventory.php on line 195.
+ 1 APPPATH\Views\users\warehouse_manager\inventory.php(195): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "unit_abbreviation"', 'C:\\xampp\\htdocs\\WITMS\\app\\Views\\users\\warehouse_manager\\inventory.php', 195)
+ 2 SYSTEMPATH\View\View.php(226): include('C:\\xampp\\htdocs\\WITMS\\app\\Views\\users\\warehouse_manager\\inventory.php')
+ 3 SYSTEMPATH\View\View.php(229): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1167): CodeIgniter\View\View->render('users/warehouse_manager/inventory', [], true)
+ 5 APPPATH\Controllers\WarehouseManagerController.php(84): view('users/warehouse_manager/inventory', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->inventory()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-11-11 17:18:37 --> ErrorException: Undefined array key "unit_abbreviation"
+[Method: GET, Route: warehouse-manager/inventory]
+in APPPATH\Views\users\warehouse_manager\inventory.php on line 195.
+ 1 APPPATH\Views\users\warehouse_manager\inventory.php(195): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "unit_abbreviation"', 'C:\\xampp\\htdocs\\WITMS\\app\\Views\\users\\warehouse_manager\\inventory.php', 195)
+ 2 SYSTEMPATH\View\View.php(226): include('C:\\xampp\\htdocs\\WITMS\\app\\Views\\users\\warehouse_manager\\inventory.php')
+ 3 SYSTEMPATH\View\View.php(229): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1167): CodeIgniter\View\View->render('users/warehouse_manager/inventory', [], true)
+ 5 APPPATH\Controllers\WarehouseManagerController.php(84): view('users/warehouse_manager/inventory', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->inventory()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-11-11 17:19:58 --> ErrorException: Undefined array key "unit_abbreviation"
+[Method: GET, Route: warehouse-manager/inventory]
+in APPPATH\Views\users\warehouse_manager\inventory.php on line 195.
+ 1 APPPATH\Views\users\warehouse_manager\inventory.php(195): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "unit_abbreviation"', 'C:\\xampp\\htdocs\\WITMS\\app\\Views\\users\\warehouse_manager\\inventory.php', 195)
+ 2 SYSTEMPATH\View\View.php(226): include('C:\\xampp\\htdocs\\WITMS\\app\\Views\\users\\warehouse_manager\\inventory.php')
+ 3 SYSTEMPATH\View\View.php(229): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1167): CodeIgniter\View\View->render('users/warehouse_manager/inventory', [], true)
+ 5 APPPATH\Controllers\WarehouseManagerController.php(84): view('users/warehouse_manager/inventory', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->inventory()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))

@@ -12,25 +12,27 @@ $userRole = $user['role'] ?? 'Unknown';
 $currentUrl = current_url();
 
 // Define navigation items for each role
-$navigationItems = [
+$navigationItems = [    
     'Warehouse Manager' => [
         ['icon' => 'bi-speedometer2', 'label' => 'Dashboard', 'url' => '/warehouse-manager/dashboard'],
-        ['icon' => 'bi-box-seam', 'label' => 'Inventory Overview', 'url' => '/warehouse-manager/inventory'],
+        ['icon' => 'bi-box-seam', 'label' => 'Inventory', 'url' => '/warehouse-manager/inventory'],
+        ['icon' => 'bi-boxes', 'label' => 'Materials', 'url' => '/warehouse-manager/materials'],
         ['icon' => 'bi-people', 'label' => 'Staff Management', 'url' => '/warehouse-manager/staff'],
         ['icon' => 'bi-clipboard-data', 'label' => 'Reports', 'url' => '/warehouse-manager/reports'],
         ['icon' => 'bi-graph-up', 'label' => 'Analytics', 'url' => '/warehouse-manager/analytics'],
         ['icon' => 'bi-truck', 'label' => 'Stock Movements', 'url' => '/warehouse-manager/stock-movements'],
-        ['icon' => 'bi-exclamation-triangle', 'label' => 'Stock Alerts', 'url' => '/warehouse-manager/alerts'],
+        ['icon' => 'bi-exclamation-triangle', 'label' => 'Stock Alerts', 'url' => '/warehouse-manager/low-stock'],
         ['icon' => 'bi-building', 'label' => 'Warehouse Settings', 'url' => '/warehouse-manager/settings'],
     ],
     
     'Warehouse Staff' => [
         ['icon' => 'bi-speedometer2', 'label' => 'Dashboard', 'url' => '/warehouse-staff/dashboard'],
+        ['icon' => 'bi-box-seam', 'label' => 'Inventory', 'url' => '/inventory'],
+        ['icon' => 'bi-boxes', 'label' => 'Materials', 'url' => '/materials'],
         ['icon' => 'bi-upc-scan', 'label' => 'Scan Items', 'url' => '/warehouse-staff/scan'],
         ['icon' => 'bi-box-arrow-in-down', 'label' => 'Receive Stock', 'url' => '/warehouse-staff/receive'],
         ['icon' => 'bi-box-arrow-up', 'label' => 'Issue Stock', 'url' => '/warehouse-staff/issue'],
         ['icon' => 'bi-arrow-left-right', 'label' => 'Stock Transfer', 'url' => '/warehouse-staff/transfer'],
-        ['icon' => 'bi-search', 'label' => 'Search Inventory', 'url' => '/warehouse-staff/search'],
         ['icon' => 'bi-clock-history', 'label' => 'My Activity', 'url' => '/warehouse-staff/activity'],
     ],
     

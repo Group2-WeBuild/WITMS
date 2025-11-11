@@ -111,8 +111,7 @@ class SupplierModel extends Model
      */
     public function updateSupplier($id, $data)
     {
-        // CodeIgniter 4's update() already handles validation with {id} placeholder
-        // We just need to ensure the id is available in the validation context
+
         $this->validationData = array_merge($data, ['id' => $id]);
         
         $result = $this->update($id, $data);

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= esc($title ?? 'Inventory Management') ?></title>
+    <title><?= esc($title ?? 'Materials Management') ?></title>
     
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -30,7 +30,7 @@
         .stat-card.primary { border-left-color: #0d6efd; }
         .stat-card.success { border-left-color: #198754; }
         .stat-card.warning { border-left-color: #ffc107; }
-        .stat-card.danger { border-left-color: #dc3545; }
+        .stat-card.info { border-left-color: #0dcaf0; }
         
         .stat-card .icon {
             width: 50px;
@@ -78,25 +78,20 @@
     <!-- Main Content -->
     <div class="main-content">
         <!-- Top Navbar -->
-        <?= view('templates/top_navbar', ['user' => $user ?? [], 'page_title' => 'Inventory Management']) ?>
-
-        <div class="container-fluid">
+        <?= view('templates/top_navbar', ['user' => $user ?? [], 'page_title' => 'Materials Catalog']) ?>        <div class="container-fluid">
             <!-- Page Header -->
             <div class="page-header">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h2 class="mb-1"><i class="bi bi-box-seam"></i> Inventory Management</h2>
-                        <p class="text-muted mb-0">Track and manage all warehouse inventory</p>
+                        <h2 class="mb-1"><i class="bi bi-boxes"></i> Materials Catalog</h2>
+                        <p class="text-muted mb-0">Manage materials, categories, and units</p>
                     </div>
                     <div>
-                        <a href="<?= base_url('warehouse-manager/inventory/add') ?>" class="btn btn-primary">
-                            <i class="bi bi-plus-circle"></i> Add Stock
+                        <a href="<?= base_url('warehouse-manager/materials/add') ?>" class="btn btn-primary">
+                            <i class="bi bi-plus-circle"></i> Add Material
                         </a>
-                        <a href="<?= base_url('warehouse-manager/inventory/low-stock') ?>" class="btn btn-warning">
-                            <i class="bi bi-exclamation-triangle"></i> Low Stock
-                        </a>
-                        <a href="<?= base_url('warehouse-manager/inventory/expiring') ?>" class="btn btn-danger">
-                            <i class="bi bi-calendar-x"></i> Expiring Items
+                        <a href="<?= base_url('warehouse-manager/materials/categories') ?>" class="btn btn-secondary">
+                            <i class="bi bi-folder"></i> Categories
                         </a>
                     </div>
                 </div>
@@ -115,121 +110,119 @@
                     <i class="bi bi-exclamation-triangle"></i> <?= session()->getFlashdata('error') ?>
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
-            <?php endif; ?>
-
-            <!-- Inventory Stats -->
+            <?php endif; ?>            <!-- Materials Stats -->
             <div class="row mb-4">
                 <div class="col-md-3">
                     <div class="stat-card primary">
                         <div class="icon bg-primary bg-opacity-10 text-primary">
-                            <i class="bi bi-box-seam"></i>
+                            <i class="bi bi-boxes"></i>
                         </div>
-                        <h3><?= number_format($stats['total_items'] ?? 0) ?></h3>
-                        <p>Total Items</p>
+                        <h3><?= number_format($stats['total_materials'] ?? 0) ?></h3>
+                        <p>Total Materials</p>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="stat-card success">
                         <div class="icon bg-success bg-opacity-10 text-success">
-                            <i class="bi bi-cash-stack"></i>
+                            <i class="bi bi-check-circle"></i>
                         </div>
-                        <h3>₱<?= number_format($stats['total_value'] ?? 0, 2) ?></h3>
-                        <p>Total Value</p>
+                        <h3><?= number_format($stats['active_materials'] ?? 0) ?></h3>
+                        <p>Active Materials</p>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="stat-card warning">
                         <div class="icon bg-warning bg-opacity-10 text-warning">
-                            <i class="bi bi-exclamation-triangle"></i>
+                            <i class="bi bi-folder"></i>
                         </div>
-                        <h3><?= number_format($stats['low_stock'] ?? 0) ?></h3>
-                        <p>Low Stock Items</p>
+                        <h3><?= number_format($stats['total_categories'] ?? 0) ?></h3>
+                        <p>Categories</p>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="stat-card danger">
-                        <div class="icon bg-danger bg-opacity-10 text-danger">
-                            <i class="bi bi-calendar-x"></i>
+                    <div class="stat-card info">
+                        <div class="icon bg-info bg-opacity-10 text-info">
+                            <i class="bi bi-clock-history"></i>
                         </div>
-                        <h3><?= number_format($stats['expiring'] ?? 0) ?></h3>
-                        <p>Expiring Soon</p>
+                        <h3><?= number_format($stats['perishable_materials'] ?? 0) ?></h3>
+                        <p>Perishable Items</p>
                     </div>
                 </div>
-            </div>
-
-            <!-- Inventory Table -->
+            </div>            <!-- Materials Table -->
             <div class="card shadow-sm table-card">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0"><i class="bi bi-list-ul"></i> Inventory List</h5>
+                    <h5 class="mb-0"><i class="bi bi-list-ul"></i> Materials List</h5>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table id="inventoryTable" class="table table-striped table-hover">
+                        <table id="materialsTable" class="table table-striped table-hover">
                             <thead class="table-dark">
                                 <tr>
                                     <th>ID</th>
-                                    <th>Material</th>
+                                    <th>Code</th>
+                                    <th>Name</th>
                                     <th>Category</th>
-                                    <th>Warehouse</th>
-                                    <th>Quantity</th>
-                                    <th>Available</th>
                                     <th>Unit</th>
-                                    <th>Location</th>
+                                    <th>Unit Cost</th>
+                                    <th>Reorder Level</th>
                                     <th>Status</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php if (!empty($inventory)): ?>
-                                    <?php foreach ($inventory as $item): ?>
+                                <?php if (!empty($materials)): ?>
+                                    <?php foreach ($materials as $material): ?>
                                         <tr>
-                                            <td><?= esc($item['id']) ?></td>
+                                            <td><?= esc($material['id']) ?></td>
+                                            <td><code><?= esc($material['code']) ?></code></td>
                                             <td>
-                                                <strong><?= esc($item['material_name']) ?></strong><br>
-                                                <small class="text-muted"><?= esc($item['material_code']) ?></small>
+                                                <strong><?= esc($material['name']) ?></strong>
+                                                <?php if ($material['is_perishable']): ?>
+                                                    <br><span class="badge bg-warning text-dark">Perishable</span>
+                                                <?php endif; ?>
                                             </td>
-                                            <td><?= esc($item['category_name']) ?></td>                                            <td><?= esc($item['warehouse_name']) ?></td>
-                                            <td><?= number_format($item['quantity'], 2) ?></td>
-                                            <td><?= number_format($item['available_quantity'], 2) ?></td>
-                                            <td><?= esc($item['unit_abbr'] ?? 'N/A') ?></td>
-                                            <td><?= esc($item['location_in_warehouse'] ?? 'N/A') ?></td>
+                                            <td><?= esc($material['category_name']) ?></td>
+                                            <td><?= esc($material['unit_name']) ?> (<?= esc($material['unit_abbreviation']) ?>)</td>
+                                            <td>₱<?= number_format($material['unit_cost'], 2) ?></td>
+                                            <td><?= number_format($material['reorder_level'], 2) ?></td>
                                             <td>
-                                                <?php
-                                                $stockLevel = $item['quantity'] ?? 0;
-                                                $reorderLevel = $item['reorder_level'] ?? 0;
-                                                
-                                                if ($stockLevel <= 0):
-                                                ?>
-                                                    <span class="badge bg-danger">Out of Stock</span>
-                                                <?php elseif ($stockLevel <= $reorderLevel): ?>
-                                                    <span class="badge bg-warning text-dark">Low Stock</span>
+                                                <?php if ($material['is_active']): ?>
+                                                    <span class="badge bg-success">Active</span>
                                                 <?php else: ?>
-                                                    <span class="badge bg-success">In Stock</span>
+                                                    <span class="badge bg-secondary">Inactive</span>
                                                 <?php endif; ?>
                                             </td>
                                             <td>
                                                 <div class="btn-group btn-group-sm">
-                                                    <a href="<?= base_url('warehouse-manager/inventory/view/' . $item['id']) ?>" 
-                                                       class="btn btn-info" title="View Details">
+                                                    <a href="<?= base_url('warehouse-manager/materials/view/' . $material['id']) ?>" 
+                                                       class="btn btn-info" title="View">
                                                         <i class="bi bi-eye"></i>
                                                     </a>
-                                                    <a href="<?= base_url('warehouse-manager/inventory/edit/' . $item['id']) ?>" 
+                                                    <a href="<?= base_url('warehouse-manager/materials/edit/' . $material['id']) ?>" 
                                                        class="btn btn-warning" title="Edit">
                                                         <i class="bi bi-pencil"></i>
                                                     </a>
-                                                    <a href="<?= base_url('warehouse-manager/inventory/adjust/' . $item['id']) ?>" 
-                                                       class="btn btn-primary" title="Adjust Quantity">
-                                                        <i class="bi bi-arrow-left-right"></i>
-                                                    </a>
+                                                    <?php if ($material['is_active']): ?>
+                                                        <a href="<?= base_url('warehouse-manager/materials/deactivate/' . $material['id']) ?>" 
+                                                           class="btn btn-danger" title="Deactivate"
+                                                           onclick="return confirm('Deactivate this material?')">
+                                                            <i class="bi bi-x-circle"></i>
+                                                        </a>
+                                                    <?php else: ?>
+                                                        <a href="<?= base_url('warehouse-manager/materials/activate/' . $material['id']) ?>" 
+                                                           class="btn btn-success" title="Activate">
+                                                            <i class="bi bi-check-circle"></i>
+                                                        </a>
+                                                    <?php endif; ?>
                                                 </div>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
                                 <?php else: ?>
                                     <tr>
-                                        <td colspan="10" class="text-center py-4">
+                                        <td colspan="9" class="text-center py-4">
                                             <i class="bi bi-inbox display-4 text-muted"></i>
-                                            <p class="text-muted mt-2">No inventory items found</p>
+                                            <p class="text-muted mt-2">No materials found</p>
                                         </td>
                                     </tr>
                                 <?php endif; ?>
@@ -251,12 +244,12 @@
     
     <script>
         $(document).ready(function() {
-            $('#inventoryTable').DataTable({
-                order: [[0, 'desc']],
+            $('#materialsTable').DataTable({
+                order: [[1, 'asc']],
                 pageLength: 25,
                 language: {
-                    search: "Search inventory:",
-                    lengthMenu: "Show _MENU_ items per page"
+                    search: "Search materials:",
+                    lengthMenu: "Show _MENU_ materials per page"
                 }
             });
         });
