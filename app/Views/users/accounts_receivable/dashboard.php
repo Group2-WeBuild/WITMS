@@ -11,64 +11,45 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 <body class="bg-light">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                <!-- Header with Logout -->
-                <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
-                    <div class="container-fluid">
-                        <a class="navbar-brand" href="#">WITMS - Accounts Receivable</a>
-                        <div class="d-flex align-items-center">
-                            <span class="text-white me-3">
-                                <i class="bi bi-person-circle"></i> 
-                                <?= esc($user['full_name'] ?? 'User') ?>
-                            </span>
-                            <a href="<?= base_url('auth/logout') ?>" 
-                               class="btn btn-danger btn-sm" 
-                               onclick="return confirm('Are you sure you want to logout?')">
-                                <i class="bi bi-box-arrow-left me-1"></i>Logout
-                            </a>
+    <!-- Sidebar Navigation -->
+    <?= view('templates/sidebar_navigation', ['user' => $user]) ?>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container-fluid">
+            <h1 class="mb-4">Accounts Receivable Dashboard</h1>
+            
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle me-2"></i>
+                Welcome to the Accounts Receivable Dashboard. Here you can manage customer invoices and payments.
+            </div>
+            
+            <!-- Quick Stats -->
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card text-center shadow-sm">
+                        <div class="card-body">
+                            <i class="bi bi-file-earmark-text text-primary" style="font-size: 2rem;"></i>
+                            <h5 class="card-title mt-2">Outstanding Invoices</h5>
+                            <h2 class="text-primary">0</h2>
                         </div>
                     </div>
-                </nav>
-
-                <!-- Dashboard Content -->
-                <div class="container">
-                    <div class="row">
-                        <div class="col-12">
-                            <h1 class="mb-3">Accounts Receivable Dashboard</h1>
-                            <div class="alert alert-info">
-                                <i class="bi bi-info-circle me-2"></i>
-                                Welcome to the Accounts Receivable Dashboard. Here you can manage customer invoices and payments.
-                            </div>
-                            
-                            <!-- Quick Stats -->
-                            <div class="row mb-4">
-                                <div class="col-md-4">
-                                    <div class="card text-center">
-                                        <div class="card-body">
-                                            <h5 class="card-title">Outstanding Invoices</h5>
-                                            <h2 class="text-primary">0</h2>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="card text-center">
-                                        <div class="card-body">
-                                            <h5 class="card-title">Due This Week</h5>
-                                            <h2 class="text-warning">0</h2>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="card text-center">
-                                        <div class="card-body">
-                                            <h5 class="card-title">Overdue</h5>
-                                            <h2 class="text-danger">0</h2>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center shadow-sm">
+                        <div class="card-body">
+                            <i class="bi bi-calendar-event text-warning" style="font-size: 2rem;"></i>
+                            <h5 class="card-title mt-2">Due This Week</h5>
+                            <h2 class="text-warning">0</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card text-center shadow-sm">
+                        <div class="card-body">
+                            <i class="bi bi-exclamation-triangle text-danger" style="font-size: 2rem;"></i>
+                            <h5 class="card-title mt-2">Overdue</h5>
+                            <h2 class="text-danger">0</h2>
                         </div>
                     </div>
                 </div>
