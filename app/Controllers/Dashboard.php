@@ -5,18 +5,27 @@ namespace App\Controllers;
 use App\Models\UserModel;
 use App\Models\DepartmentModel;
 use App\Models\RoleModel;
+use App\Models\InventoryModel;
+use App\Models\MaterialModel;
+use App\Models\MaterialCategoryModel;
 
 class Dashboard extends BaseController
 {
     protected $userModel;
     protected $departmentModel;
     protected $roleModel;
+    protected $inventoryModel;
+    protected $materialModel;
+    protected $categoryModel;
 
     public function __construct()
     {
         $this->userModel = new UserModel();
         $this->departmentModel = new DepartmentModel();
         $this->roleModel = new RoleModel();
+        $this->inventoryModel = new InventoryModel();
+        $this->materialModel = new MaterialModel();
+        $this->categoryModel = new MaterialCategoryModel();
     }
 
     /**
@@ -216,8 +225,7 @@ class Dashboard extends BaseController
             'login_time' => session()->get('login_time')
         ];
     }
-    
-    /**
+      /**
      * Get warehouse statistics with proper role-based queries
      */
     private function getWarehouseStats(): array
@@ -261,9 +269,19 @@ class Dashboard extends BaseController
         // Calculate total warehouse personnel
         $totalWarehouseStaff = $managerCount + $staffCount + $auditorCount + $procurementCount;
         
+        // Get real-time inventory and materials statistics
+        $inventoryStats = $this->inventoryModel->getInventoryStats();
+        $materialStats = $this->materialModel->getMaterialStats();
+        
         return [
-            'total_items' => 0, // Placeholder for future inventory module
-            'low_stock_items' => 0, // Placeholder for future inventory module
+            'total_items' => $inventoryStats['total_items'] ?? 0,
+            'low_stock_items' => $inventoryStats['low_stock_items'] ?? 0,
+            'expiring_soon' => $inventoryStats['expiring_soon'] ?? 0,
+            'total_quantity' => $inventoryStats['total_quantity'] ?? 0,
+            'total_value' => $inventoryStats['total_value'] ?? 0,
+            'total_materials' => $materialStats['total_materials'] ?? 0,
+            'active_materials' => $materialStats['active_materials'] ?? 0,
+            'perishable_materials' => $materialStats['perishable_materials'] ?? 0,
             'pending_orders' => 0, // Placeholder for future orders module
             'active_staff' => $staffCount,
             'total_warehouse_personnel' => $totalWarehouseStaff,
