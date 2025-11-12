@@ -12,11 +12,10 @@ class WarehouseModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    
-    protected $allowedFields    = [
+      protected $allowedFields    = [
         'name',
         'code',
-        'location',
+        'warehouse_location_id',
         'capacity',
         'manager_id',
         'is_active'
@@ -40,14 +39,14 @@ class WarehouseModel extends Model
         'name' => [
             'label' => 'Warehouse Name',
             'rules' => 'required|max_length[100]|is_unique[warehouses.name,id,{id}]'
-        ],
+        ],        
         'code' => [
             'label' => 'Warehouse Code',
             'rules' => 'required|max_length[20]|is_unique[warehouses.code,id,{id}]|alpha_dash'
         ],
-        'location' => [
-            'label' => 'Location',
-            'rules' => 'required|max_length[255]'
+        'warehouse_location_id' => [
+            'label' => 'Warehouse Location',
+            'rules' => 'permit_empty|is_natural_no_zero|is_not_unique[warehouse_locations.id]'
         ],
         'capacity' => [
             'label' => 'Capacity',
@@ -257,5 +256,67 @@ class WarehouseModel extends Model
             'available_capacity' => $warehouse['capacity'] ?? 0,
             'utilization_percentage' => 0
         ];
+    }
+
+    /**
+     * Get warehouses with location details
+     */
+    public function getWarehousesWithLocations()
+    {
+        return $this->select('warehouses.*, 
+            warehouse_locations.street_address,
+            warehouse_locations.barangay,
+            warehouse_locations.city,
+            warehouse_locations.province,
+            warehouse_locations.region,
+            warehouse_locations.postal_code,
+            warehouse_locations.country,
+            warehouse_locations.latitude,
+            warehouse_locations.longitude')
+            ->join('warehouse_locations', 'warehouse_locations.id = warehouses.warehouse_location_id', 'left')
+            ->findAll();
+    }
+
+    /**
+     * Get single warehouse with location details
+     */
+    public function getWarehouseWithLocation(int $warehouseId)
+    {
+        return $this->select('warehouses.*, 
+            warehouse_locations.street_address,
+            warehouse_locations.barangay,
+            warehouse_locations.city,
+            warehouse_locations.province,
+            warehouse_locations.region,
+            warehouse_locations.postal_code,
+            warehouse_locations.country,
+            warehouse_locations.latitude,
+            warehouse_locations.longitude')
+            ->join('warehouse_locations', 'warehouse_locations.id = warehouses.warehouse_location_id', 'left')
+            ->where('warehouses.id', $warehouseId)
+            ->first();
+    }
+
+    /**
+     * Get formatted warehouse address
+     */
+    public function getFormattedAddress(int $warehouseId): ?string
+    {
+        $warehouse = $this->getWarehouseWithLocation($warehouseId);
+        
+        if (!$warehouse || !$warehouse['city']) {
+            return null;
+        }
+
+        $parts = [];
+        if (!empty($warehouse['street_address'])) $parts[] = $warehouse['street_address'];
+        if (!empty($warehouse['barangay'])) $parts[] = 'Brgy. ' . $warehouse['barangay'];
+        if (!empty($warehouse['city'])) $parts[] = $warehouse['city'];
+        if (!empty($warehouse['province'])) $parts[] = $warehouse['province'];
+        if (!empty($warehouse['region'])) $parts[] = $warehouse['region'];
+        if (!empty($warehouse['postal_code'])) $parts[] = $warehouse['postal_code'];
+        if (!empty($warehouse['country'])) $parts[] = $warehouse['country'];
+
+        return implode(', ', $parts);
     }
 }

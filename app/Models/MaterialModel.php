@@ -230,8 +230,6 @@ class MaterialModel extends Model
      */
     public function updateMaterial($id, $data)
     {
-        // CodeIgniter 4's update() already handles validation with {id} placeholder
-        // We just need to ensure the id is available in the validation context
         $this->validationData = array_merge($data, ['id' => $id]);
         
         $result = $this->update($id, $data);
@@ -247,7 +245,7 @@ class MaterialModel extends Model
      */
     public function deactivateMaterial($id)
     {
-        return $this->update($id, ['is_active' => false]);
+        return $this->update($id, ['is_active' => 0]);
     }
 
     /**
@@ -255,7 +253,7 @@ class MaterialModel extends Model
      */
     public function activateMaterial($id)
     {
-        return $this->update($id, ['is_active' => true]);
+        return $this->update($id, ['is_active' => 1]);
     }
 
     /**

@@ -22,7 +22,7 @@ $navigationItems = [
         ['icon' => 'bi-graph-up', 'label' => 'Analytics', 'url' => '/warehouse-manager/analytics'],
         ['icon' => 'bi-truck', 'label' => 'Stock Movements', 'url' => '/warehouse-manager/stock-movements'],
         ['icon' => 'bi-exclamation-triangle', 'label' => 'Stock Alerts', 'url' => '/warehouse-manager/low-stock'],
-        ['icon' => 'bi-building', 'label' => 'Warehouse Settings', 'url' => '/warehouse-manager/settings'],
+        ['icon' => 'bi-building', 'label' => 'Warehouse Management', 'url' => '/warehouse-manager/warehouse-management'],
     ],
     
     'Warehouse Staff' => [

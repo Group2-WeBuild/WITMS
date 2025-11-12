@@ -20,18 +20,19 @@ class CreateWarehousesTable extends Migration
                 'constraint' => 100,
                 'null'       => false,
                 'comment'    => 'Warehouse name',
-            ],
+            ],            
             'code' => [
                 'type'       => 'VARCHAR',
                 'constraint' => 20,
                 'null'       => false,
                 'comment'    => 'Warehouse code identifier',
             ],
-            'location' => [
-                'type'       => 'VARCHAR',
-                'constraint' => 255,
-                'null'       => false,
-                'comment'    => 'Physical address',
+            'warehouse_location_id' => [
+                'type'       => 'INT',
+                'constraint' => 11,
+                'unsigned'   => true,
+                'null'       => true,
+                'comment'    => 'Foreign key to warehouse_locations table',
             ],
             'capacity' => [
                 'type'       => 'DECIMAL',
@@ -59,11 +60,13 @@ class CreateWarehousesTable extends Migration
                 'type' => 'DATETIME',
                 'null' => true,
             ],
-        ]);
-
+        ]);        
         $this->forge->addKey('id', true);
         $this->forge->addUniqueKey(['code']);
         $this->forge->addKey(['manager_id'], false);
+        $this->forge->addKey(['warehouse_location_id'], false);
+        
+        $this->forge->addForeignKey('warehouse_location_id', 'warehouse_locations', 'id', 'SET NULL', 'CASCADE');
 
         $this->forge->createTable('warehouses');
     }

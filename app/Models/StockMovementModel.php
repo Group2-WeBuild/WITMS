@@ -29,7 +29,8 @@ class StockMovementModel extends Model
     ];
 
     protected bool $allowEmptyInserts = false;
-    protected bool $updateOnlyChanged = true;      protected array $casts = [
+    protected bool $updateOnlyChanged = true;      
+    protected array $casts = [
         'id' => 'integer',
         'material_id' => 'integer',
         'from_warehouse_id' => '?integer',
@@ -38,7 +39,6 @@ class StockMovementModel extends Model
         'performed_by' => 'integer',
         'approved_by' => '?integer',
         'reference_id' => '?integer',
-        'movement_date' => 'datetime'
     ];
     protected array $castHandlers = [];
 

@@ -54,8 +54,7 @@ $routes->group('warehouse-manager', function ($routes) {
     $routes->get('inventory/view/(:num)', 'WarehouseManagerController::inventoryView/$1');
     $routes->get('inventory/low-stock', 'WarehouseManagerController::inventoryLowStock');
     $routes->get('inventory/expiring', 'WarehouseManagerController::inventoryExpiring');
-    
-    // Materials Management
+      // Materials Management
     $routes->get('materials', 'WarehouseManagerController::materials');
     $routes->get('materials/add', 'WarehouseManagerController::materialsAdd');
     $routes->post('materials/store', 'WarehouseManagerController::materialsStore');
@@ -64,4 +63,15 @@ $routes->group('warehouse-manager', function ($routes) {
     $routes->get('materials/view/(:num)', 'WarehouseManagerController::materialsView/$1');
     $routes->get('materials/deactivate/(:num)', 'WarehouseManagerController::materialsDeactivate/$1');
     $routes->get('materials/activate/(:num)', 'WarehouseManagerController::materialsActivate/$1');
+    
+    // Warehouse Management
+    $routes->get('warehouse-management', 'WarehouseManagerController::warehouseManagement');
+    $routes->get('warehouse/add', 'WarehouseManagerController::warehouseAdd');
+    $routes->post('warehouse/store', 'WarehouseManagerController::warehouseStore');
+    $routes->get('warehouse/edit/(:num)', 'WarehouseManagerController::warehouseEdit/$1');
+    $routes->post('warehouse/update/(:num)', 'WarehouseManagerController::warehouseUpdate/$1');
+    $routes->get('warehouse/view/(:num)', 'WarehouseManagerController::warehouseView/$1');
+    $routes->get('warehouse/map', 'WarehouseManagerController::warehouseMap');
+    $routes->get('warehouse/deactivate/(:num)', 'WarehouseManagerController::warehouseDeactivate/$1');
+    $routes->get('warehouse/activate/(:num)', 'WarehouseManagerController::warehouseActivate/$1');
 });

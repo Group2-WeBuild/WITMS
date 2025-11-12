@@ -6,6 +6,7 @@ use App\Models\InventoryModel;
 use App\Models\MaterialModel;
 use App\Models\MaterialCategoryModel;
 use App\Models\WarehouseModel;
+use App\Models\WarehouseLocationModel;
 use App\Models\UnitsOfMeasureModel;
 use App\Models\StockMovementModel;
 
@@ -15,6 +16,7 @@ class WarehouseManagerController extends BaseController
     protected $materialModel;
     protected $categoryModel;
     protected $warehouseModel;
+    protected $warehouseLocationModel;
     protected $unitModel;
     protected $stockMovementModel;
 
@@ -24,6 +26,7 @@ class WarehouseManagerController extends BaseController
         $this->materialModel = new MaterialModel();
         $this->categoryModel = new MaterialCategoryModel();
         $this->warehouseModel = new WarehouseModel();
+        $this->warehouseLocationModel = new WarehouseLocationModel();
         $this->unitModel = new UnitsOfMeasureModel();
         $this->stockMovementModel = new StockMovementModel();
     }
@@ -412,9 +415,7 @@ class WarehouseManagerController extends BaseController
         } else {
             return redirect()->back()->with('error', 'Failed to deactivate material');
         }
-    }
-
-    /**
+    }    /**
      * Activate material
      */
     public function materialsActivate($id)
@@ -426,6 +427,249 @@ class WarehouseManagerController extends BaseController
             return redirect()->to('/warehouse-manager/materials')->with('success', 'Material activated successfully!');
         } else {
             return redirect()->back()->with('error', 'Failed to activate material');
+        }
+    }
+
+    // ==========================================
+    // WAREHOUSE MANAGEMENT
+    // ==========================================
+
+    /**
+     * List all warehouses
+     */
+    public function warehouseManagement()
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        $warehouses = $this->warehouseModel->getWarehousesWithLocations();
+        $stats = $this->warehouseModel->getWarehouseStats();
+
+        $data = [
+            'title' => 'Warehouse Management - WITMS',
+            'user' => $this->getUserData(),
+            'warehouses' => $warehouses,
+            'stats' => $stats
+        ];
+
+        return view('users/warehouse_manager/warehouse_list', $data);
+    }
+
+    /**
+     * Show add warehouse form
+     */
+    public function warehouseAdd()
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        $data = [
+            'title' => 'Add Warehouse - WITMS',
+            'user' => $this->getUserData()
+        ];
+
+        return view('users/warehouse_manager/warehouse_add', $data);
+    }
+
+    /**
+     * Store new warehouse
+     */
+    public function warehouseStore()
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        // First, create the warehouse location
+        $locationData = [
+            'street_address' => $this->request->getPost('street_address'),
+            'barangay' => $this->request->getPost('barangay'),
+            'city' => $this->request->getPost('city'),
+            'province' => $this->request->getPost('province'),
+            'region' => $this->request->getPost('region'),
+            'postal_code' => $this->request->getPost('postal_code'),
+            'country' => $this->request->getPost('country') ?? 'Philippines',
+            'latitude' => $this->request->getPost('latitude') ?: null,
+            'longitude' => $this->request->getPost('longitude') ?: null
+        ];
+
+        $locationId = $this->warehouseLocationModel->insert($locationData);
+
+        if (!$locationId) {
+            $errors = $this->warehouseLocationModel->errors();
+            return redirect()->back()->with('error', 'Failed to create warehouse location: ' . json_encode($errors))->withInput();
+        }
+
+        // Then, create the warehouse
+        $warehouseData = [
+            'name' => $this->request->getPost('name'),
+            'code' => $this->request->getPost('code'),
+            'warehouse_location_id' => $locationId,
+            'capacity' => $this->request->getPost('capacity'),
+            'manager_id' => $this->request->getPost('manager_id') ?: null,
+            'is_active' => 1
+        ];
+
+        if ($this->warehouseModel->insert($warehouseData)) {
+            return redirect()->to('/warehouse-manager/warehouse-management')->with('success', 'Warehouse created successfully!');
+        } else {
+            // Rollback: delete the location
+            $this->warehouseLocationModel->delete($locationId);
+            $errors = $this->warehouseModel->errors();
+            return redirect()->back()->with('error', 'Failed to create warehouse: ' . json_encode($errors))->withInput();
+        }
+    }
+
+    /**
+     * Show edit warehouse form
+     */
+    public function warehouseEdit($id)
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        $warehouse = $this->warehouseModel->getWarehouseWithLocation($id);
+
+        if (!$warehouse) {
+            return redirect()->to('/warehouse-manager/warehouse-management')->with('error', 'Warehouse not found');
+        }
+
+        $data = [
+            'title' => 'Edit Warehouse - WITMS',
+            'user' => $this->getUserData(),
+            'warehouse' => $warehouse
+        ];
+
+        return view('users/warehouse_manager/warehouse_edit', $data);
+    }
+
+    /**
+     * Update warehouse
+     */
+    public function warehouseUpdate($id)
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        $warehouse = $this->warehouseModel->find($id);
+        if (!$warehouse) {
+            return redirect()->to('/warehouse-manager/warehouse-management')->with('error', 'Warehouse not found');
+        }
+
+        // Update warehouse location
+        $locationData = [
+            'street_address' => $this->request->getPost('street_address'),
+            'barangay' => $this->request->getPost('barangay'),
+            'city' => $this->request->getPost('city'),
+            'province' => $this->request->getPost('province'),
+            'region' => $this->request->getPost('region'),
+            'postal_code' => $this->request->getPost('postal_code'),
+            'country' => $this->request->getPost('country') ?? 'Philippines',
+            'latitude' => $this->request->getPost('latitude') ?: null,
+            'longitude' => $this->request->getPost('longitude') ?: null
+        ];
+
+        if (!$this->warehouseLocationModel->update($warehouse['warehouse_location_id'], $locationData)) {
+            $errors = $this->warehouseLocationModel->errors();
+            return redirect()->back()->with('error', 'Failed to update location: ' . json_encode($errors))->withInput();
+        }
+
+        // Update warehouse info
+        $warehouseData = [
+            'name' => $this->request->getPost('name'),
+            'code' => $this->request->getPost('code'),
+            'capacity' => $this->request->getPost('capacity'),
+            'manager_id' => $this->request->getPost('manager_id') ?: null
+        ];
+
+        if ($this->warehouseModel->update($id, $warehouseData)) {
+            return redirect()->to('/warehouse-manager/warehouse-management')->with('success', 'Warehouse updated successfully!');
+        } else {
+            $errors = $this->warehouseModel->errors();
+            return redirect()->back()->with('error', 'Failed to update warehouse: ' . json_encode($errors))->withInput();
+        }
+    }
+
+    /**
+     * View warehouse details
+     */
+    public function warehouseView($id)
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        $warehouse = $this->warehouseModel->getWarehouseWithLocation($id);
+        
+        if (!$warehouse) {
+            return redirect()->to('/warehouse-manager/warehouse-management')->with('error', 'Warehouse not found');
+        }
+
+        // Get inventory count for this warehouse
+        $inventoryCount = $this->inventoryModel->where('warehouse_id', $id)->countAllResults();
+        
+        // Get formatted address
+        $locationModel = $this->warehouseLocationModel;
+        $location = $locationModel->find($warehouse['warehouse_location_id']);
+        $formattedAddress = $location ? $locationModel->formatAddress($location) : 'N/A';
+
+        $data = [
+            'title' => 'Warehouse Details - WITMS',
+            'user' => $this->getUserData(),
+            'warehouse' => $warehouse,
+            'inventoryCount' => $inventoryCount,
+            'formattedAddress' => $formattedAddress
+        ];
+
+        return view('users/warehouse_manager/warehouse_view', $data);
+    }
+
+    /**
+     * Show warehouse map view
+     */
+    public function warehouseMap()
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;        // Get all warehouses with map data
+        $mapData = $this->warehouseLocationModel->getAllWithMapData(true);
+        $mapConfig = $this->warehouseLocationModel->getMapConfig();
+
+        $data = [
+            'title' => 'Warehouse Map - WITMS',
+            'user' => $this->getUserData(),
+            'mapData' => $mapData,
+            'mapConfig' => $mapConfig,
+            'apiKey' => $mapConfig['api_key'] ?? ''
+        ];
+
+        return view('users/warehouse_manager/warehouse_map', $data);
+    }
+
+    /**
+     * Deactivate warehouse
+     */
+    public function warehouseDeactivate($id)
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        if ($this->warehouseModel->toggleWarehouseStatus($id, false)) {
+            return redirect()->to('/warehouse-manager/warehouse-management')->with('success', 'Warehouse deactivated successfully!');
+        } else {
+            return redirect()->back()->with('error', 'Failed to deactivate warehouse');
+        }
+    }
+
+    /**
+     * Activate warehouse
+     */
+    public function warehouseActivate($id)
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        if ($this->warehouseModel->toggleWarehouseStatus($id, true)) {
+            return redirect()->to('/warehouse-manager/warehouse-management')->with('success', 'Warehouse activated successfully!');
+        } else {
+            return redirect()->back()->with('error', 'Failed to activate warehouse');
         }
     }
 }

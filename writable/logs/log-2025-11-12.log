@@ -1,0 +1,186 @@
+ERROR - 2025-11-12 14:14:14 --> mysqli_sql_exception: Table 'witms_db.warehouse_locations' doesn't exist in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `warehou...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `warehou...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `warehou...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `warehou...', Array, false)
+#4 C:\xampp\htdocs\WITMS\system\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\WITMS\system\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+#6 C:\xampp\htdocs\WITMS\app\Models\WarehouseModel.php(277): CodeIgniter\BaseModel->findAll()
+#7 C:\xampp\htdocs\WITMS\app\Controllers\WarehouseManagerController.php(445): App\Models\WarehouseModel->getWarehousesWithLocations()
+#8 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->warehouseManagement()
+#9 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+#10 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#11 C:\xampp\htdocs\WITMS\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#12 C:\xampp\htdocs\WITMS\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#13 C:\xampp\htdocs\WITMS\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#14 {main}
+CRITICAL - 2025-11-12 14:14:14 --> CodeIgniter\Database\Exceptions\DatabaseException: Table 'witms_db.warehouse_locations' doesn't exist
+[Method: GET, Route: warehouse-manager/warehouse-management]
+in SYSTEMPATH\Database\BaseConnection.php on line 684.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `warehouses`.*, `warehouse_locations`.`street_address`, `warehouse_locations`.`barangay`, `warehouse_locations`.`city`, `warehouse_locations`.`province`, `warehouse_locations`.`region`, `warehouse_locations`.`postal_code`, `warehouse_locations`.`country`, `warehouse_locations`.`latitude`, `warehouse_locations`.`longitude`
+FROM `warehouses`
+LEFT JOIN `warehouse_locations` ON `warehouse_locations`.`id` = `warehouses`.`warehouse_location_id`', [], false)
+ 2 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 3 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 4 APPPATH\Models\WarehouseModel.php(277): CodeIgniter\BaseModel->findAll()
+ 5 APPPATH\Controllers\WarehouseManagerController.php(445): App\Models\WarehouseModel->getWarehousesWithLocations()
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->warehouseManagement()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-11-12 14:14:14 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Table 'witms_db.warehouse_locations' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `warehouses`.*, `warehouse_locations`.`street_address`, `warehouse_locations`.`barangay`, `warehouse_locations`.`city`, `warehouse_locations`.`province`, `warehouse_locations`.`region`, `warehouse_locations`.`postal_code`, `warehouse_locations`.`country`, `warehouse_locations`.`latitude`, `warehouse_locations`.`longitude`
+FROM `warehouses`
+LEFT JOIN `warehouse_locations` ON `warehouse_locations`.`id` = `warehouses`.`warehouse_location_id`')
+ 2 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `warehouses`.*, `warehouse_locations`.`street_address`, `warehouse_locations`.`barangay`, `warehouse_locations`.`city`, `warehouse_locations`.`province`, `warehouse_locations`.`region`, `warehouse_locations`.`postal_code`, `warehouse_locations`.`country`, `warehouse_locations`.`latitude`, `warehouse_locations`.`longitude`
+FROM `warehouses`
+LEFT JOIN `warehouse_locations` ON `warehouse_locations`.`id` = `warehouses`.`warehouse_location_id`')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `warehouses`.*, `warehouse_locations`.`street_address`, `warehouse_locations`.`barangay`, `warehouse_locations`.`city`, `warehouse_locations`.`province`, `warehouse_locations`.`region`, `warehouse_locations`.`postal_code`, `warehouse_locations`.`country`, `warehouse_locations`.`latitude`, `warehouse_locations`.`longitude`
+FROM `warehouses`
+LEFT JOIN `warehouse_locations` ON `warehouse_locations`.`id` = `warehouses`.`warehouse_location_id`', [], false)
+ 4 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 5 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 6 APPPATH\Models\WarehouseModel.php(277): CodeIgniter\BaseModel->findAll()
+ 7 APPPATH\Controllers\WarehouseManagerController.php(445): App\Models\WarehouseModel->getWarehousesWithLocations()
+ 8 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->warehouseManagement()
+ 9 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+10 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-11-12 14:14:14 --> [Caused by] mysqli_sql_exception: Table 'witms_db.warehouse_locations' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `warehouses`.*, `warehouse_locations`.`street_address`, `warehouse_locations`.`barangay`, `warehouse_locations`.`city`, `warehouse_locations`.`province`, `warehouse_locations`.`region`, `warehouse_locations`.`postal_code`, `warehouse_locations`.`country`, `warehouse_locations`.`latitude`, `warehouse_locations`.`longitude`
+FROM `warehouses`
+LEFT JOIN `warehouse_locations` ON `warehouse_locations`.`id` = `warehouses`.`warehouse_location_id`', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `warehouses`.*, `warehouse_locations`.`street_address`, `warehouse_locations`.`barangay`, `warehouse_locations`.`city`, `warehouse_locations`.`province`, `warehouse_locations`.`region`, `warehouse_locations`.`postal_code`, `warehouse_locations`.`country`, `warehouse_locations`.`latitude`, `warehouse_locations`.`longitude`
+FROM `warehouses`
+LEFT JOIN `warehouse_locations` ON `warehouse_locations`.`id` = `warehouses`.`warehouse_location_id`')
+ 3 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `warehouses`.*, `warehouse_locations`.`street_address`, `warehouse_locations`.`barangay`, `warehouse_locations`.`city`, `warehouse_locations`.`province`, `warehouse_locations`.`region`, `warehouse_locations`.`postal_code`, `warehouse_locations`.`country`, `warehouse_locations`.`latitude`, `warehouse_locations`.`longitude`
+FROM `warehouses`
+LEFT JOIN `warehouse_locations` ON `warehouse_locations`.`id` = `warehouses`.`warehouse_location_id`')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `warehouses`.*, `warehouse_locations`.`street_address`, `warehouse_locations`.`barangay`, `warehouse_locations`.`city`, `warehouse_locations`.`province`, `warehouse_locations`.`region`, `warehouse_locations`.`postal_code`, `warehouse_locations`.`country`, `warehouse_locations`.`latitude`, `warehouse_locations`.`longitude`
+FROM `warehouses`
+LEFT JOIN `warehouse_locations` ON `warehouse_locations`.`id` = `warehouses`.`warehouse_location_id`', [], false)
+ 5 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 6 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 7 APPPATH\Models\WarehouseModel.php(277): CodeIgniter\BaseModel->findAll()
+ 8 APPPATH\Controllers\WarehouseManagerController.php(445): App\Models\WarehouseModel->getWarehousesWithLocations()
+ 9 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->warehouseManagement()
+10 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+11 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+12 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+13 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+14 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-11-12 14:21:14 --> ErrorException: Undefined array key "apiKey"
+[Method: GET, Route: warehouse-manager/warehouse/map]
+in APPPATH\Controllers\WarehouseManagerController.php on line 642.
+ 1 APPPATH\Controllers\WarehouseManagerController.php(642): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "apiKey"', 'C:\\xampp\\htdocs\\WITMS\\app\\Controllers\\WarehouseManagerController.php', 642)
+ 2 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->warehouseMap()
+ 3 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 4 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-11-12 14:24:58 --> ErrorException: Undefined array key "apiKey"
+[Method: GET, Route: warehouse-manager/warehouse/map]
+in APPPATH\Controllers\WarehouseManagerController.php on line 642.
+ 1 APPPATH\Controllers\WarehouseManagerController.php(642): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "apiKey"', 'C:\\xampp\\htdocs\\WITMS\\app\\Controllers\\WarehouseManagerController.php', 642)
+ 2 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->warehouseMap()
+ 3 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 4 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2025-11-12 14:56:14 --> mysqli_sql_exception: Table 'warehouse_locations' already exists in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('CREATE TABLE `w...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('CREATE TABLE `w...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('CREATE TABLE `w...')
+#3 C:\xampp\htdocs\WITMS\system\Database\Forge.php(570): CodeIgniter\Database\BaseConnection->query('CREATE TABLE `w...')
+#4 C:\xampp\htdocs\WITMS\app\Database\Migrations\2025-11-09-140050_CreateWarehouseLocationsTable.php(82): CodeIgniter\Database\Forge->createTable('warehouse_locat...')
+#5 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(876): App\Database\Migrations\CreateWarehouseLocationsTable->up()
+#6 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(182): CodeIgniter\Database\MigrationRunner->migrate('up', Object(stdClass))
+#7 C:\xampp\htdocs\WITMS\system\Commands\Database\Migrate.php(85): CodeIgniter\Database\MigrationRunner->latest(NULL)
+#8 C:\xampp\htdocs\WITMS\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\Migrate->run(Array)
+#9 C:\xampp\htdocs\WITMS\system\CLI\BaseCommand.php(119): CodeIgniter\CLI\Commands->run('migrate', Array)
+#10 C:\xampp\htdocs\WITMS\system\Commands\Database\MigrateRefresh.php(87): CodeIgniter\CLI\BaseCommand->call('migrate', Array)
+#11 C:\xampp\htdocs\WITMS\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\MigrateRefresh->run(Array)
+#12 C:\xampp\htdocs\WITMS\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate:refresh', Array)
+#13 C:\xampp\htdocs\WITMS\system\Boot.php(388): CodeIgniter\CLI\Console->run()
+#14 C:\xampp\htdocs\WITMS\system\Boot.php(133): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#15 C:\xampp\htdocs\WITMS\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#16 {main}
+ERROR - 2025-11-12 14:57:13 --> mysqli_sql_exception: Duplicate key name 'warehouse_id' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('CREATE TABLE `w...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('CREATE TABLE `w...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('CREATE TABLE `w...')
+#3 C:\xampp\htdocs\WITMS\system\Database\Forge.php(570): CodeIgniter\Database\BaseConnection->query('CREATE TABLE `w...')
+#4 C:\xampp\htdocs\WITMS\app\Database\Migrations\2025-11-09-140050_CreateWarehouseLocationsTable.php(82): CodeIgniter\Database\Forge->createTable('warehouse_locat...')
+#5 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(876): App\Database\Migrations\CreateWarehouseLocationsTable->up()
+#6 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(182): CodeIgniter\Database\MigrationRunner->migrate('up', Object(stdClass))
+#7 C:\xampp\htdocs\WITMS\system\Commands\Database\Migrate.php(85): CodeIgniter\Database\MigrationRunner->latest(NULL)
+#8 C:\xampp\htdocs\WITMS\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\Migrate->run(Array)
+#9 C:\xampp\htdocs\WITMS\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate', Array)
+#10 C:\xampp\htdocs\WITMS\system\Boot.php(388): CodeIgniter\CLI\Console->run()
+#11 C:\xampp\htdocs\WITMS\system\Boot.php(133): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#12 C:\xampp\htdocs\WITMS\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#13 {main}
+ERROR - 2025-11-12 14:58:32 --> mysqli_sql_exception: Cannot add or update a child row: a foreign key constraint fails (`witms_db`.`warehouses`, CONSTRAINT `warehouses_warehouse_location_id_foreign` FOREIGN KEY (`warehouse_location_id`) REFERENCES `warehouse_locations` (`id`) ON DELETE CASCADE ON UPDATE SET NUL) in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('INSERT INTO `wa...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `wa...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `wa...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(1841): CodeIgniter\Database\BaseConnection->query('INSERT INTO `wa...', NULL, false)
+#4 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(2230): CodeIgniter\Database\BaseBuilder->batchExecute('_insertBatch', 100)
+#5 C:\xampp\htdocs\WITMS\app\Database\Seeds\WarehouseSeeder.php(88): CodeIgniter\Database\BaseBuilder->insertBatch(Array)
+#6 C:\xampp\htdocs\WITMS\system\Database\Seeder.php(149): App\Database\Seeds\WarehouseSeeder->run()
+#7 C:\xampp\htdocs\WITMS\app\Database\Seeds\MainSeeder.php(14): CodeIgniter\Database\Seeder->call('App\\Database\\Se...')
+#8 C:\xampp\htdocs\WITMS\system\Database\Seeder.php(149): App\Database\Seeds\MainSeeder->run()
+#9 C:\xampp\htdocs\WITMS\system\Commands\Database\Seed.php(79): CodeIgniter\Database\Seeder->call('App\\Database\\Se...')
+#10 C:\xampp\htdocs\WITMS\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\Seed->run(Array)
+#11 C:\xampp\htdocs\WITMS\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('db:seed', Array)
+#12 C:\xampp\htdocs\WITMS\system\Boot.php(388): CodeIgniter\CLI\Console->run()
+#13 C:\xampp\htdocs\WITMS\system\Boot.php(133): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#14 C:\xampp\htdocs\WITMS\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#15 {main}
+ERROR - 2025-11-12 15:08:35 --> mysqli_sql_exception: Unknown column 'warehouse_id' in 'field list' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('UPDATE `warehou...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('UPDATE `warehou...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('UPDATE `warehou...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(2521): CodeIgniter\Database\BaseConnection->query('UPDATE `warehou...', Array, false)
+#4 C:\xampp\htdocs\WITMS\app\Database\Seeds\WarehouseSeeder.php(94): CodeIgniter\Database\BaseBuilder->update(Array)
+#5 C:\xampp\htdocs\WITMS\system\Database\Seeder.php(149): App\Database\Seeds\WarehouseSeeder->run()
+#6 C:\xampp\htdocs\WITMS\app\Database\Seeds\MainSeeder.php(14): CodeIgniter\Database\Seeder->call('App\\Database\\Se...')
+#7 C:\xampp\htdocs\WITMS\system\Database\Seeder.php(149): App\Database\Seeds\MainSeeder->run()
+#8 C:\xampp\htdocs\WITMS\system\Commands\Database\Seed.php(79): CodeIgniter\Database\Seeder->call('App\\Database\\Se...')
+#9 C:\xampp\htdocs\WITMS\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\Seed->run(Array)
+#10 C:\xampp\htdocs\WITMS\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('db:seed', Array)
+#11 C:\xampp\htdocs\WITMS\system\Boot.php(388): CodeIgniter\CLI\Console->run()
+#12 C:\xampp\htdocs\WITMS\system\Boot.php(133): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#13 C:\xampp\htdocs\WITMS\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#14 {main}
+ERROR - 2025-11-12 15:10:21 --> mysqli_sql_exception: Duplicate entry 'WH-001' for key 'warehouses.code' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('INSERT INTO `wa...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('INSERT INTO `wa...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('INSERT INTO `wa...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(1841): CodeIgniter\Database\BaseConnection->query('INSERT INTO `wa...', NULL, false)
+#4 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(2230): CodeIgniter\Database\BaseBuilder->batchExecute('_insertBatch', 100)
+#5 C:\xampp\htdocs\WITMS\app\Database\Seeds\WarehouseSeeder.php(90): CodeIgniter\Database\BaseBuilder->insertBatch(Array)
+#6 C:\xampp\htdocs\WITMS\system\Database\Seeder.php(149): App\Database\Seeds\WarehouseSeeder->run()
+#7 C:\xampp\htdocs\WITMS\app\Database\Seeds\MainSeeder.php(14): CodeIgniter\Database\Seeder->call('App\\Database\\Se...')
+#8 C:\xampp\htdocs\WITMS\system\Database\Seeder.php(149): App\Database\Seeds\MainSeeder->run()
+#9 C:\xampp\htdocs\WITMS\system\Commands\Database\Seed.php(79): CodeIgniter\Database\Seeder->call('App\\Database\\Se...')
+#10 C:\xampp\htdocs\WITMS\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\Seed->run(Array)
+#11 C:\xampp\htdocs\WITMS\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('db:seed', Array)
+#12 C:\xampp\htdocs\WITMS\system\Boot.php(388): CodeIgniter\CLI\Console->run()
+#13 C:\xampp\htdocs\WITMS\system\Boot.php(133): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#14 C:\xampp\htdocs\WITMS\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#15 {main}
