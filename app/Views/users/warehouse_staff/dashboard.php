@@ -15,6 +15,9 @@
     <!-- Include Sidebar Navigation -->
     <?= view('templates/sidebar_navigation', ['user' => $user]) ?>
     
+    <!-- Include Top Navigation Bar -->
+    <?= view('templates/top_navbar', ['user' => $user, 'page_title' => 'Warehouse Staff Dashboard']) ?>
+    
     <!-- Main Content Area -->
     <div class="main-content">
         <div class="container-fluid">

@@ -1,0 +1,656 @@
+ERROR - 2025-12-16 05:04:31 --> WarehouseStaff access denied - Role mismatch or not logged in
+ERROR - 2025-12-16 05:04:31 --> Expected: "Warehouse Staff", Got: ""
+ERROR - 2025-12-16 05:05:55 --> WarehouseStaff access denied - Role mismatch or not logged in
+ERROR - 2025-12-16 05:05:55 --> Expected: "Warehouse Staff", Got: ""
+ERROR - 2025-12-16 05:08:43 --> WarehouseStaff access denied - Role mismatch or not logged in
+ERROR - 2025-12-16 05:08:43 --> Expected one of: Warehouse Staff, warehouse staff, Warehouse Manager, warehouse manager, Got: ""
+ERROR - 2025-12-16 05:08:56 --> WarehouseStaff access denied - Role mismatch or not logged in
+ERROR - 2025-12-16 05:08:56 --> Expected one of: Warehouse Staff, warehouse staff, Warehouse Manager, warehouse manager, Got: ""
+CRITICAL - 2025-12-16 05:48:15 --> CodeIgniter\Exceptions\BadMethodCallException: Call to undefined method App\Models\InventoryModel::getWarehouses
+[Method: GET, Route: warehouse-staff/receive]
+in SYSTEMPATH\Model.php on line 927.
+ 1 APPPATH\Controllers\WarehouseStaffController.php(378): CodeIgniter\Model->__call('getWarehouses', [])
+ 2 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->receiveStock()
+ 3 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+ 4 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2025-12-16 05:50:21 --> mysqli_sql_exception: Unknown column 'materials.unit' in 'field list' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `stock_m...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `stock_m...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `stock_m...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `stock_m...', Array, false)
+#4 C:\xampp\htdocs\WITMS\app\Controllers\WarehouseStaffController.php(597): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->activity()
+#6 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+#7 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\WITMS\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#9 C:\xampp\htdocs\WITMS\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 C:\xampp\htdocs\WITMS\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 {main}
+CRITICAL - 2025-12-16 05:50:21 --> CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'materials.unit' in 'field list'
+[Method: GET, Route: warehouse-staff/activity]
+in SYSTEMPATH\Database\BaseConnection.php on line 684.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+WHERE `stock_movements`.`user_id` = :stock_movements.user_id:
+ORDER BY `stock_movements`.`created_at` DESC', [...], false)
+ 2 APPPATH\Controllers\WarehouseStaffController.php(597): CodeIgniter\Database\BaseBuilder->get()
+ 3 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->activity()
+ 4 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+ 5 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 7 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 8 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-16 05:50:21 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'materials.unit' in 'field list'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+WHERE `stock_movements`.`user_id` = \'2\'
+ORDER BY `stock_movements`.`created_at` DESC')
+ 2 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+WHERE `stock_movements`.`user_id` = \'2\'
+ORDER BY `stock_movements`.`created_at` DESC')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+WHERE `stock_movements`.`user_id` = :stock_movements.user_id:
+ORDER BY `stock_movements`.`created_at` DESC', [...], false)
+ 4 APPPATH\Controllers\WarehouseStaffController.php(597): CodeIgniter\Database\BaseBuilder->get()
+ 5 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->activity()
+ 6 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+ 7 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-16 05:50:21 --> [Caused by] mysqli_sql_exception: Unknown column 'materials.unit' in 'field list'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+WHERE `stock_movements`.`user_id` = \'2\'
+ORDER BY `stock_movements`.`created_at` DESC', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+WHERE `stock_movements`.`user_id` = \'2\'
+ORDER BY `stock_movements`.`created_at` DESC')
+ 3 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+WHERE `stock_movements`.`user_id` = \'2\'
+ORDER BY `stock_movements`.`created_at` DESC')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+WHERE `stock_movements`.`user_id` = :stock_movements.user_id:
+ORDER BY `stock_movements`.`created_at` DESC', [...], false)
+ 5 APPPATH\Controllers\WarehouseStaffController.php(597): CodeIgniter\Database\BaseBuilder->get()
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->activity()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2025-12-16 05:51:14 --> mysqli_sql_exception: Table 'witms_db.units' doesn't exist in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `stock_m...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `stock_m...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `stock_m...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `stock_m...', Array, false)
+#4 C:\xampp\htdocs\WITMS\app\Controllers\WarehouseStaffController.php(598): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->activity()
+#6 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+#7 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\WITMS\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#9 C:\xampp\htdocs\WITMS\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 C:\xampp\htdocs\WITMS\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 {main}
+CRITICAL - 2025-12-16 05:51:14 --> CodeIgniter\Database\Exceptions\DatabaseException: Table 'witms_db.units' doesn't exist
+[Method: GET, Route: warehouse-staff/activity]
+in SYSTEMPATH\Database\BaseConnection.php on line 684.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units`.`name` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units` ON `units`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = :stock_movements.user_id:
+ORDER BY `stock_movements`.`created_at` DESC', [...], false)
+ 2 APPPATH\Controllers\WarehouseStaffController.php(598): CodeIgniter\Database\BaseBuilder->get()
+ 3 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->activity()
+ 4 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+ 5 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 7 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 8 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-16 05:51:14 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Table 'witms_db.units' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units`.`name` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units` ON `units`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = \'2\'
+ORDER BY `stock_movements`.`created_at` DESC')
+ 2 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units`.`name` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units` ON `units`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = \'2\'
+ORDER BY `stock_movements`.`created_at` DESC')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units`.`name` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units` ON `units`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = :stock_movements.user_id:
+ORDER BY `stock_movements`.`created_at` DESC', [...], false)
+ 4 APPPATH\Controllers\WarehouseStaffController.php(598): CodeIgniter\Database\BaseBuilder->get()
+ 5 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->activity()
+ 6 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+ 7 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-16 05:51:14 --> [Caused by] mysqli_sql_exception: Table 'witms_db.units' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units`.`name` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units` ON `units`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = \'2\'
+ORDER BY `stock_movements`.`created_at` DESC', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units`.`name` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units` ON `units`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = \'2\'
+ORDER BY `stock_movements`.`created_at` DESC')
+ 3 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units`.`name` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units` ON `units`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = \'2\'
+ORDER BY `stock_movements`.`created_at` DESC')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units`.`name` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units` ON `units`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = :stock_movements.user_id:
+ORDER BY `stock_movements`.`created_at` DESC', [...], false)
+ 5 APPPATH\Controllers\WarehouseStaffController.php(598): CodeIgniter\Database\BaseBuilder->get()
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->activity()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2025-12-16 05:51:21 --> mysqli_sql_exception: Table 'witms_db.units' doesn't exist in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `stock_m...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `stock_m...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `stock_m...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `stock_m...', Array, false)
+#4 C:\xampp\htdocs\WITMS\app\Controllers\WarehouseStaffController.php(598): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->activity()
+#6 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+#7 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\WITMS\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#9 C:\xampp\htdocs\WITMS\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 C:\xampp\htdocs\WITMS\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 {main}
+CRITICAL - 2025-12-16 05:51:21 --> CodeIgniter\Database\Exceptions\DatabaseException: Table 'witms_db.units' doesn't exist
+[Method: GET, Route: warehouse-staff/activity]
+in SYSTEMPATH\Database\BaseConnection.php on line 684.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units`.`name` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units` ON `units`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = :stock_movements.user_id:
+ORDER BY `stock_movements`.`created_at` DESC', [...], false)
+ 2 APPPATH\Controllers\WarehouseStaffController.php(598): CodeIgniter\Database\BaseBuilder->get()
+ 3 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->activity()
+ 4 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+ 5 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 7 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 8 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-16 05:51:21 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Table 'witms_db.units' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units`.`name` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units` ON `units`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = \'2\'
+ORDER BY `stock_movements`.`created_at` DESC')
+ 2 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units`.`name` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units` ON `units`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = \'2\'
+ORDER BY `stock_movements`.`created_at` DESC')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units`.`name` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units` ON `units`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = :stock_movements.user_id:
+ORDER BY `stock_movements`.`created_at` DESC', [...], false)
+ 4 APPPATH\Controllers\WarehouseStaffController.php(598): CodeIgniter\Database\BaseBuilder->get()
+ 5 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->activity()
+ 6 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+ 7 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-16 05:51:21 --> [Caused by] mysqli_sql_exception: Table 'witms_db.units' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units`.`name` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units` ON `units`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = \'2\'
+ORDER BY `stock_movements`.`created_at` DESC', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units`.`name` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units` ON `units`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = \'2\'
+ORDER BY `stock_movements`.`created_at` DESC')
+ 3 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units`.`name` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units` ON `units`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = \'2\'
+ORDER BY `stock_movements`.`created_at` DESC')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units`.`name` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units` ON `units`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = :stock_movements.user_id:
+ORDER BY `stock_movements`.`created_at` DESC', [...], false)
+ 5 APPPATH\Controllers\WarehouseStaffController.php(598): CodeIgniter\Database\BaseBuilder->get()
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->activity()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2025-12-16 05:52:15 --> mysqli_sql_exception: Unknown column 'stock_movements.user_id' in 'where clause' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `stock_m...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `stock_m...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `stock_m...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `stock_m...', Array, false)
+#4 C:\xampp\htdocs\WITMS\app\Controllers\WarehouseStaffController.php(598): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->activity()
+#6 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+#7 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\WITMS\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#9 C:\xampp\htdocs\WITMS\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 C:\xampp\htdocs\WITMS\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 {main}
+CRITICAL - 2025-12-16 05:52:15 --> CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'stock_movements.user_id' in 'where clause'
+[Method: GET, Route: warehouse-staff/activity]
+in SYSTEMPATH\Database\BaseConnection.php on line 684.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units_of_measure`.`abbreviation` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = :stock_movements.user_id:
+ORDER BY `stock_movements`.`created_at` DESC', [...], false)
+ 2 APPPATH\Controllers\WarehouseStaffController.php(598): CodeIgniter\Database\BaseBuilder->get()
+ 3 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->activity()
+ 4 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+ 5 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 7 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 8 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-16 05:52:15 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'stock_movements.user_id' in 'where clause'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units_of_measure`.`abbreviation` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = \'2\'
+ORDER BY `stock_movements`.`created_at` DESC')
+ 2 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units_of_measure`.`abbreviation` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = \'2\'
+ORDER BY `stock_movements`.`created_at` DESC')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units_of_measure`.`abbreviation` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = :stock_movements.user_id:
+ORDER BY `stock_movements`.`created_at` DESC', [...], false)
+ 4 APPPATH\Controllers\WarehouseStaffController.php(598): CodeIgniter\Database\BaseBuilder->get()
+ 5 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->activity()
+ 6 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+ 7 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-16 05:52:15 --> [Caused by] mysqli_sql_exception: Unknown column 'stock_movements.user_id' in 'where clause'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units_of_measure`.`abbreviation` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = \'2\'
+ORDER BY `stock_movements`.`created_at` DESC', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units_of_measure`.`abbreviation` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = \'2\'
+ORDER BY `stock_movements`.`created_at` DESC')
+ 3 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units_of_measure`.`abbreviation` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = \'2\'
+ORDER BY `stock_movements`.`created_at` DESC')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units_of_measure`.`abbreviation` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = :stock_movements.user_id:
+ORDER BY `stock_movements`.`created_at` DESC', [...], false)
+ 5 APPPATH\Controllers\WarehouseStaffController.php(598): CodeIgniter\Database\BaseBuilder->get()
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->activity()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2025-12-16 05:56:23 --> mysqli_sql_exception: Table 'witms_db.categories' doesn't exist in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `invento...', 0)
+#1 C:\xampp\htdocsERROR - 2025-12-16 05:52:20 --> mysqli_sql_exception: Unknown column 'stock_movements.user_id' in 'where clause' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `stock_m...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `stock_m...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `stock_m...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `stock_m...', Array, false)
+#4 C:\xampp\htdocs\WITMS\app\Controllers\WarehouseStaffController.php(598): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->activity()
+#6 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+#7 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\WITMS\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#9 C:\xampp\htdocs\WITMS\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 C:\xampp\htdocs\WITMS\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 {main}
+CRITICAL - 2025-12-16 05:52:20 --> CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'stock_movements.user_id' in 'where clause'
+[Method: GET, Route: warehouse-staff/activity]
+in SYSTEMPATH\Database\BaseConnection.php on line 684.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units_of_measure`.`abbreviation` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = :stock_movements.user_id:
+ORDER BY `stock_movements`.`created_at` DESC', [...], false)
+ 2 APPPATH\Controllers\WarehouseStaffController.php(598): CodeIgniter\Database\BaseBuilder->get()
+ 3 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->activity()
+ 4 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+ 5 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 7 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 8 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-16 05:52:20 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'stock_movements.user_id' in 'where clause'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units_of_measure`.`abbreviation` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = \'2\'
+ORDER BY `stock_movements`.`created_at` DESC')
+ 2 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units_of_measure`.`abbreviation` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = \'2\'
+ORDER BY `stock_movements`.`created_at` DESC')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units_of_measure`.`abbreviation` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = :stock_movements.user_id:
+ORDER BY `stock_movements`.`created_at` DESC', [...], false)
+ 4 APPPATH\Controllers\WarehouseStaffController.php(598): CodeIgniter\Database\BaseBuilder->get()
+ 5 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->activity()
+ 6 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+ 7 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-16 05:52:20 --> [Caused by] mysqli_sql_exception: Unknown column 'stock_movements.user_id' in 'where clause'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units_of_measure`.`abbreviation` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = \'2\'
+ORDER BY `stock_movements`.`created_at` DESC', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units_of_measure`.`abbreviation` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = \'2\'
+ORDER BY `stock_movements`.`created_at` DESC')
+ 3 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units_of_measure`.`abbreviation` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = \'2\'
+ORDER BY `stock_movements`.`created_at` DESC')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `stock_movements`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `units_of_measure`.`abbreviation` as `unit`
+FROM `stock_movements`
+JOIN `materials` ON `materials`.`id` = `stock_movements`.`material_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `stock_movements`.`user_id` = :stock_movements.user_id:
+ORDER BY `stock_movements`.`created_at` DESC', [...], false)
+ 5 APPPATH\Controllers\WarehouseStaffController.php(598): CodeIgniter\Database\BaseBuilder->get()
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->activity()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `invento...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `invento...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `invento...', Array, false)
+#4 C:\xampp\htdocs\WITMS\app\Controllers\WarehouseStaffController.php(647): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->searchInventory()
+#6 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+#7 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\WITMS\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#9 C:\xampp\htdocs\WITMS\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 C:\xampp\htdocs\WITMS\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 {main}
+CRITICAL - 2025-12-16 05:56:23 --> CodeIgniter\Database\Exceptions\DatabaseException: Table 'witms_db.categories' doesn't exist
+[Method: POST, Route: warehouse-staff/search-inventory]
+in SYSTEMPATH\Database\BaseConnection.php on line 684.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `inventory`.*, `materials`.`name`, `materials`.`code`, `materials`.`reorder_level`, `categories`.`name` as `category_name`, `warehouses`.`name` as `warehouse_name`, `units_of_measure`.`abbreviation` as `unit`, `inventory`.`location_in_warehouse`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+LEFT JOIN `categories` ON `categories`.`id` = `materials`.`category_id`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `inventory`.`warehouse_id` = :inventory.warehouse_id:', [...], false)
+ 2 APPPATH\Controllers\WarehouseStaffController.php(647): CodeIgniter\Database\BaseBuilder->get()
+ 3 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->searchInventory()
+ 4 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+ 5 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 7 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 8 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-16 05:56:23 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Table 'witms_db.categories' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `inventory`.*, `materials`.`name`, `materials`.`code`, `materials`.`reorder_level`, `categories`.`name` as `category_name`, `warehouses`.`name` as `warehouse_name`, `units_of_measure`.`abbreviation` as `unit`, `inventory`.`location_in_warehouse`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+LEFT JOIN `categories` ON `categories`.`id` = `materials`.`category_id`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `inventory`.`warehouse_id` = \'1\'')
+ 2 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `inventory`.*, `materials`.`name`, `materials`.`code`, `materials`.`reorder_level`, `categories`.`name` as `category_name`, `warehouses`.`name` as `warehouse_name`, `units_of_measure`.`abbreviation` as `unit`, `inventory`.`location_in_warehouse`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+LEFT JOIN `categories` ON `categories`.`id` = `materials`.`category_id`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `inventory`.`warehouse_id` = \'1\'')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `inventory`.*, `materials`.`name`, `materials`.`code`, `materials`.`reorder_level`, `categories`.`name` as `category_name`, `warehouses`.`name` as `warehouse_name`, `units_of_measure`.`abbreviation` as `unit`, `inventory`.`location_in_warehouse`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+LEFT JOIN `categories` ON `categories`.`id` = `materials`.`category_id`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `inventory`.`warehouse_id` = :inventory.warehouse_id:', [...], false)
+ 4 APPPATH\Controllers\WarehouseStaffController.php(647): CodeIgniter\Database\BaseBuilder->get()
+ 5 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->searchInventory()
+ 6 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+ 7 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-16 05:56:23 --> [Caused by] mysqli_sql_exception: Table 'witms_db.categories' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `inventory`.*, `materials`.`name`, `materials`.`code`, `materials`.`reorder_level`, `categories`.`name` as `category_name`, `warehouses`.`name` as `warehouse_name`, `units_of_measure`.`abbreviation` as `unit`, `inventory`.`location_in_warehouse`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+LEFT JOIN `categories` ON `categories`.`id` = `materials`.`category_id`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `inventory`.`warehouse_id` = \'1\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `inventory`.*, `materials`.`name`, `materials`.`code`, `materials`.`reorder_level`, `categories`.`name` as `category_name`, `warehouses`.`name` as `warehouse_name`, `units_of_measure`.`abbreviation` as `unit`, `inventory`.`location_in_warehouse`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+LEFT JOIN `categories` ON `categories`.`id` = `materials`.`category_id`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `inventory`.`warehouse_id` = \'1\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `inventory`.*, `materials`.`name`, `materials`.`code`, `materials`.`reorder_level`, `categories`.`name` as `category_name`, `warehouses`.`name` as `warehouse_name`, `units_of_measure`.`abbreviation` as `unit`, `inventory`.`location_in_warehouse`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+LEFT JOIN `categories` ON `categories`.`id` = `materials`.`category_id`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `inventory`.`warehouse_id` = \'1\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `inventory`.*, `materials`.`name`, `materials`.`code`, `materials`.`reorder_level`, `categories`.`name` as `category_name`, `warehouses`.`name` as `warehouse_name`, `units_of_measure`.`abbreviation` as `unit`, `inventory`.`location_in_warehouse`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+LEFT JOIN `categories` ON `categories`.`id` = `materials`.`category_id`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `inventory`.`warehouse_id` = :inventory.warehouse_id:', [...], false)
+ 5 APPPATH\Controllers\WarehouseStaffController.php(647): CodeIgniter\Database\BaseBuilder->get()
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->searchInventory()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2025-12-16 05:56:25 --> mysqli_sql_exception: Table 'witms_db.categories' doesn't exist in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `invento...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `invento...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `invento...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `invento...', Array, false)
+#4 C:\xampp\htdocs\WITMS\app\Controllers\WarehouseStaffController.php(647): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->searchInventory()
+#6 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+#7 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#8 C:\xampp\htdocs\WITMS\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#9 C:\xampp\htdocs\WITMS\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#10 C:\xampp\htdocs\WITMS\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#11 {main}
+CRITICAL - 2025-12-16 05:56:25 --> CodeIgniter\Database\Exceptions\DatabaseException: Table 'witms_db.categories' doesn't exist
+[Method: POST, Route: warehouse-staff/search-inventory]
+in SYSTEMPATH\Database\BaseConnection.php on line 684.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `inventory`.*, `materials`.`name`, `materials`.`code`, `materials`.`reorder_level`, `categories`.`name` as `category_name`, `warehouses`.`name` as `warehouse_name`, `units_of_measure`.`abbreviation` as `unit`, `inventory`.`location_in_warehouse`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+LEFT JOIN `categories` ON `categories`.`id` = `materials`.`category_id`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `inventory`.`warehouse_id` = :inventory.warehouse_id:', [...], false)
+ 2 APPPATH\Controllers\WarehouseStaffController.php(647): CodeIgniter\Database\BaseBuilder->get()
+ 3 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->searchInventory()
+ 4 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+ 5 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 7 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 8 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-16 05:56:25 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Table 'witms_db.categories' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `inventory`.*, `materials`.`name`, `materials`.`code`, `materials`.`reorder_level`, `categories`.`name` as `category_name`, `warehouses`.`name` as `warehouse_name`, `units_of_measure`.`abbreviation` as `unit`, `inventory`.`location_in_warehouse`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+LEFT JOIN `categories` ON `categories`.`id` = `materials`.`category_id`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `inventory`.`warehouse_id` = \'1\'')
+ 2 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `inventory`.*, `materials`.`name`, `materials`.`code`, `materials`.`reorder_level`, `categories`.`name` as `category_name`, `warehouses`.`name` as `warehouse_name`, `units_of_measure`.`abbreviation` as `unit`, `inventory`.`location_in_warehouse`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+LEFT JOIN `categories` ON `categories`.`id` = `materials`.`category_id`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `inventory`.`warehouse_id` = \'1\'')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `inventory`.*, `materials`.`name`, `materials`.`code`, `materials`.`reorder_level`, `categories`.`name` as `category_name`, `warehouses`.`name` as `warehouse_name`, `units_of_measure`.`abbreviation` as `unit`, `inventory`.`location_in_warehouse`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+LEFT JOIN `categories` ON `categories`.`id` = `materials`.`category_id`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `inventory`.`warehouse_id` = :inventory.warehouse_id:', [...], false)
+ 4 APPPATH\Controllers\WarehouseStaffController.php(647): CodeIgniter\Database\BaseBuilder->get()
+ 5 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->searchInventory()
+ 6 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+ 7 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 8 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 9 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+10 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-16 05:56:25 --> [Caused by] mysqli_sql_exception: Table 'witms_db.categories' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `inventory`.*, `materials`.`name`, `materials`.`code`, `materials`.`reorder_level`, `categories`.`name` as `category_name`, `warehouses`.`name` as `warehouse_name`, `units_of_measure`.`abbreviation` as `unit`, `inventory`.`location_in_warehouse`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+LEFT JOIN `categories` ON `categories`.`id` = `materials`.`category_id`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `inventory`.`warehouse_id` = \'1\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `inventory`.*, `materials`.`name`, `materials`.`code`, `materials`.`reorder_level`, `categories`.`name` as `category_name`, `warehouses`.`name` as `warehouse_name`, `units_of_measure`.`abbreviation` as `unit`, `inventory`.`location_in_warehouse`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+LEFT JOIN `categories` ON `categories`.`id` = `materials`.`category_id`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `inventory`.`warehouse_id` = \'1\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `inventory`.*, `materials`.`name`, `materials`.`code`, `materials`.`reorder_level`, `categories`.`name` as `category_name`, `warehouses`.`name` as `warehouse_name`, `units_of_measure`.`abbreviation` as `unit`, `inventory`.`location_in_warehouse`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+LEFT JOIN `categories` ON `categories`.`id` = `materials`.`category_id`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `inventory`.`warehouse_id` = \'1\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `inventory`.*, `materials`.`name`, `materials`.`code`, `materials`.`reorder_level`, `categories`.`name` as `category_name`, `warehouses`.`name` as `warehouse_name`, `units_of_measure`.`abbreviation` as `unit`, `inventory`.`location_in_warehouse`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+LEFT JOIN `categories` ON `categories`.`id` = `materials`.`category_id`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `inventory`.`warehouse_id` = :inventory.warehouse_id:', [...], false)
+ 5 APPPATH\Controllers\WarehouseStaffController.php(647): CodeIgniter\Database\BaseBuilder->get()
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->searchInventory()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))

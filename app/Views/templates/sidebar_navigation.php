@@ -27,9 +27,8 @@ $navigationItems = [
     
     'Warehouse Staff' => [
         ['icon' => 'bi-speedometer2', 'label' => 'Dashboard', 'url' => '/warehouse-staff/dashboard'],
-        ['icon' => 'bi-box-seam', 'label' => 'Inventory', 'url' => '/inventory'],
-        ['icon' => 'bi-boxes', 'label' => 'Materials', 'url' => '/materials'],
-        ['icon' => 'bi-upc-scan', 'label' => 'Scan Items', 'url' => '/warehouse-staff/scan'],
+        ['icon' => 'bi-search', 'label' => 'Search Inventory', 'url' => '/warehouse-staff/search-inventory'],
+        ['icon' => 'bi-upc-scan', 'label' => 'Scan Items', 'url' => '/warehouse-staff/scan-item'],
         ['icon' => 'bi-box-arrow-in-down', 'label' => 'Receive Stock', 'url' => '/warehouse-staff/receive'],
         ['icon' => 'bi-box-arrow-up', 'label' => 'Issue Stock', 'url' => '/warehouse-staff/issue'],
         ['icon' => 'bi-arrow-left-right', 'label' => 'Stock Transfer', 'url' => '/warehouse-staff/transfer'],
@@ -431,7 +430,7 @@ document.addEventListener('click', function(event) {
                 $isActive = (strpos($currentUrl, $item['url']) !== false) ? 'active' : '';
             ?>
             <div class="sidebar-menu-item">
-                <a href="<?= $itemUrl ?>" class="<?= $isActive ?>" onclick="console.log('Link clicked: <?= $item['label'] ?>')">
+                <a href="<?= $itemUrl ?>" class="<?= $isActive ?>" onclick="console.log('Link clicked: <?= $item['label'] ?>'); console.log('URL: <?= $itemUrl ?>'); console.log('Event target:', event.target); console.log('Default prevented:', event.defaultPrevented);">
                     <i class="bi <?= $item['icon'] ?>"></i>
                     <span><?= esc($item['label']) ?></span>
                 </a>

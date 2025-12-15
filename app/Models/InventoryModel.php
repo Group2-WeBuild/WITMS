@@ -137,38 +137,6 @@ class InventoryModel extends Model
     }
 
     /**
-     * Get inventory by warehouse
-     */
-    public function getInventoryByWarehouse($warehouseId)
-    {
-        return $this->select('
-            inventory.*,
-            materials.name as material_name,
-            materials.code as material_code,
-            units_of_measure.abbreviation as unit_abbr
-        ')
-        ->join('materials', 'materials.id = inventory.material_id')
-        ->join('units_of_measure', 'units_of_measure.id = materials.unit_id')
-        ->where('inventory.warehouse_id', $warehouseId)
-        ->findAll();
-    }
-
-    /**
-     * Get inventory by material
-     */
-    public function getInventoryByMaterial($materialId)
-    {
-        return $this->select('
-            inventory.*,
-            warehouses.name as warehouse_name,
-            warehouses.code as warehouse_code
-        ')
-        ->join('warehouses', 'warehouses.id = inventory.warehouse_id')
-        ->where('inventory.material_id', $materialId)
-        ->findAll();
-    }
-
-    /**
      * Get low stock items
      */
     public function getLowStockItems($warehouseId = null)
@@ -350,6 +318,52 @@ class InventoryModel extends Model
         $result = $builder->first();
         return $result['total_value'] ?? 0;
     }    /**
+     * Get inventory by material ID
+     */
+    public function getInventoryByMaterial($materialId)
+    {
+        return $this->select('
+                inventory.*,
+                materials.name as material_name,
+                materials.code as material_code,
+                warehouses.name as warehouse_name,
+                warehouses.code as warehouse_code,
+                warehouse_locations.location_name as location_name,
+                units.name as unit_name,
+                units.abbreviation as unit_abbr
+            ')
+            ->join('materials', 'materials.id = inventory.material_id')
+            ->join('warehouses', 'warehouses.id = inventory.warehouse_id')
+            ->join('warehouse_locations', 'warehouse_locations.id = inventory.location_id', 'left')
+            ->join('units', 'units.id = inventory.unit_id', 'left')
+            ->where('inventory.material_id', $materialId)
+            ->findAll();
+    }
+
+    /**
+     * Get inventory by warehouse ID
+     */
+    public function getInventoryByWarehouse($warehouseId)
+    {
+        return $this->select('
+                inventory.*,
+                materials.name as material_name,
+                materials.code as material_code,
+                warehouses.name as warehouse_name,
+                warehouses.code as warehouse_code,
+                warehouse_locations.location_name as location_name,
+                units.name as unit_name,
+                units.abbreviation as unit_abbr
+            ')
+            ->join('materials', 'materials.id = inventory.material_id')
+            ->join('warehouses', 'warehouses.id = inventory.warehouse_id')
+            ->join('warehouse_locations', 'warehouse_locations.id = inventory.location_id', 'left')
+            ->join('units', 'units.id = inventory.unit_id', 'left')
+            ->where('inventory.warehouse_id', $warehouseId)
+            ->findAll();
+    }
+
+    /**
      * Get inventory statistics
      */
     public function getInventoryStats($warehouseId = null)

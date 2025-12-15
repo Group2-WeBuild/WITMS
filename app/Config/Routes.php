@@ -66,6 +66,9 @@ $routes->group('warehouse-manager', function ($routes) {
     $routes->get('materials/deactivate/(:num)', 'WarehouseManagerController::materialsDeactivate/$1');
     $routes->get('materials/activate/(:num)', 'WarehouseManagerController::materialsActivate/$1');
     
+    // QR Code routes
+    $routes->get('qrcodes/(:any)', 'QRCodeController::serve/$1');
+
     // Warehouse Management
     $routes->get('warehouse-management', 'WarehouseManagerController::warehouseManagement');
     $routes->get('warehouse/add', 'WarehouseManagerController::warehouseAdd');
@@ -94,4 +97,47 @@ $routes->group('warehouse-manager', function ($routes) {
     // Staff Management
     $routes->get('staff-management', 'WarehouseManagerController::staffManagement');
     $routes->post('staff/assign/(:num)', 'WarehouseManagerController::assignWork/$1');
+
+    // Scan Item
+    $routes->get('scan-item', 'WarehouseManagerController::scanItem');
+      
+});
+
+// ==========================================
+// WAREHOUSE STAFF ROUTES
+// ==========================================
+$routes->group('warehouse-staff', function ($routes) {
+    // Dashboard
+    $routes->get('dashboard', 'WarehouseStaffController::dashboard');
+    
+    // Scan Items
+    $routes->get('scan-item', 'WarehouseStaffController::scanItem');
+    $routes->post('scan/store-items', 'WarehouseStaffController::storeScannedItems');
+    
+    // QR Scanner
+    $routes->get('qr-scanner', 'WarehouseStaffController::qrScanner');
+    $routes->post('qr/scan-data', 'WarehouseStaffController::qrScanData');
+    $routes->post('qr/read-upload', 'WarehouseStaffController::readQRUpload');
+    
+    // Search Inventory
+    $routes->get('search-inventory', 'WarehouseStaffController::searchInventory');
+    $routes->post('search-inventory', 'WarehouseStaffController::searchInventory');
+    
+    // Receive Stock
+    $routes->get('receive', 'WarehouseStaffController::receiveStock');
+    $routes->post('receive/process', 'WarehouseStaffController::processReceiveStock');
+    
+    // Issue Stock
+    $routes->get('issue', 'WarehouseStaffController::issueStock');
+    $routes->post('issue/process', 'WarehouseStaffController::processIssueStock');
+    
+    // Stock Transfer
+    $routes->get('transfer', 'WarehouseStaffController::stockTransfer');
+    $routes->post('transfer/process', 'WarehouseStaffController::processStockTransfer');
+    
+    // Activity Log
+    $routes->get('activity', 'WarehouseStaffController::activity');
+    
+    // Stock Movements
+    $routes->get('stock-movements', 'WarehouseStaffController::stockMovements');
 });
