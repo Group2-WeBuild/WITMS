@@ -79,12 +79,16 @@ class WarehouseManagerController extends BaseController
 
         $inventory = $this->inventoryModel->getInventoryWithDetails();
         $stats = $this->inventoryModel->getInventoryStats();
+        $warehouses = $this->warehouseModel->findAll();
+        $categories = $this->categoryModel->findAll();
 
         $data = [
             'title' => 'Inventory Management - WITMS',
             'user' => $this->getUserData(),
             'inventory' => $inventory,
-            'stats' => $stats
+            'stats' => $stats,
+            'warehouses' => $warehouses,
+            'categories' => $categories
         ];
 
         return view('users/warehouse_manager/inventory', $data);

@@ -218,25 +218,6 @@
                                            class="btn btn-sm btn-info btn-action" title="View Details">
                                             <i class="bi bi-eye"></i>
                                         </a>
-                                        <a href="<?=base_url('/warehouse-manager/warehouse/edit/' . $warehouse['id'])?>" 
-                                           class="btn btn-sm btn-warning btn-action" title="Edit">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <?php if ($warehouse['is_active']): ?>
-                                            <a href="<?=base_url('/warehouse-manager/warehouse/deactivate/' . $warehouse['id'])?>" 
-                                               class="btn btn-sm btn-danger btn-action" 
-                                               title="Deactivate"
-                                               onclick="return confirm('Are you sure you want to deactivate this warehouse?')">
-                                                <i class="bi bi-x-circle"></i>
-                                            </a>
-                                        <?php else: ?>
-                                            <a href="<?=base_url('/warehouse-manager/warehouse/activate/' . $warehouse['id'])?>" 
-                                               class="btn btn-sm btn-success btn-action" 
-                                               title="Activate"
-                                               onclick="return confirm('Are you sure you want to activate this warehouse?')">
-                                                <i class="bi bi-check-circle"></i>
-                                            </a>
-                                        <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>

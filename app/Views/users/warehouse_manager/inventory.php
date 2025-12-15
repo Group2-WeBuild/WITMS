@@ -167,6 +167,52 @@
                     <h5 class="mb-0"><i class="bi bi-list-ul"></i> Inventory List</h5>
                 </div>
                 <div class="card-body">
+                    <!-- Search and Filters -->
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <label class="form-label">Search Inventory</label>
+                            <input type="text" id="searchInput" class="form-control" placeholder="Search by material name or code...">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Warehouse</label>
+                            <select id="warehouseFilter" class="form-select">
+                                <option value="">All Warehouses</option>
+                                <?php if (!empty($warehouses)): ?>
+                                    <?php foreach ($warehouses as $warehouse): ?>
+                                        <option value="<?= esc($warehouse['name']) ?>"><?= esc($warehouse['name']) ?></option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Category</label>
+                            <select id="categoryFilter" class="form-select">
+                                <option value="">All Categories</option>
+                                <?php if (!empty($categories)): ?>
+                                    <?php foreach ($categories as $category): ?>
+                                        <option value="<?= esc($category['name']) ?>"><?= esc($category['name']) ?></option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Status</label>
+                            <select id="statusFilter" class="form-select">
+                                <option value="">All Status</option>
+                                <option value="In Stock">In Stock</option>
+                                <option value="Low Stock">Low Stock</option>
+                                <option value="Out of Stock">Out of Stock</option>
+                                <option value="Expiring">Expiring</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">&nbsp;</label>
+                            <button id="clearFilters" class="btn btn-outline-secondary w-100">
+                                <i class="bi bi-x-circle"></i> Clear Filters
+                            </button>
+                        </div>
+                    </div>
+                    
                     <div class="table-responsive">
                         <table id="inventoryTable" class="table table-striped table-hover">
                             <thead class="table-dark">
@@ -192,7 +238,8 @@
                                                 <strong><?= esc($item['material_name']) ?></strong><br>
                                                 <small class="text-muted"><?= esc($item['material_code']) ?></small>
                                             </td>
-                                            <td><?= esc($item['category_name']) ?></td>                                            <td><?= esc($item['warehouse_name']) ?></td>
+                                            <td><?= esc($item['category_name']) ?></td>
+                                            <td><?= esc($item['warehouse_name']) ?></td>
                                             <td><?= number_format($item['quantity'], 2) ?></td>
                                             <td><?= number_format($item['available_quantity'], 2) ?></td>
                                             <td><?= esc($item['unit_abbr'] ?? 'N/A') ?></td>
@@ -246,22 +293,80 @@
     </div>
 
     <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <!-- Bootstrap 5 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- DataTables JS -->
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
     <script>
         $(document).ready(function() {
-            $('#inventoryTable').DataTable({
+            // Initialize DataTable with custom search
+            var table = $('#inventoryTable').DataTable({
                 order: [[0, 'desc']],
                 pageLength: 25,
                 language: {
                     search: "Search inventory:",
                     lengthMenu: "Show _MENU_ items per page"
+                },
+                initComplete: function() {
+                    // Hide default search
+                    $('.dataTables_filter').hide();
                 }
+            });
+
+            // Custom search functionality
+            function filterTable() {
+                var searchTerm = $('#searchInput').val().toLowerCase();
+                var warehouseFilter = $('#warehouseFilter').val().toLowerCase();
+                var categoryFilter = $('#categoryFilter').val().toLowerCase();
+                var statusFilter = $('#statusFilter').val();
+
+                table.rows().every(function() {
+                    var row = this.data();
+                    var rowNode = this.node();
+                    var materialName = $(row[1]).text().toLowerCase();
+                    var materialCode = $(row[1]).find('small').text().toLowerCase();
+                    var warehouse = row[3].toLowerCase();
+                    var category = row[2].toLowerCase();
+                    var status = $(rowNode).find('.badge').text().trim();
+                    
+                    // Check if item is expiring
+                    var expirationDate = $(rowNode).find('td:eq(7)').text().trim();
+                    var isExpiring = false;
+                    if (expirationDate && expirationDate !== 'N/A') {
+                        var expDate = new Date(expirationDate);
+                        var today = new Date();
+                        var daysUntilExpiry = Math.ceil((expDate - today) / (1000 * 60 * 60 * 24));
+                        if (daysUntilExpiry <= 30 && daysUntilExpiry >= 0) {
+                            isExpiring = true;
+                        }
+                    }
+
+                    var matchesSearch = materialName.includes(searchTerm) || materialCode.includes(searchTerm);
+                    var matchesWarehouse = !warehouseFilter || warehouse === warehouseFilter;
+                    var matchesCategory = !categoryFilter || category === categoryFilter;
+                    var matchesStatus = !statusFilter || 
+                        (statusFilter === 'Expiring' ? isExpiring : status === statusFilter);
+
+                    if (matchesSearch && matchesWarehouse && matchesCategory && matchesStatus) {
+                        this.nodes().to$().show();
+                    } else {
+                        this.nodes().to$().hide();
+                    }
+                });
+            }
+
+            // Event listeners
+            $('#searchInput').on('keyup', filterTable);
+            $('#warehouseFilter').on('change', filterTable);
+            $('#categoryFilter').on('change', filterTable);
+            $('#statusFilter').on('change', filterTable);
+
+            // Clear filters
+            $('#clearFilters').on('click', function() {
+                $('#searchInput').val('');
+                $('#warehouseFilter').val('');
+                $('#categoryFilter').val('');
+                $('#statusFilter').val('');
+                filterTable();
             });
         });
     </script>

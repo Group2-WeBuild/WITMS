@@ -93,11 +93,8 @@
                         <p class="text-muted mb-0"><?= esc($warehouse['code']) ?></p>
                     </div>
                     <div>
-                        <a href="<?=base_url('/warehouse-manager/warehouse-management')?>" class="btn btn-secondary me-2">
+                        <a href="<?=base_url('/warehouse-manager/warehouse-management')?>" class="btn btn-secondary">
                             <i class="bi bi-arrow-left"></i> Back to List
-                        </a>
-                        <a href="<?=base_url('/warehouse-manager/warehouse/edit/' . $warehouse['id'])?>" class="btn btn-warning">
-                            <i class="bi bi-pencil"></i> Edit
                         </a>
                     </div>
                 </div>
@@ -242,29 +239,10 @@
                             <h4 class="mb-4"><i class="bi bi-lightning"></i> Quick Actions</h4>
                             
                             <div class="d-grid gap-2">
-                                <a href="<?=base_url('/warehouse-manager/warehouse/edit/' . $warehouse['id'])?>" 
-                                   class="btn btn-warning">
-                                    <i class="bi bi-pencil"></i> Edit Warehouse
-                                </a>
-
                                 <a href="<?=base_url('/warehouse-manager/warehouse/map')?>" 
                                    class="btn btn-info">
                                     <i class="bi bi-map"></i> View on Map
                                 </a>
-
-                                <?php if ($warehouse['is_active']): ?>
-                                    <a href="<?=base_url('/warehouse-manager/warehouse/deactivate/' . $warehouse['id'])?>" 
-                                       class="btn btn-danger"
-                                       onclick="return confirm('Are you sure you want to deactivate this warehouse?')">
-                                        <i class="bi bi-x-circle"></i> Deactivate
-                                    </a>
-                                <?php else: ?>
-                                    <a href="<?=base_url('/warehouse-manager/warehouse/activate/' . $warehouse['id'])?>" 
-                                       class="btn btn-success"
-                                       onclick="return confirm('Are you sure you want to activate this warehouse?')">
-                                        <i class="bi bi-check-circle"></i> Activate
-                                    </a>
-                                <?php endif; ?>
 
                                 <a href="<?=base_url('/warehouse-manager/inventory?warehouse_id=' . $warehouse['id'])?>" 
                                    class="btn btn-secondary">

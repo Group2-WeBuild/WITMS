@@ -16,8 +16,6 @@ $navigationItems = [
     'Warehouse Manager' => [
         ['icon' => 'bi-speedometer2', 'label' => 'Dashboard', 'url' => '/warehouse-manager/dashboard'],
         ['icon' => 'bi-box-seam', 'label' => 'Inventory', 'url' => '/warehouse-manager/inventory'],
-        ['icon' => 'bi-box-seam-fill', 'label' => 'Low Stock Items', 'url' => '/warehouse-manager/inventory/low-stock'],
-        ['icon' => 'bi-clock-history', 'label' => 'Expiring Items', 'url' => '/warehouse-manager/inventory/expiring'],
         ['icon' => 'bi-boxes', 'label' => 'Materials', 'url' => '/warehouse-manager/materials'],
         ['icon' => 'bi-arrow-left-right', 'label' => 'Stock Movements', 'url' => '/warehouse-manager/stock-movements'],
         ['icon' => 'bi-exclamation-triangle', 'label' => 'Stock Alerts', 'url' => '/warehouse-manager/stock-alerts'],
@@ -440,12 +438,5 @@ document.addEventListener('click', function(event) {
             </div>
         <?php endforeach; ?>
     </div>
-    
-    <!-- Sidebar Footer with Logout -->
-    <div class="sidebar-footer">
-        <a href="<?= base_url('/auth/logout') ?>" class="btn-logout" onclick="return confirm('Are you sure you want to logout?')">
-            <i class="bi bi-box-arrow-right"></i>
-            <span>Logout</span>
-        </a>
-    </div>
+
 </div>
