@@ -87,7 +87,7 @@
         
         <div class="container-fluid">            <!-- Welcome Message -->
             <div class="mb-4">
-                <h2 class="mb-2">Welcome back, <?= esc($user['full_name'] ?? 'User') ?>! 👋</h2>
+                <h2 class="mb-2">Welcome back, <?= esc($user['full_name'] ?? 'User') ?>! </h2>
                 <p class="text-muted">
                     Here's what's happening in your warehouse today.
                     <small class="ms-2"><i class="bi bi-info-circle"></i> Data updates in real-time</small>
@@ -95,7 +95,7 @@
             </div>
                               <!-- Quick Stats -->
             <div class="row mb-4">
-                <div class="col-xl-3 col-md-6">
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
                     <div class="stat-card bg-white">
                         <div class="icon bg-primary bg-opacity-10 text-primary">
                             <i class="bi bi-people-fill"></i>
@@ -106,7 +106,7 @@
                     </div>
                 </div>
                 
-                <div class="col-xl-3 col-md-6">
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
                     <div class="stat-card bg-white">
                         <div class="icon bg-success bg-opacity-10 text-success">
                             <i class="bi bi-box-seam-fill"></i>
@@ -117,7 +117,7 @@
                     </div>
                 </div>
                 
-                <div class="col-xl-3 col-md-6">
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
                     <div class="stat-card bg-white">
                         <div class="icon bg-warning bg-opacity-10 text-warning">
                             <i class="bi bi-boxes"></i>
@@ -128,7 +128,7 @@
                     </div>
                 </div>
                 
-                <div class="col-xl-3 col-md-6">
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
                     <div class="stat-card bg-white">
                         <div class="icon bg-danger bg-opacity-10 text-danger">
                             <i class="bi bi-exclamation-triangle-fill"></i>
@@ -141,7 +141,7 @@
 
             <!-- Additional Stats Row -->
             <div class="row mb-4">
-                <div class="col-xl-3 col-md-6">
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
                     <div class="card border-info">
                         <div class="card-body text-center">
                             <h6 class="text-muted text-uppercase">Total Quantity</h6>
@@ -150,7 +150,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-3 col-md-6">
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
                     <div class="card border-success">
                         <div class="card-body text-center">
                             <h6 class="text-muted text-uppercase">Inventory Value</h6>
@@ -159,7 +159,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-3 col-md-6">
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
                     <div class="card border-warning">
                         <div class="card-body text-center">
                             <h6 class="text-muted text-uppercase">Perishable Items</h6>
@@ -168,7 +168,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-3 col-md-6">
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
                     <div class="card border-danger">
                         <div class="card-body text-center">
                             <h6 class="text-muted text-uppercase">Expiring Soon</h6>
@@ -227,11 +227,11 @@
 
             <!-- Recent Activity -->
             <div class="row">
-                <div class="col-lg-8 mb-4">
+                <div class="col-lg-8 col-md-12 mb-4">
                     <div class="recent-activity">
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <h5 class="mb-0"><i class="bi bi-clock-history"></i> Recent Activity</h5>
-                            <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+                            <a href="#" class="btn btn-sm btn-outline-primary d-none d-md-inline-block">View All</a>
                         </div>
                         <div class="alert alert-info mb-0">
                             <i class="bi bi-info-circle me-2"></i>
@@ -240,7 +240,7 @@
                     </div>
                 </div>
                 
-                <div class="col-lg-4 mb-4">
+                <div class="col-lg-4 col-md-12 mb-4">
                     <div class="recent-activity">
                         <h5 class="mb-3"><i class="bi bi-bell"></i> Notifications</h5>
                         <div class="alert alert-secondary mb-0">

@@ -52,6 +52,8 @@ $routes->group('warehouse-manager', function ($routes) {
     $routes->get('inventory/edit/(:num)', 'WarehouseManagerController::inventoryEdit/$1');
     $routes->post('inventory/update/(:num)', 'WarehouseManagerController::inventoryUpdate/$1');
     $routes->get('inventory/view/(:num)', 'WarehouseManagerController::inventoryView/$1');
+    $routes->get('inventory/adjust/(:num)', 'WarehouseManagerController::inventoryAdjust/$1');
+    $routes->post('inventory/adjust-process/(:num)', 'WarehouseManagerController::inventoryAdjustProcess/$1');
     $routes->get('inventory/low-stock', 'WarehouseManagerController::inventoryLowStock');
     $routes->get('inventory/expiring', 'WarehouseManagerController::inventoryExpiring');
       // Materials Management
@@ -74,4 +76,22 @@ $routes->group('warehouse-manager', function ($routes) {
     $routes->get('warehouse/map', 'WarehouseManagerController::warehouseMap');
     $routes->get('warehouse/deactivate/(:num)', 'WarehouseManagerController::warehouseDeactivate/$1');
     $routes->get('warehouse/activate/(:num)', 'WarehouseManagerController::warehouseActivate/$1');
+    
+    // Stock Movements
+    $routes->get('stock-movements', 'WarehouseManagerController::stockMovements');
+    
+    // Reports
+    $routes->get('reports', 'WarehouseManagerController::reports');
+    $routes->get('reports/generate/(:alpha)', 'WarehouseManagerController::generateReport/$1');
+    
+    // Analytics
+    $routes->get('analytics', 'WarehouseManagerController::analytics');
+    
+    // Stock Alerts
+    $routes->get('stock-alerts', 'WarehouseManagerController::stockAlerts');
+    $routes->post('stock-alerts/contact-procurement', 'WarehouseManagerController::contactProcurement');
+    
+    // Staff Management
+    $routes->get('staff-management', 'WarehouseManagerController::staffManagement');
+    $routes->post('staff/assign/(:num)', 'WarehouseManagerController::assignWork/$1');
 });

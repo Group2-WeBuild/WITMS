@@ -1,0 +1,202 @@
+CRITICAL - 2025-12-15 11:25:27 --> ErrorException: Undefined array key "category_name"
+[Method: GET, Route: warehouse-manager/inventory/low-stock]
+in APPPATH\Views\users\warehouse_manager\inventory.php on line 191.
+ 1 APPPATH\Views\users\warehouse_manager\inventory.php(191): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "category_name"', 'C:\\xampp\\htdocs\\WITMS\\app\\Views\\users\\warehouse_manager\\inventory.php', 191)
+ 2 SYSTEMPATH\View\View.php(226): include('C:\\xampp\\htdocs\\WITMS\\app\\Views\\users\\warehouse_manager\\inventory.php')
+ 3 SYSTEMPATH\View\View.php(229): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1167): CodeIgniter\View\View->render('users/warehouse_manager/inventory', [], true)
+ 5 APPPATH\Controllers\WarehouseManagerController.php(232): view('users/warehouse_manager/inventory', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->inventoryLowStock()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-15 17:44:50 --> ErrorException: Undefined array key "category_name"
+[Method: GET, Route: warehouse-manager/inventory/low-stock]
+in APPPATH\Views\users\warehouse_manager\inventory.php on line 191.
+ 1 APPPATH\Views\users\warehouse_manager\inventory.php(191): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "category_name"', 'C:\\xampp\\htdocs\\WITMS\\app\\Views\\users\\warehouse_manager\\inventory.php', 191)
+ 2 SYSTEMPATH\View\View.php(226): include('C:\\xampp\\htdocs\\WITMS\\app\\Views\\users\\warehouse_manager\\inventory.php')
+ 3 SYSTEMPATH\View\View.php(229): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1167): CodeIgniter\View\View->render('users/warehouse_manager/inventory', [], true)
+ 5 APPPATH\Controllers\WarehouseManagerController.php(232): view('users/warehouse_manager/inventory', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->inventoryLowStock()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-15 17:45:26 --> ErrorException: Undefined array key "category_name"
+[Method: GET, Route: warehouse-manager/inventory/low-stock]
+in APPPATH\Views\users\warehouse_manager\inventory.php on line 191.
+ 1 APPPATH\Views\users\warehouse_manager\inventory.php(191): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "category_name"', 'C:\\xampp\\htdocs\\WITMS\\app\\Views\\users\\warehouse_manager\\inventory.php', 191)
+ 2 SYSTEMPATH\View\View.php(226): include('C:\\xampp\\htdocs\\WITMS\\app\\Views\\users\\warehouse_manager\\inventory.php')
+ 3 SYSTEMPATH\View\View.php(229): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1167): CodeIgniter\View\View->render('users/warehouse_manager/inventory', [], true)
+ 5 APPPATH\Controllers\WarehouseManagerController.php(232): view('users/warehouse_manager/inventory', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->inventoryLowStock()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-15 17:59:57 --> ErrorException: Undefined array key "full_name"
+[Method: GET, Route: warehouse-manager/warehouse/edit/1]
+in APPPATH\Views\users\warehouse_manager\warehouse_edit.php on line 106.
+ 1 APPPATH\Views\users\warehouse_manager\warehouse_edit.php(106): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "full_name"', 'C:\\xampp\\htdocs\\WITMS\\app\\Views\\users\\warehouse_manager\\warehouse_edit.php', 106)
+ 2 SYSTEMPATH\View\View.php(226): include('C:\\xampp\\htdocs\\WITMS\\app\\Views\\users\\warehouse_manager\\warehouse_edit.php')
+ 3 SYSTEMPATH\View\View.php(229): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1167): CodeIgniter\View\View->render('users/warehouse_manager/warehouse_edit', [], true)
+ 5 APPPATH\Controllers\WarehouseManagerController.php(566): view('users/warehouse_manager/warehouse_edit', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->warehouseEdit('1')
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-15 18:00:06 --> ErrorException: Undefined array key "full_name"
+[Method: GET, Route: warehouse-manager/warehouse/add]
+in APPPATH\Views\users\warehouse_manager\warehouse_add.php on line 106.
+ 1 APPPATH\Views\users\warehouse_manager\warehouse_add.php(106): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "full_name"', 'C:\\xampp\\htdocs\\WITMS\\app\\Views\\users\\warehouse_manager\\warehouse_add.php', 106)
+ 2 SYSTEMPATH\View\View.php(226): include('C:\\xampp\\htdocs\\WITMS\\app\\Views\\users\\warehouse_manager\\warehouse_add.php')
+ 3 SYSTEMPATH\View\View.php(229): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1167): CodeIgniter\View\View->render('users/warehouse_manager/warehouse_add', [], true)
+ 5 APPPATH\Controllers\WarehouseManagerController.php(484): view('users/warehouse_manager/warehouse_add', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->warehouseAdd()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-15 18:11:13 --> ErrorException: Undefined array key "reorder_quantity"
+[Method: GET, Route: warehouse-manager/stock-alerts]
+in APPPATH\Views\users\warehouse_manager\stock_alerts.php on line 164.
+ 1 APPPATH\Views\users\warehouse_manager\stock_alerts.php(164): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "reorder_quantity"', 'C:\\xampp\\htdocs\\WITMS\\app\\Views\\users\\warehouse_manager\\stock_alerts.php', 164)
+ 2 SYSTEMPATH\View\View.php(226): include('C:\\xampp\\htdocs\\WITMS\\app\\Views\\users\\warehouse_manager\\stock_alerts.php')
+ 3 SYSTEMPATH\View\View.php(229): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1167): CodeIgniter\View\View->render('users/warehouse_manager/stock_alerts', [], true)
+ 5 APPPATH\Controllers\WarehouseManagerController.php(747): view('users/warehouse_manager/stock_alerts', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->stockAlerts()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-15 18:15:09 --> ErrorException: Undefined array key "reorder_quantity"
+[Method: GET, Route: warehouse-manager/stock-alerts]
+in APPPATH\Views\users\warehouse_manager\stock_alerts.php on line 164.
+ 1 APPPATH\Views\users\warehouse_manager\stock_alerts.php(164): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "reorder_quantity"', 'C:\\xampp\\htdocs\\WITMS\\app\\Views\\users\\warehouse_manager\\stock_alerts.php', 164)
+ 2 SYSTEMPATH\View\View.php(226): include('C:\\xampp\\htdocs\\WITMS\\app\\Views\\users\\warehouse_manager\\stock_alerts.php')
+ 3 SYSTEMPATH\View\View.php(229): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1167): CodeIgniter\View\View->render('users/warehouse_manager/stock_alerts', [], true)
+ 5 APPPATH\Controllers\WarehouseManagerController.php(747): view('users/warehouse_manager/stock_alerts', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->stockAlerts()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-15 18:18:13 --> ErrorException: Undefined array key "reorder_quantity"
+[Method: GET, Route: warehouse-manager/stock-alerts]
+in APPPATH\Views\users\warehouse_manager\stock_alerts.php on line 164.
+ 1 APPPATH\Views\users\warehouse_manager\stock_alerts.php(164): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "reorder_quantity"', 'C:\\xampp\\htdocs\\WITMS\\app\\Views\\users\\warehouse_manager\\stock_alerts.php', 164)
+ 2 SYSTEMPATH\View\View.php(226): include('C:\\xampp\\htdocs\\WITMS\\app\\Views\\users\\warehouse_manager\\stock_alerts.php')
+ 3 SYSTEMPATH\View\View.php(229): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1167): CodeIgniter\View\View->render('users/warehouse_manager/stock_alerts', [], true)
+ 5 APPPATH\Controllers\WarehouseManagerController.php(747): view('users/warehouse_manager/stock_alerts', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->stockAlerts()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-15 18:29:53 --> ErrorException: Undefined array key "first_name"
+[Method: POST, Route: warehouse-manager/stock-alerts/contact-procurement]
+in APPPATH\Controllers\WarehouseManagerController.php on line 795.
+ 1 APPPATH\Controllers\WarehouseManagerController.php(795): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "first_name"', 'C:\\xampp\\htdocs\\WITMS\\app\\Controllers\\WarehouseManagerController.php', 795)
+ 2 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->contactProcurement()
+ 3 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 4 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-15 18:30:22 --> ErrorException: Undefined array key "first_name"
+[Method: POST, Route: warehouse-manager/stock-alerts/contact-procurement]
+in APPPATH\Controllers\WarehouseManagerController.php on line 795.
+ 1 APPPATH\Controllers\WarehouseManagerController.php(795): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "first_name"', 'C:\\xampp\\htdocs\\WITMS\\app\\Controllers\\WarehouseManagerController.php', 795)
+ 2 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->contactProcurement()
+ 3 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 4 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-15 19:33:36 --> Error: Class "App\Controllers\StockMovementModel" not found
+[Method: GET, Route: warehouse-manager/warehouse-management]
+in APPPATH\Controllers\WarehouseManagerController.php on line 31.
+ 1 SYSTEMPATH\CodeIgniter.php(903): App\Controllers\WarehouseManagerController->__construct()
+ 2 SYSTEMPATH\CodeIgniter.php(498): CodeIgniter\CodeIgniter->createController()
+ 3 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 5 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 6 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-15 19:34:26 --> Error: Class "App\Controllers\StockMovementModel" not found
+[Method: GET, Route: warehouse-manager/warehouse/map]
+in APPPATH\Controllers\WarehouseManagerController.php on line 31.
+ 1 SYSTEMPATH\CodeIgniter.php(903): App\Controllers\WarehouseManagerController->__construct()
+ 2 SYSTEMPATH\CodeIgniter.php(498): CodeIgniter\CodeIgniter->createController()
+ 3 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 4 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 5 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 6 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-15 19:54:19 --> ErrorException: Undefined array key "unit_abbreviation"
+[Method: GET, Route: warehouse-manager/stock-movements]
+in APPPATH\Views\users\warehouse_manager\stock_movements.php on line 161.
+ 1 APPPATH\Views\users\warehouse_manager\stock_movements.php(161): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "unit_abbreviation"', 'C:\\xampp\\htdocs\\WITMS\\app\\Views\\users\\warehouse_manager\\stock_movements.php', 161)
+ 2 SYSTEMPATH\View\View.php(226): include('C:\\xampp\\htdocs\\WITMS\\app\\Views\\users\\warehouse_manager\\stock_movements.php')
+ 3 SYSTEMPATH\View\View.php(229): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1167): CodeIgniter\View\View->render('users/warehouse_manager/stock_movements', [], true)
+ 5 APPPATH\Controllers\WarehouseManagerController.php(690): view('users/warehouse_manager/stock_movements', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->stockMovements()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-15 20:04:44 --> ErrorException: Undefined array key "unit_cost"
+[Method: GET, Route: warehouse-manager/reports/generate/lowstock]
+in APPPATH\Views\reports\low_stock.php on line 65.
+ 1 APPPATH\Views\reports\low_stock.php(65): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "unit_cost"', 'C:\\xampp\\htdocs\\WITMS\\app\\Views\\reports\\low_stock.php', 65)
+ 2 SYSTEMPATH\View\View.php(226): include('C:\\xampp\\htdocs\\WITMS\\app\\Views\\reports\\low_stock.php')
+ 3 SYSTEMPATH\View\View.php(229): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1167): CodeIgniter\View\View->render('reports/low_stock', [], true)
+ 5 APPPATH\Controllers\WarehouseManagerController.php(736): view('reports/low_stock', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->generateReport('lowstock')
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-15 20:08:38 --> TypeError: array_unshift(): Argument #1 ($array) must be of type array, null given
+[Method: GET, Route: warehouse-manager/reports/generate/movements]
+in APPPATH\Controllers\WarehouseManagerController.php on line 748.
+ 1 APPPATH\Controllers\WarehouseManagerController.php(748): array_unshift(null, [...])
+ 2 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->generateReport('movements')
+ 3 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 4 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-15 20:12:37 --> ErrorException: Undefined array key "expiring_items"
+[Method: GET, Route: warehouse-manager/reports/generate/performance]
+in APPPATH\Views\reports\warehouse_performance.php on line 132.
+ 1 APPPATH\Views\reports\warehouse_performance.php(132): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "expiring_items"', 'C:\\xampp\\htdocs\\WITMS\\app\\Views\\reports\\warehouse_performance.php', 132)
+ 2 SYSTEMPATH\View\View.php(226): include('C:\\xampp\\htdocs\\WITMS\\app\\Views\\reports\\warehouse_performance.php')
+ 3 SYSTEMPATH\View\View.php(229): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1167): CodeIgniter\View\View->render('reports/warehouse_performance', [], true)
+ 5 APPPATH\Controllers\WarehouseManagerController.php(794): view('reports/warehouse_performance', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->generateReport('performance')
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))

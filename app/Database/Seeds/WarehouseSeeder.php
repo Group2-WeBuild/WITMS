@@ -84,7 +84,8 @@ class WarehouseSeeder extends Seeder
                 'is_active'             => true,
                 'created_at'            => date('Y-m-d H:i:s'),
                 'updated_at'            => date('Y-m-d H:i:s'),
-            ],        ];
+            ],        
+        ];
         
         // Insert warehouses after locations exist
         $this->db->table('warehouses')->insertBatch($warehouseData);

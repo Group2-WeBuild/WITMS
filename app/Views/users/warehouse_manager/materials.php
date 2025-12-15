@@ -9,6 +9,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
     
@@ -81,18 +83,20 @@
         <?= view('templates/top_navbar', ['user' => $user ?? [], 'page_title' => 'Materials Catalog']) ?>        <div class="container-fluid">
             <!-- Page Header -->
             <div class="page-header">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
+                <div class="row align-items-center">
+                    <div class="col-md-8">
                         <h2 class="mb-1"><i class="bi bi-boxes"></i> Materials Catalog</h2>
                         <p class="text-muted mb-0">Manage materials, categories, and units</p>
                     </div>
-                    <div>
-                        <a href="<?= base_url('warehouse-manager/materials/add') ?>" class="btn btn-primary">
-                            <i class="bi bi-plus-circle"></i> Add Material
-                        </a>
-                        <a href="<?= base_url('warehouse-manager/materials/categories') ?>" class="btn btn-secondary">
-                            <i class="bi bi-folder"></i> Categories
-                        </a>
+                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                        <div class="btn-group d-flex flex-column flex-md-row" role="group">
+                            <a href="<?= base_url('warehouse-manager/materials/add') ?>" class="btn btn-primary mb-2 mb-md-0 me-md-2">
+                                <i class="bi bi-plus-circle"></i> Add Material
+                            </a>
+                            <a href="<?= base_url('warehouse-manager/materials/categories') ?>" class="btn btn-secondary">
+                                <i class="bi bi-folder"></i> Categories
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -112,7 +116,7 @@
                 </div>
             <?php endif; ?>            <!-- Materials Stats -->
             <div class="row mb-4">
-                <div class="col-md-3">
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
                     <div class="stat-card primary">
                         <div class="icon bg-primary bg-opacity-10 text-primary">
                             <i class="bi bi-boxes"></i>
@@ -121,7 +125,7 @@
                         <p>Total Materials</p>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
                     <div class="stat-card success">
                         <div class="icon bg-success bg-opacity-10 text-success">
                             <i class="bi bi-check-circle"></i>
@@ -130,7 +134,7 @@
                         <p>Active Materials</p>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
                     <div class="stat-card warning">
                         <div class="icon bg-warning bg-opacity-10 text-warning">
                             <i class="bi bi-folder"></i>
@@ -139,13 +143,13 @@
                         <p>Categories</p>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
                     <div class="stat-card info">
                         <div class="icon bg-info bg-opacity-10 text-info">
                             <i class="bi bi-clock-history"></i>
                         </div>
-                        <h3><?= number_format($stats['perishable_materials'] ?? 0) ?></h3>
-                        <p>Perishable Items</p>
+                        <h3><?= number_format($stats['recently_added'] ?? 0) ?></h3>
+                        <p>Added This Month</p>
                     </div>
                 </div>
             </div>            <!-- Materials Table -->
@@ -195,25 +199,13 @@
                                             <td>
                                                 <div class="btn-group btn-group-sm">
                                                     <a href="<?= base_url('warehouse-manager/materials/view/' . $material['id']) ?>" 
-                                                       class="btn btn-info" title="View">
+                                                       class="btn btn-info" title="View Details">
                                                         <i class="bi bi-eye"></i>
                                                     </a>
                                                     <a href="<?= base_url('warehouse-manager/materials/edit/' . $material['id']) ?>" 
                                                        class="btn btn-warning" title="Edit">
                                                         <i class="bi bi-pencil"></i>
                                                     </a>
-                                                    <?php if ($material['is_active']): ?>
-                                                        <a href="<?= base_url('warehouse-manager/materials/deactivate/' . $material['id']) ?>" 
-                                                           class="btn btn-danger" title="Deactivate"
-                                                           onclick="return confirm('Deactivate this material?')">
-                                                            <i class="bi bi-x-circle"></i>
-                                                        </a>
-                                                    <?php else: ?>
-                                                        <a href="<?= base_url('warehouse-manager/materials/activate/' . $material['id']) ?>" 
-                                                           class="btn btn-success" title="Activate">
-                                                            <i class="bi bi-check-circle"></i>
-                                                        </a>
-                                                    <?php endif; ?>
                                                 </div>
                                             </td>
                                         </tr>

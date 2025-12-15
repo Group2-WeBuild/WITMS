@@ -96,7 +96,7 @@ class MaterialModel extends Model
         ],
         'is_active' => [
             'label' => 'Is Active',
-            'rules' => 'permit_empty|in_list[0,1]'
+            'rules' => 'permit_empty'
         ]
     ];
 
@@ -120,7 +120,7 @@ class MaterialModel extends Model
 
     // Callbacks
     protected $allowCallbacks = true;
-    protected $beforeInsert   = ['generateCode'];
+    protected $beforeInsert   = ['generateCode', 'setActiveDefault'];
     protected $afterInsert    = [];
     protected $beforeUpdate   = [];
     protected $afterUpdate    = [];
@@ -133,7 +133,8 @@ class MaterialModel extends Model
      * Get materials with their category and unit information
      */
     public function getMaterialsWithDetails($id = null)
-    {        $builder = $this->select('
+    {        
+        $builder = $this->select('
             materials.*,
             material_categories.name as category_name,
             material_categories.code as category_code,
@@ -225,7 +226,9 @@ class MaterialModel extends Model
         }
 
         return false;
-    }    /**
+    }    
+    
+    /**
      * Update material with validation
      */
     public function updateMaterial($id, $data)
@@ -254,6 +257,18 @@ class MaterialModel extends Model
     public function activateMaterial($id)
     {
         return $this->update($id, ['is_active' => 1]);
+    }
+
+    /**
+     * Set default value for is_active field
+     */
+    protected function setActiveDefault(array $data)
+    {
+        if (!isset($data['data']['is_active'])) {
+            $data['data']['is_active'] = 1; // Default to active
+        }
+        
+        return $data;
     }
 
     /**
@@ -300,7 +315,6 @@ class MaterialModel extends Model
         $stats['perishable_materials'] = $this->where('is_perishable', true)
                                              ->where('is_active', true)
                                              ->countAllResults();
-        
         return $stats;
     }
 }

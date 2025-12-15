@@ -178,10 +178,14 @@ class InventoryModel extends Model
             materials.name as material_name,
             materials.code as material_code,
             materials.reorder_level,
+            materials.reorder_quantity,
+            materials.unit_cost,
+            material_categories.name as category_name,
             warehouses.name as warehouse_name,
             units_of_measure.abbreviation as unit_abbr
         ')
         ->join('materials', 'materials.id = inventory.material_id')
+        ->join('material_categories', 'material_categories.id = materials.category_id')
         ->join('warehouses', 'warehouses.id = inventory.warehouse_id')
         ->join('units_of_measure', 'units_of_measure.id = materials.unit_id')
         ->where('inventory.available_quantity <=', 'materials.reorder_level', false);
@@ -202,10 +206,13 @@ class InventoryModel extends Model
             inventory.*,
             materials.name as material_name,
             materials.code as material_code,
+            materials.unit_cost,
+            material_categories.name as category_name,
             warehouses.name as warehouse_name,
             units_of_measure.abbreviation as unit_abbr
         ')
         ->join('materials', 'materials.id = inventory.material_id')
+        ->join('material_categories', 'material_categories.id = materials.category_id')
         ->join('warehouses', 'warehouses.id = inventory.warehouse_id')
         ->join('units_of_measure', 'units_of_measure.id = materials.unit_id')
         ->where('inventory.expiration_date IS NOT NULL')
@@ -217,6 +224,34 @@ class InventoryModel extends Model
         }
 
         return $builder->orderBy('inventory.expiration_date', 'ASC')->findAll();
+    }
+
+    /**
+     * Get inventory valuation by category
+     */
+    public function getInventoryValuation($warehouseId = null)
+    {
+        $builder = $this->select('
+            materials.id as material_id,
+            materials.name as material_name,
+            materials.code as material_code,
+            materials.unit_cost,
+            material_categories.name as category_name,
+            units_of_measure.name as unit_name,
+            SUM(inventory.available_quantity) as total_quantity,
+            SUM(inventory.available_quantity * materials.unit_cost) as total_value
+        ')
+        ->join('materials', 'materials.id = inventory.material_id')
+        ->join('material_categories', 'material_categories.id = materials.category_id')
+        ->join('units_of_measure', 'units_of_measure.id = materials.unit_id')
+        ->where('inventory.available_quantity >', 0)
+        ->groupBy('materials.id, material_categories.id, units_of_measure.id');
+
+        if ($warehouseId !== null) {
+            $builder->where('inventory.warehouse_id', $warehouseId);
+        }
+
+        return $builder->findAll();
     }
 
     /**
@@ -342,7 +377,8 @@ class InventoryModel extends Model
             'low_stock' => count($this->getLowStockItems($warehouseId)),
             'low_stock_items' => count($this->getLowStockItems($warehouseId)),
             'expiring' => count($this->getExpiringItems(30, $warehouseId)),
-            'expiring_soon' => count($this->getExpiringItems(30, $warehouseId))
+            'expiring_soon' => count($this->getExpiringItems(30, $warehouseId)),
+            'expiring_items' => count($this->getExpiringItems(30, $warehouseId))
         ];
 
         return $stats;

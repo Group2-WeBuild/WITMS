@@ -9,6 +9,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
     
@@ -83,21 +85,23 @@
         <div class="container-fluid">
             <!-- Page Header -->
             <div class="page-header">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
+                <div class="row align-items-center">
+                    <div class="col-md-8">
                         <h2 class="mb-1"><i class="bi bi-box-seam"></i> Inventory Management</h2>
                         <p class="text-muted mb-0">Track and manage all warehouse inventory</p>
                     </div>
-                    <div>
-                        <a href="<?= base_url('warehouse-manager/inventory/add') ?>" class="btn btn-primary">
-                            <i class="bi bi-plus-circle"></i> Add Stock
-                        </a>
-                        <a href="<?= base_url('warehouse-manager/inventory/low-stock') ?>" class="btn btn-warning">
-                            <i class="bi bi-exclamation-triangle"></i> Low Stock
-                        </a>
-                        <a href="<?= base_url('warehouse-manager/inventory/expiring') ?>" class="btn btn-danger">
-                            <i class="bi bi-calendar-x"></i> Expiring Items
-                        </a>
+                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                        <div class="btn-group d-flex flex-column flex-md-row" role="group">
+                            <a href="<?= base_url('warehouse-manager/inventory/add') ?>" class="btn btn-primary mb-2 mb-md-0 me-md-2">
+                                <i class="bi bi-plus-circle"></i> Add Stock
+                            </a>
+                            <a href="<?= base_url('warehouse-manager/inventory/low-stock') ?>" class="btn btn-warning mb-2 mb-md-0 me-md-2">
+                                <i class="bi bi-exclamation-triangle"></i> Low Stock
+                            </a>
+                            <a href="<?= base_url('warehouse-manager/inventory/expiring') ?>" class="btn btn-danger">
+                                <i class="bi bi-calendar-x"></i> Expiring Items
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -119,7 +123,7 @@
 
             <!-- Inventory Stats -->
             <div class="row mb-4">
-                <div class="col-md-3">
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
                     <div class="stat-card primary">
                         <div class="icon bg-primary bg-opacity-10 text-primary">
                             <i class="bi bi-box-seam"></i>
@@ -128,7 +132,7 @@
                         <p>Total Items</p>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
                     <div class="stat-card success">
                         <div class="icon bg-success bg-opacity-10 text-success">
                             <i class="bi bi-cash-stack"></i>
@@ -137,7 +141,7 @@
                         <p>Total Value</p>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
                     <div class="stat-card warning">
                         <div class="icon bg-warning bg-opacity-10 text-warning">
                             <i class="bi bi-exclamation-triangle"></i>
@@ -146,7 +150,7 @@
                         <p>Low Stock Items</p>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
                     <div class="stat-card danger">
                         <div class="icon bg-danger bg-opacity-10 text-danger">
                             <i class="bi bi-calendar-x"></i>

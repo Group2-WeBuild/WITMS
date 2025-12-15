@@ -18,6 +18,15 @@ class App extends BaseConfig
      */
     public string $baseURL = 'http://localhost/WITMS/';
 
+    public function __construct()
+    {  
+        parent::__construct();
+        
+        if (isset($_SERVER['HTTP_HOST'])) {
+            $this->baseURL = 'https://' . $_SERVER['HTTP_HOST'] . '/WITMS/';
+        }
+    }
+
     /**
      * Allowed Hostnames in the Site URL other than the hostname in the baseURL.
      * If you want to accept multiple Hostnames, set this.
@@ -29,7 +38,11 @@ class App extends BaseConfig
      *
      * @var list<string>
      */
-    public array $allowedHostnames = [];    /**
+    public array $allowedHostnames = [
+        '192.168.1.6',
+        'localhost',
+        '127.0.0.1'
+    ];    /**
      * --------------------------------------------------------------------------
      * Index File
      * --------------------------------------------------------------------------
@@ -131,7 +144,7 @@ class App extends BaseConfig
      * @see https://www.php.net/manual/en/timezones.php for list of timezones
      *      supported by PHP.
      */
-    public string $appTimezone = 'UTC';
+    public string $appTimezone = 'Asia/Manila';
 
     /**
      * --------------------------------------------------------------------------

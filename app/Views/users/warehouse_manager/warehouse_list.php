@@ -6,6 +6,8 @@
     <title><?= $title ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    
+    
     <style>
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
@@ -85,18 +87,20 @@
     <div class="main-content">
         <!-- Page Header -->
         <div class="page-header">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
+            <div class="row align-items-center">
+                <div class="col-md-8">
                     <h2 class="mb-1"><i class="bi bi-building"></i> Warehouse Management</h2>
                     <p class="text-muted mb-0">Manage warehouse locations and configurations</p>
                 </div>
-                <div>
-                    <a href=<?= base_url('warehouse-manager/warehouse/map') ?> class="btn btn-info btn-lg me-2">
-                        <i class="bi bi-map"></i> Map View
-                    </a>
-                    <a href=<?= base_url('warehouse-manager/warehouse/add') ?> class="btn btn-primary btn-lg">
-                        <i class="bi bi-plus-circle"></i> Add Warehouse
-                    </a>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <div class="btn-group d-flex flex-column flex-md-row" role="group">
+                        <a href=<?= base_url('warehouse-manager/warehouse/map') ?> class="btn btn-info mb-2 mb-md-0 me-md-2">
+                            <i class="bi bi-map"></i> Map View
+                        </a>
+                        <a href=<?= base_url('warehouse-manager/warehouse/add') ?> class="btn btn-primary">
+                            <i class="bi bi-plus-circle"></i> Add Warehouse
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -117,7 +121,7 @@
 
         <!-- Statistics Cards -->
         <div class="row mb-4">
-            <div class="col-md-3">
+            <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
                 <div class="stat-card">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -130,7 +134,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
                 <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
@@ -143,28 +147,28 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
                 <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <div class="number"><?= $stats['warehouses_with_managers'] ?? 0 ?></div>
-                            <div class="label">With Managers</div>
+                            <div class="number"><?= $stats['total_capacity'] ?? 0 ?></div>
+                            <div class="label">Total Capacity (m²)</div>
                         </div>
                         <div class="icon">
-                            <i class="bi bi-person-check"></i>
+                            <i class="bi bi-arrows-angle-expand"></i>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-3">
-                <div class="stat-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+            <div class="col-xl-3 col-lg-6 col-md-6 mb-3">
+                <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <div class="number"><?= $stats['inactive_warehouses'] ?? 0 ?></div>
-                            <div class="label">Inactive Warehouses</div>
+                            <div class="number"><?= $stats['managed_warehouses'] ?? 0 ?></div>
+                            <div class="label">With Managers</div>
                         </div>
                         <div class="icon">
-                            <i class="bi bi-x-circle"></i>
+                            <i class="bi bi-people"></i>
                         </div>
                     </div>
                 </div>

@@ -127,7 +127,7 @@ class SupplierModel extends Model
      */
     public function deactivateSupplier($id)
     {
-        return $this->update($id, ['is_active' => false]);
+        return $this->update($id, ['is_active' => 0]);
     }
 
     /**
@@ -135,7 +135,7 @@ class SupplierModel extends Model
      */
     public function activateSupplier($id)
     {
-        return $this->update($id, ['is_active' => true]);
+        return $this->update($id, ['is_active' => 1]);
     }
 
     /**

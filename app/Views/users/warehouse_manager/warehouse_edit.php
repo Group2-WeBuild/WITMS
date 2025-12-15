@@ -5,7 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $title ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">    <style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    
+    <!-- Include Mobile Styles -->
+    <?= view('templates/mobile_styles') ?>
+    
+    <style>
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             background-color: #f8f9fa;
@@ -93,9 +98,22 @@
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="manager_id" class="form-label">Manager (Optional)</label>
-                                    <input type="number" class="form-control" id="manager_id" name="manager_id" 
-                                           value="<?= old('manager_id', $warehouse['manager_id']) ?>" placeholder="User ID">
-                                    <small class="text-muted">Leave empty to assign later</small>
+                                    <select class="form-select" id="manager_id" name="manager_id">
+                                        <option value="">-- Select Manager --</option>
+                                        <?php if (!empty($warehouseManagers)): ?>
+                                            <?php foreach ($warehouseManagers as $manager): ?>
+                                                <?php 
+                                                // Exclude current user if they are a warehouse manager
+                                                $currentUserId = session()->get('user_id');
+                                                $isCurrentUser = ($manager['id'] == $currentUserId);
+                                                ?>
+                                                <option value="<?= $manager['id'] ?>" <?= old('manager_id', $warehouse['manager_id']) == $manager['id'] ? 'selected' : '' ?> <?= $isCurrentUser ? 'disabled' : '' ?>>
+                                                    <?= esc(trim($manager['first_name'] . ' ' . $manager['middle_name'] . ' ' . $manager['last_name'])) ?><?= $isCurrentUser ? ' (Current User)' : '' ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </select>
+                                    <small class="text-muted">Cannot assign yourself as manager</small>
                                 </div>
                             </div>
                         </div>
@@ -186,13 +204,18 @@
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="latitude" class="form-label">Latitude</label>
-                                    <input type="number" class="form-control" id="latitude" name="latitude" 
-                                           step="0.00000001" value="<?= old('latitude', $warehouse['latitude'] ?? '') ?>">
+                                    <div class="input-group">
+                                        <input type="number" class="form-control" id="latitude" name="latitude" 
+                                               step="0.00000001" value="<?= old('latitude', $warehouse['latitude'] ?? '') ?>" placeholder="e.g., 14.5995">
+                                        <button class="btn btn-outline-primary" type="button" id="getCurrentLocation">
+                                            <i class="bi bi-geo-alt"></i> Use Current Location
+                                        </button>
+                                    </div>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="longitude" class="form-label">Longitude</label>
                                     <input type="number" class="form-control" id="longitude" name="longitude" 
-                                           step="0.00000001" value="<?= old('longitude', $warehouse['longitude'] ?? '') ?>">
+                                           step="0.00000001" value="<?= old('longitude', $warehouse['longitude'] ?? '') ?>" placeholder="e.g., 120.9842">
                                 </div>
                             </div>
                         </div>
@@ -213,5 +236,54 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('getCurrentLocation').addEventListener('click', function() {
+            if (navigator.geolocation) {
+                this.innerHTML = '<i class="bi bi-hourglass-split"></i> Getting location...';
+                this.disabled = true;
+                
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        document.getElementById('latitude').value = position.coords.latitude.toFixed(8);
+                        document.getElementById('longitude').value = position.coords.longitude.toFixed(8);
+                        this.innerHTML = '<i class="bi bi-check-circle"></i> Location Found!';
+                        this.classList.remove('btn-outline-primary');
+                        this.classList.add('btn-success');
+                        
+                        setTimeout(() => {
+                            this.innerHTML = '<i class="bi bi-geo-alt"></i> Use Current Location';
+                            this.classList.remove('btn-success');
+                            this.classList.add('btn-outline-primary');
+                            this.disabled = false;
+                        }, 2000);
+                    },
+                    (error) => {
+                        this.innerHTML = '<i class="bi bi-geo-alt"></i> Use Current Location';
+                        this.disabled = false;
+                        
+                        let errorMessage = 'Unable to get your location. ';
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                errorMessage += 'Location access denied by user.';
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                errorMessage += 'Location information unavailable.';
+                                break;
+                            case error.TIMEOUT:
+                                errorMessage += 'Location request timed out.';
+                                break;
+                            default:
+                                errorMessage += 'Unknown error occurred.';
+                                break;
+                        }
+                        
+                        alert(errorMessage);
+                    }
+                );
+            } else {
+                alert('Geolocation is not supported by your browser.');
+            }
+        });
+    </script>
 </body>
 </html>

@@ -16,13 +16,15 @@ $navigationItems = [
     'Warehouse Manager' => [
         ['icon' => 'bi-speedometer2', 'label' => 'Dashboard', 'url' => '/warehouse-manager/dashboard'],
         ['icon' => 'bi-box-seam', 'label' => 'Inventory', 'url' => '/warehouse-manager/inventory'],
+        ['icon' => 'bi-box-seam-fill', 'label' => 'Low Stock Items', 'url' => '/warehouse-manager/inventory/low-stock'],
+        ['icon' => 'bi-clock-history', 'label' => 'Expiring Items', 'url' => '/warehouse-manager/inventory/expiring'],
         ['icon' => 'bi-boxes', 'label' => 'Materials', 'url' => '/warehouse-manager/materials'],
-        ['icon' => 'bi-people', 'label' => 'Staff Management', 'url' => '/warehouse-manager/staff'],
-        ['icon' => 'bi-clipboard-data', 'label' => 'Reports', 'url' => '/warehouse-manager/reports'],
-        ['icon' => 'bi-graph-up', 'label' => 'Analytics', 'url' => '/warehouse-manager/analytics'],
-        ['icon' => 'bi-truck', 'label' => 'Stock Movements', 'url' => '/warehouse-manager/stock-movements'],
-        ['icon' => 'bi-exclamation-triangle', 'label' => 'Stock Alerts', 'url' => '/warehouse-manager/low-stock'],
+        ['icon' => 'bi-arrow-left-right', 'label' => 'Stock Movements', 'url' => '/warehouse-manager/stock-movements'],
+        ['icon' => 'bi-exclamation-triangle', 'label' => 'Stock Alerts', 'url' => '/warehouse-manager/stock-alerts'],
         ['icon' => 'bi-building', 'label' => 'Warehouse Management', 'url' => '/warehouse-manager/warehouse-management'],
+        ['icon' => 'bi-map', 'label' => 'Warehouse Map', 'url' => '/warehouse-manager/warehouse/map'],
+        ['icon' => 'bi-people', 'label' => 'Staff Management', 'url' => '/warehouse-manager/staff-management'],
+        ['icon' => 'bi-file-earmark-text', 'label' => 'Reports', 'url' => '/warehouse-manager/reports'],
     ],
     
     'Warehouse Staff' => [
@@ -62,7 +64,7 @@ $navigationItems = [
         ['icon' => 'bi-receipt', 'label' => 'Vendor Invoices', 'url' => '/accounts-payable/invoices'],
         ['icon' => 'bi-cash-coin', 'label' => 'Payments', 'url' => '/accounts-payable/payments'],
         ['icon' => 'bi-calendar-check', 'label' => 'Payment Schedule', 'url' => '/accounts-payable/schedule'],
-        ['icon' => 'bi-people', 'label' => 'Vendors', 'url' => '/accounts-payable/vendors'],
+        ['icon' => 'bi-people', 'label' => 'Suppliers', 'url' => '/accounts-payable/suppliers'],
         ['icon' => 'bi-file-text', 'label' => 'AP Reports', 'url' => '/accounts-payable/reports'],
         ['icon' => 'bi-clock-history', 'label' => 'Payment History', 'url' => '/accounts-payable/history'],
     ],
@@ -107,14 +109,33 @@ $menuItems = $navigationItems[$userRole] ?? [];
 <style>
     .sidebar-nav {
         background-color: #1a365d;
-        min-height: 100vh;
+        height: 100vh;
         width: 250px;
         position: fixed;
         left: 0;
         top: 0;
         overflow-y: auto;
+        overflow-x: hidden;
         z-index: 1000;
         box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
+    
+    /* Custom scrollbar for webkit browsers */
+    .sidebar-nav::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .sidebar-nav::-webkit-scrollbar-track {
+        background: #1a365d;
+    }
+    
+    .sidebar-nav::-webkit-scrollbar-thumb {
+        background: #2d4a7c;
+        border-radius: 3px;
+    }
+    
+    .sidebar-nav::-webkit-scrollbar-thumb:hover {
+        background: #3d5a8c;
     }
     
     .sidebar-brand {
@@ -179,6 +200,8 @@ $menuItems = $navigationItems[$userRole] ?? [];
     
     .sidebar-menu {
         padding: 15px 0;
+        flex: 1 !important;
+        overflow-y: auto !important;
     }
     
     .sidebar-menu-item {
@@ -186,13 +209,17 @@ $menuItems = $navigationItems[$userRole] ?? [];
     }
     
     .sidebar-menu-item a {
-        display: flex;
-        align-items: center;
-        padding: 12px 15px;
-        color: #FFFFFF;
-        text-decoration: none;
-        border-radius: 5px;
-        transition: all 0.3s ease;
+        display: flex !important;
+        align-items: center !important;
+        padding: 12px 15px !important;
+        color: #FFFFFF !important;
+        text-decoration: none !important;
+        border-radius: 5px !important;
+        transition: all 0.3s ease !important;
+        pointer-events: auto !important;
+        cursor: pointer !important;
+        position: relative !important;
+        z-index: 1 !important;
     }
     
     .sidebar-menu-item a:hover {
@@ -217,11 +244,10 @@ $menuItems = $navigationItems[$userRole] ?? [];
     }
     
     .sidebar-footer {
-        position: absolute;
+        position: sticky;
         bottom: 0;
-        width: 100%;
-        padding: 15px;
         background-color: #152a4a;
+        padding: 15px;
         border-top: 1px solid #2d4a7c;
     }
     
@@ -255,35 +281,148 @@ $menuItems = $navigationItems[$userRole] ?? [];
     }
     
     @media (max-width: 768px) {
+        /* Mobile Sidebar Styles - Integrated to avoid cascade issues */
         .sidebar-nav {
-            width: 100%;
-            position: relative;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            height: 100vh !important;
+            z-index: 1055 !important;
+            width: 280px !important;
+            background-color: #1a365d !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            overflow-y: hidden !important;
+            overflow-x: hidden !important;
+            pointer-events: auto !important;
+            display: flex !important;
+            flex-direction: column !important;
+        }
+        
+        .sidebar-nav * {
+            visibility: visible !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+        }
+        
+        .sidebar-nav.show {
+            transform: translateX(0) !important;
+        }
+        
+        .mobile-menu-toggle {
+            display: block !important;
+            position: fixed;
+            top: 70px;
+            right: 15px;
+            z-index: 1050;
+            background: #0d6efd !important;
+            color: white !important;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .main-content {
             margin-left: 0;
+            padding-top: 20px !important;
+        }
+        
+        .top-navbar {
+            display: none !important;
         }
         
         .sidebar-footer {
-            position: relative;
+            background-color: #152a4a;
+            padding: 15px;
+            border-top: 1px solid #2d4a7c;
+            flex-shrink: 0;
+        }
+    }
+    
+    /* Hide mobile menu toggle on desktop */
+    @media (min-width: 769px) {
+        .mobile-menu-toggle {
+            display: none !important;
         }
     }
 </style>
+
+<!-- Mobile Menu Toggle Button -->
+<button class="mobile-menu-toggle" onclick="toggleMobileMenu()" aria-label="Toggle menu">
+    <i class="bi bi-list"></i>
+</button>
+
+<script>
+function toggleMobileMenu() {
+    const sidebar = document.querySelector('.sidebar-nav');
+    console.log('Toggle clicked, sidebar:', sidebar);
+    if (sidebar) {
+        sidebar.classList.toggle('show');
+        console.log('Sidebar classes after toggle:', sidebar.classList);
+        // Prevent body scroll when menu is open
+        document.body.style.overflow = sidebar.classList.contains('show') ? 'hidden' : '';
+    }
+    // Prevent event bubbling to document click handler
+    event.stopPropagation();
+}
+
+// Close mobile menu when clicking outside
+document.addEventListener('click', function(event) {
+    const sidebar = document.querySelector('.sidebar-nav');
+    const toggle = document.querySelector('.mobile-menu-toggle');
+    
+    // Don't close if clicking on the toggle button
+    if (toggle && toggle.contains(event.target)) {
+        return;
+    }
+    
+    // Only close if sidebar is open and clicking outside of it
+    if (window.innerWidth <= 768 && 
+        sidebar && 
+        sidebar.classList.contains('show') &&
+        !sidebar.contains(event.target)) {
+        sidebar.classList.remove('show');
+        document.body.style.overflow = '';
+    }
+});
+
+// Handle window resize
+window.addEventListener('resize', function() {
+    const sidebar = document.querySelector('.sidebar-nav');
+    if (window.innerWidth > 768 && sidebar) {
+        sidebar.classList.remove('show');
+        document.body.style.overflow = '';
+    }
+});
+
+// Close menu when clicking on a link
+document.addEventListener('click', function(event) {
+    const sidebar = document.querySelector('.sidebar-nav');
+    if (window.innerWidth <= 768 && 
+        sidebar && 
+        sidebar.classList.contains('show') &&
+        event.target.closest('.sidebar-nav a')) {
+        sidebar.classList.remove('show');
+        document.body.style.overflow = '';
+    }
+});
+</script>
 
 <div class="sidebar-nav">
     <!-- Brand/Logo -->
     <div class="sidebar-brand">
         <h4><i class="bi bi-building"></i> WITMS</h4>
         <p>WeBuild Construction</p>
-    </div>
-    
-    <!-- User Profile -->
-    <div class="sidebar-user">
-        <div class="user-avatar">
-            <i class="bi bi-person-circle"></i>
-        </div>
-        <div class="user-name"><?= esc($user['full_name'] ?? 'User') ?></div>
-        <div class="user-role"><?= esc($userRole) ?></div>
     </div>
     
     <!-- Navigation Menu -->
@@ -294,7 +433,7 @@ $menuItems = $navigationItems[$userRole] ?? [];
                 $isActive = (strpos($currentUrl, $item['url']) !== false) ? 'active' : '';
             ?>
             <div class="sidebar-menu-item">
-                <a href="<?= $itemUrl ?>" class="<?= $isActive ?>">
+                <a href="<?= $itemUrl ?>" class="<?= $isActive ?>" onclick="console.log('Link clicked: <?= $item['label'] ?>')">
                     <i class="bi <?= $item['icon'] ?>"></i>
                     <span><?= esc($item['label']) ?></span>
                 </a>
@@ -302,12 +441,10 @@ $menuItems = $navigationItems[$userRole] ?? [];
         <?php endforeach; ?>
     </div>
     
-    <!-- Logout Button -->
+    <!-- Sidebar Footer with Logout -->
     <div class="sidebar-footer">
-        <a href="<?= base_url('auth/logout') ?>" 
-           class="btn btn-logout" 
-           onclick="return confirm('Are you sure you want to logout?')">
-            <i class="bi bi-box-arrow-left"></i>
+        <a href="<?= base_url('/auth/logout') ?>" class="btn-logout" onclick="return confirm('Are you sure you want to logout?')">
+            <i class="bi bi-box-arrow-right"></i>
             <span>Logout</span>
         </a>
     </div>
