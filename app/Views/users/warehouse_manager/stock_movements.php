@@ -60,7 +60,7 @@
                     <div class="d-flex align-items-center">
                         <div class="flex-grow-1">
                             <h6 class="text-muted mb-2">Total Movements</h6>
-                            <h4 class="mb-0"><?= number_format($stats['total_movements'] ?? 0) ?></h4>
+                            <h4 class="mb-0" id="stat-total"><?= number_format($stats['total_movements'] ?? 0) ?></h4>
                         </div>
                         <div class="ms-3">
                             <i class="bi bi-arrow-left-right text-primary fs-2"></i>
@@ -73,7 +73,7 @@
                     <div class="d-flex align-items-center">
                         <div class="flex-grow-1">
                             <h6 class="text-muted mb-2">Today's Movements</h6>
-                            <h4 class="mb-0"><?= number_format($stats['today_movements'] ?? 0) ?></h4>
+                            <h4 class="mb-0" id="stat-today"><?= number_format($stats['today_movements'] ?? 0) ?></h4>
                         </div>
                         <div class="ms-3">
                             <i class="bi bi-calendar-day text-success fs-2"></i>
@@ -86,7 +86,7 @@
                     <div class="d-flex align-items-center">
                         <div class="flex-grow-1">
                             <h6 class="text-muted mb-2">This Week</h6>
-                            <h4 class="mb-0"><?= number_format($stats['week_movements'] ?? 0) ?></h4>
+                            <h4 class="mb-0" id="stat-week"><?= number_format($stats['week_movements'] ?? 0) ?></h4>
                         </div>
                         <div class="ms-3">
                             <i class="bi bi-calendar-week text-info fs-2"></i>
@@ -99,7 +99,7 @@
                     <div class="d-flex align-items-center">
                         <div class="flex-grow-1">
                             <h6 class="text-muted mb-2">This Month</h6>
-                            <h4 class="mb-0"><?= number_format($stats['month_movements'] ?? 0) ?></h4>
+                            <h4 class="mb-0" id="stat-month"><?= number_format($stats['month_movements'] ?? 0) ?></h4>
                         </div>
                         <div class="ms-3">
                             <i class="bi bi-calendar-month text-warning fs-2"></i>
@@ -192,5 +192,38 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Auto-refresh statistics every 30 seconds
+        function refreshStats() {
+            fetch('<?= base_url('warehouse-manager/stock-movements/stats') ?>', {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.stats) {
+                    // Update the statistics display
+                    document.getElementById('stat-total').textContent = new Intl.NumberFormat().format(data.stats.total_movements || 0);
+                    document.getElementById('stat-today').textContent = new Intl.NumberFormat().format(data.stats.today_movements || 0);
+                    document.getElementById('stat-week').textContent = new Intl.NumberFormat().format(data.stats.week_movements || 0);
+                    document.getElementById('stat-month').textContent = new Intl.NumberFormat().format(data.stats.month_movements || 0);
+                }
+            })
+            .catch(error => {
+                console.error('Error refreshing stats:', error);
+            });
+        }
+
+        // Refresh stats immediately on page load, then every 30 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initial refresh after 2 seconds (to allow page to fully load)
+            setTimeout(refreshStats, 2000);
+            
+            // Set up interval to refresh every 30 seconds
+            setInterval(refreshStats, 30000);
+        });
+    </script>
 </body>
 </html>

@@ -149,7 +149,13 @@
                                 <!-- Reference -->
                                 <div class="mb-3">
                                     <label class="form-label">Requisition Number</label>
-                                    <input type="text" name="reference" class="form-control" placeholder="e.g., MR-2024-001" value="<?= old('reference') ?>">
+                                    <div class="input-group">
+                                        <input type="text" name="reference" id="requisition-number" class="form-control" placeholder="Auto-generated" value="<?= old('reference') ?>" readonly>
+                                        <button type="button" class="btn btn-outline-secondary" id="generate-requisition-btn" title="Generate new requisition number">
+                                            <i class="bi bi-arrow-clockwise"></i> Generate
+                                        </button>
+                                    </div>
+                                    <small class="form-text text-muted">Requisition number is auto-generated. Click Generate to create a new one.</small>
                                 </div>
                                 
                                 <!-- Notes -->
@@ -271,6 +277,44 @@
                 quantityInput.focus();
             }
         });
+
+        // Generate requisition number on page load and when button is clicked
+        const requisitionNumberInput = document.getElementById('requisition-number');
+        const generateRequisitionBtn = document.getElementById('generate-requisition-btn');
+        
+        function generateRequisitionNumber() {
+            generateRequisitionBtn.disabled = true;
+            generateRequisitionBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+            
+            fetch('<?= base_url('warehouse-staff/ajax/generate-requisition') ?>', {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                generateRequisitionBtn.disabled = false;
+                generateRequisitionBtn.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Generate';
+                
+                if (data.success && data.requisition_number) {
+                    requisitionNumberInput.value = data.requisition_number;
+                } else {
+                    alert('Error generating requisition number: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                generateRequisitionBtn.disabled = false;
+                generateRequisitionBtn.innerHTML = '<i class="bi bi-arrow-clockwise"></i> Generate';
+                console.error('Error generating requisition number:', error);
+                alert('Error generating requisition number. Please try again.');
+            });
+        }
+        
+        // Generate on page load
+        generateRequisitionNumber();
+        
+        // Generate on button click
+        generateRequisitionBtn.addEventListener('click', generateRequisitionNumber);
     </script>
 </body>
 </html>

@@ -36,7 +36,10 @@ class InventorySeeder extends Seeder
             foreach ($warehouses as $warehouse) {
                 // Random quantity between 50-500
                 $quantity = rand(50, 500);
-                $reserved = rand(0, 50);
+                $reserved = rand(0, min(50, $quantity)); // Ensure reserved doesn't exceed quantity
+                
+                // Calculate available quantity (ensure it's not negative)
+                $available = max(0, $quantity - $reserved);
                 
                 $inventoryData[] = [
                     'material_id' => $material['id'],
@@ -44,7 +47,7 @@ class InventorySeeder extends Seeder
                     'batch_number' => 'BATCH-' . date('Ymd') . '-' . str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT),
                     'quantity' => $quantity,
                     'reserved_quantity' => $reserved,
-                    'available_quantity' => $quantity - $reserved,
+                    'available_quantity' => $available,
                     'location_in_warehouse' => 'Aisle ' . chr(65 + rand(0, 5)) . ', Rack ' . rand(1, 10),
                     'expiration_date' => $material['is_perishable'] ? date('Y-m-d', strtotime('+1 year')) : null,
                     'last_counted_date' => date('Y-m-d'),

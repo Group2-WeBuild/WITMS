@@ -10,6 +10,7 @@ use App\Models\WarehouseLocationModel;
 use App\Models\UnitsOfMeasureModel;
 use App\Models\WorkAssignmentModel;
 use App\Models\StockMovementModel;
+use App\Libraries\QRCodeLibrary;
 
 class WarehouseManagerController extends BaseController
 {
@@ -21,6 +22,7 @@ class WarehouseManagerController extends BaseController
     protected $unitModel;
     protected $workAssignmentModel;
     protected $stockMovementModel;
+    protected $qrLibrary;
 
     public function __construct()
     {
@@ -32,6 +34,7 @@ class WarehouseManagerController extends BaseController
         $this->unitModel = new UnitsOfMeasureModel();
         $this->stockMovementModel = new StockMovementModel();
         $this->workAssignmentModel = new WorkAssignmentModel();
+        $this->qrLibrary = new QRCodeLibrary();
     }
 
     /**
@@ -92,6 +95,20 @@ class WarehouseManagerController extends BaseController
         ];
 
         return view('users/warehouse_manager/inventory', $data);
+    }
+
+    /**
+     * Recalculate all available quantities
+     */
+    public function inventoryRecalculateAvailable()
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        $updated = $this->inventoryModel->recalculateAllAvailableQuantities();
+        
+        return redirect()->to('/warehouse-manager/inventory')
+            ->with('success', "Recalculated available quantities for {$updated} inventory item(s).");
     }
 
     /**
@@ -257,6 +274,150 @@ class WarehouseManagerController extends BaseController
         ];
 
         return view('users/warehouse_manager/inventory', $data);
+    }
+
+    /**
+     * Generate QR code for inventory item
+     */
+    public function inventoryGenerateQR($id)
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        $inventory = $this->inventoryModel->getInventoryWithDetails($id);
+        
+        if (!$inventory) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Inventory item not found']);
+        }
+        
+        // Prepare file path
+        $timestamp = microtime(true);
+        $filename = 'inventory_' . $id . '_' . str_replace('.', '_', $timestamp);
+        $filepath = WRITEPATH . 'qrcodes/' . $filename . '.png';
+        
+        // Ensure directory exists
+        $qrPath = WRITEPATH . 'qrcodes/';
+        if (!is_dir($qrPath)) {
+            if (!mkdir($qrPath, 0755, true)) {
+                return $this->response->setJSON(['success' => false, 'message' => 'Failed to create QR code directory']);
+            }
+        }
+        
+        // Generate QR code directly to file
+        $this->qrLibrary->generateInventoryQR(
+            $inventory['id'],
+            $inventory['material_code'],
+            $inventory['material_name'] ?? '',
+            $inventory['warehouse_code'],
+            $inventory['batch_number'],
+            $filepath
+        );
+        
+        return $this->response->setJSON([
+            'success' => true,
+            'qr_code' => base_url('warehouse-manager/qrcodes/' . basename($filepath)),
+            'filename' => basename($filepath),
+            'download_url' => base_url('warehouse-manager/inventory/qr-download/' . basename($filepath))
+        ]);
+    }
+
+    /**
+     * Download QR code for inventory item
+     */
+    public function inventoryDownloadQR($filename)
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        $filepath = WRITEPATH . 'qrcodes/' . $filename;
+        
+        if (!file_exists($filepath)) {
+            return redirect()->back()->with('error', 'QR code file not found');
+        }
+        
+        return $this->response->download($filepath, null);
+    }
+
+    /**
+     * Batch generate QR codes for inventory items
+     */
+    public function inventoryBatchGenerateQR()
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        $ids = $this->request->getPost('ids');
+        
+        if (!$ids || !is_array($ids)) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Invalid inventory IDs']);
+        }
+        
+        $results = [];
+        $successCount = 0;
+        $failCount = 0;
+        
+        foreach ($ids as $id) {
+            $inventory = $this->inventoryModel->getInventoryWithDetails($id);
+            
+            if ($inventory) {
+                try {
+                    // Prepare file path
+                    $timestamp = microtime(true);
+                    $filename = 'inventory_' . $id . '_' . str_replace('.', '_', $timestamp);
+                    $filepath = WRITEPATH . 'qrcodes/' . $filename . '.png';
+                    
+                    // Ensure directory exists
+                    $qrPath = WRITEPATH . 'qrcodes/';
+                    if (!is_dir($qrPath)) {
+                        if (!mkdir($qrPath, 0755, true)) {
+                            throw new \RuntimeException('Failed to create QR code directory');
+                        }
+                    }
+                    
+                    // Generate QR code directly to file
+                    $this->qrLibrary->generateInventoryQR(
+                        $inventory['id'],
+                        $inventory['material_code'],
+                        $inventory['material_name'] ?? '',
+                        $inventory['warehouse_code'],
+                        $inventory['batch_number'],
+                        $filepath
+                    );
+                    
+                    $results[$id] = [
+                        'success' => true,
+                        'qr_code' => base_url('warehouse-manager/qrcodes/' . basename($filepath)),
+                        'filename' => basename($filepath),
+                        'material_name' => $inventory['material_name'],
+                        'warehouse_name' => $inventory['warehouse_name']
+                    ];
+                    $successCount++;
+                } catch (\Exception $e) {
+                    log_message('error', 'QR Code generation failed for inventory ID ' . $id . ': ' . $e->getMessage());
+                    $results[$id] = [
+                        'success' => false,
+                        'message' => 'Failed to generate QR code: ' . $e->getMessage()
+                    ];
+                    $failCount++;
+                }
+            } else {
+                $results[$id] = [
+                    'success' => false,
+                    'message' => 'Inventory item not found'
+                ];
+                $failCount++;
+            }
+        }
+        
+        return $this->response->setJSON([
+            'success' => true,
+            'results' => $results,
+            'summary' => [
+                'total' => count($ids),
+                'success' => $successCount,
+                'failed' => $failCount
+            ]
+        ]);
     }
 
     // ==========================================
@@ -437,6 +598,238 @@ class WarehouseManagerController extends BaseController
         } else {
             return redirect()->back()->with('error', 'Failed to activate material');
         }
+    }
+
+    /**
+     * Generate QR code for material
+     */
+    public function materialsGenerateQR($id)
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        $material = $this->materialModel->find($id);
+        
+        if (!$material) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Material not found']);
+        }
+        
+        // Generate QR code and get the image data
+        // Prepare file path
+        $timestamp = microtime(true);
+        $filename = 'material_' . $id . '_' . str_replace('.', '_', $timestamp);
+        $filepath = WRITEPATH . 'qrcodes/' . $filename . '.png';
+        
+        // Ensure directory exists
+        $qrPath = WRITEPATH . 'qrcodes/';
+        if (!is_dir($qrPath)) {
+            if (!mkdir($qrPath, 0755, true)) {
+                return $this->response->setJSON(['success' => false, 'message' => 'Failed to create QR code directory']);
+            }
+        }
+        
+        // Generate QR code directly to file
+        $this->qrLibrary->generateMaterialQR(
+            $material['id'],
+            $material['code'],
+            $material['name'],
+            $filepath
+        );
+        
+        return $this->response->setJSON([
+            'success' => true,
+            'qr_code' => base_url('warehouse-manager/qrcodes/' . basename($filepath)),
+            'filename' => basename($filepath),
+            'download_url' => base_url('warehouse-manager/materials/qr-download/' . basename($filepath))
+        ]);
+    }
+
+    /**
+     * Download QR code for material
+     */
+    public function materialsDownloadQR($filename)
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        $filepath = WRITEPATH . 'qrcodes/' . $filename;
+        
+        if (!file_exists($filepath)) {
+            return redirect()->back()->with('error', 'QR code file not found');
+        }
+        
+        return $this->response->download($filepath, null);
+    }
+
+    /**
+     * View all materials with QR codes for printing
+     */
+    public function materialsQRPrint()
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        $materials = $this->materialModel->getMaterialsWithDetails();
+        
+        // Generate QR codes for all materials that don't have one yet
+        $materialsWithQR = [];
+        foreach ($materials as $material) {
+            // Check if QR code file exists
+            $qrFiles = glob(WRITEPATH . 'qrcodes/material_' . $material['id'] . '_*.png');
+            $qrCodeUrl = null;
+            $qrFilename = null;
+            
+            if (!empty($qrFiles)) {
+                // Use the most recent QR code
+                usort($qrFiles, function($a, $b) {
+                    return filemtime($b) - filemtime($a);
+                });
+                $latestFile = $qrFiles[0];
+                $qrFilename = basename($latestFile);
+                $qrCodeUrl = base_url('warehouse-manager/qrcodes/' . $qrFilename);
+            } else {
+                // Auto-generate QR code if it doesn't exist
+                try {
+                    $timestamp = microtime(true);
+                    $filename = 'material_' . $material['id'] . '_' . str_replace('.', '_', $timestamp);
+                    $filepath = WRITEPATH . 'qrcodes/' . $filename . '.png';
+                    
+                    // Ensure directory exists
+                    $qrPath = WRITEPATH . 'qrcodes/';
+                    if (!is_dir($qrPath)) {
+                        if (!mkdir($qrPath, 0755, true)) {
+                            throw new \RuntimeException('Failed to create QR code directory');
+                        }
+                    }
+                    
+                    // Generate QR code directly to file
+                    $this->qrLibrary->generateMaterialQR(
+                        $material['id'],
+                        $material['code'],
+                        $material['name'],
+                        $filepath
+                    );
+                    
+                    $qrFilename = basename($filepath);
+                    $qrCodeUrl = base_url('warehouse-manager/qrcodes/' . $qrFilename);
+                } catch (\Exception $e) {
+                    log_message('error', 'Failed to auto-generate QR for material ' . $material['id'] . ': ' . $e->getMessage());
+                    // Continue without QR code
+                }
+            }
+            
+            $material['qr_code_url'] = $qrCodeUrl;
+            $material['qr_filename'] = $qrFilename;
+            $materialsWithQR[] = $material;
+        }
+
+        $data = [
+            'title' => 'Material QR Codes - Print View - WITMS',
+            'user' => $this->getUserData(),
+            'materials' => $materialsWithQR
+        ];
+
+        return view('users/warehouse_manager/materials_qr_print', $data);
+    }
+
+    /**
+     * List all material categories
+     */
+    public function materialsCategories()
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        $categories = $this->categoryModel->getCategoriesWithHierarchy();
+        $stats = $this->categoryModel->getCategoryStats();
+
+        $data = [
+            'title' => 'Material Categories - WITMS',
+            'user' => $this->getUserData(),
+            'categories' => $categories,
+            'stats' => $stats
+        ];
+
+        return view('users/warehouse_manager/materials_categories', $data);
+    }
+
+    /**
+     * Batch generate QR codes for materials
+     */
+    public function materialsBatchGenerateQR()
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        $ids = $this->request->getPost('ids');
+        
+        if (!$ids || !is_array($ids)) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Invalid material IDs']);
+        }
+        
+        $results = [];
+        $successCount = 0;
+        $failCount = 0;
+        
+        foreach ($ids as $id) {
+            $material = $this->materialModel->find($id);
+            
+            if ($material) {
+                try {
+                    // Prepare file path
+                    $timestamp = microtime(true);
+                    $filename = 'material_' . $id . '_' . str_replace('.', '_', $timestamp);
+                    $filepath = WRITEPATH . 'qrcodes/' . $filename . '.png';
+                    
+                    // Ensure directory exists
+                    $qrPath = WRITEPATH . 'qrcodes/';
+                    if (!is_dir($qrPath)) {
+                        if (!mkdir($qrPath, 0755, true)) {
+                            throw new \RuntimeException('Failed to create QR code directory');
+                        }
+                    }
+                    
+                    // Generate QR code directly to file
+                    $this->qrLibrary->generateMaterialQR(
+                        $material['id'],
+                        $material['code'],
+                        $material['name'],
+                        $filepath
+                    );
+                    
+                    $results[$id] = [
+                        'success' => true,
+                        'qr_code' => base_url('warehouse-manager/qrcodes/' . basename($filepath)),
+                        'filename' => basename($filepath),
+                        'material_name' => $material['name']
+                    ];
+                    $successCount++;
+                } catch (\Exception $e) {
+                    log_message('error', 'QR Code generation failed for material ID ' . $id . ': ' . $e->getMessage());
+                    $results[$id] = [
+                        'success' => false,
+                        'message' => 'Failed to generate QR code: ' . $e->getMessage()
+                    ];
+                    $failCount++;
+                }
+            } else {
+                $results[$id] = [
+                    'success' => false,
+                    'message' => 'Material not found'
+                ];
+                $failCount++;
+            }
+        }
+        
+        return $this->response->setJSON([
+            'success' => true,
+            'results' => $results,
+            'summary' => [
+                'total' => count($ids),
+                'success' => $successCount,
+                'failed' => $failCount
+            ]
+        ]);
     }
 
     // ==========================================
@@ -696,6 +1089,26 @@ class WarehouseManagerController extends BaseController
     }
 
     /**
+     * Get stock movement statistics (AJAX endpoint)
+     */
+    public function getStockMovementStats()
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Invalid request']);
+        }
+
+        $stats = $this->stockMovementModel->getMovementStats();
+
+        return $this->response->setJSON([
+            'success' => true,
+            'stats' => $stats
+        ]);
+    }
+
+    /**
      * Get report display name
      */
     private function getReportName($type)
@@ -725,7 +1138,7 @@ class WarehouseManagerController extends BaseController
             'inventoryStats' => $this->inventoryModel->getInventoryStats(),
             'materialStats' => $this->materialModel->getMaterialStats(),
             'movementStats' => $this->stockMovementModel->getMovementStats(),
-            'recentReports' => session()->get('recent_reports', [])
+            'recentReports' => session()->get('recent_reports') ?? []
         ];
 
         return view('users/warehouse_manager/reports', $data);

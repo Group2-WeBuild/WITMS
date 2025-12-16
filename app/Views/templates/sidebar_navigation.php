@@ -79,7 +79,8 @@ $navigationItems = [
     'IT Administrator' => [
         ['icon' => 'bi-speedometer2', 'label' => 'Dashboard', 'url' => '/it-administrator/dashboard'],
         ['icon' => 'bi-people', 'label' => 'User Management', 'url' => '/it-administrator/users'],
-        ['icon' => 'bi-shield-check', 'label' => 'Roles & Permissions', 'url' => '/it-administrator/roles'],
+        ['icon' => 'bi-building', 'label' => 'Warehouse Management', 'url' => '/it-administrator/warehouse-management'],
+        ['icon' => 'bi-building', 'label' => 'Warehouse Assignments', 'url' => '/it-administrator/warehouse-assignments'],
         ['icon' => 'bi-building', 'label' => 'Departments', 'url' => '/it-administrator/departments'],
         ['icon' => 'bi-hdd-network', 'label' => 'System Settings', 'url' => '/it-administrator/settings'],
         ['icon' => 'bi-database', 'label' => 'Database Backup', 'url' => '/it-administrator/backup'],

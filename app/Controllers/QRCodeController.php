@@ -26,10 +26,11 @@ class QRCodeController extends BaseController
         }
         
         $mimeType = mime_content_type($filepath);
-        header('Content-Type: ' . $mimeType);
-        header('Content-Length: ' . filesize($filepath));
-        readfile($filepath);
-        exit;
+        
+        return $this->response
+            ->setHeader('Content-Type', $mimeType)
+            ->setHeader('Content-Length', (string) filesize($filepath))
+            ->setBody(file_get_contents($filepath));
     }
 
     /**

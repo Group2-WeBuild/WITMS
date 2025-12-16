@@ -30,10 +30,18 @@ class CreateWorkAssignmentsTable extends Migration
                 'type' => 'TEXT',
                 'null' => true,
             ],
+            'warehouse_id' => [
+                'type' => 'INT',
+                'constraint' => 11,
+                'unsigned' => true,
+                'null' => true,
+                'comment' => 'Optional: Specific warehouse for this task (if task is warehouse-specific)',
+            ],
             'location' => [
                 'type' => 'VARCHAR',
                 'constraint' => 255,
                 'null' => true,
+                'comment' => 'Physical location within warehouse or general location',
             ],
             'priority' => [
                 'type' => 'ENUM',
@@ -73,6 +81,7 @@ class CreateWorkAssignmentsTable extends Migration
         $this->forge->addPrimaryKey('id');
         $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'CASCADE');
         $this->forge->addForeignKey('assigned_by', 'users', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('warehouse_id', 'warehouses', 'id', 'SET NULL', 'CASCADE');
         $this->forge->createTable('work_assignments');
     }
 

@@ -246,6 +246,21 @@
                         </div>
                     </div>
 
+                    <!-- QR Code Card -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-success text-white">
+                            <h6 class="mb-0"><i class="bi bi-qr-code"></i> QR Code</h6>
+                        </div>
+                        <div class="card-body text-center">
+                            <div id="qrCodeContainer">
+                                <p class="text-muted">Click the button below to generate QR code</p>
+                                <button type="button" class="btn btn-success" id="generateMaterialQR" data-id="<?= $material['id'] ?? '' ?>">
+                                    <i class="bi bi-qr-code-scan"></i> Generate QR Code
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Quick Actions -->
                     <div class="card shadow-sm">
                         <div class="card-header bg-dark text-white">
@@ -272,5 +287,47 @@
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            $('#generateMaterialQR').on('click', function() {
+                var materialId = $(this).data('id');
+                var btn = $(this);
+                
+                btn.prop('disabled', true).html('<i class="bi bi-hourglass-split"></i> Generating...');
+                
+                $.ajax({
+                    url: '<?= base_url("warehouse-manager/materials/qr-generate/") ?>' + materialId,
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            $('#qrCodeContainer').html(`
+                                <img src="${response.qr_code}" alt="QR Code" class="img-fluid mb-3" style="max-width: 250px;">
+                                <p class="text-muted mb-3">Scan this QR code to view material details</p>
+                                <div class="d-grid gap-2">
+                                    <a href="${response.download_url}" class="btn btn-primary" download>
+                                        <i class="bi bi-download"></i> Download QR Code
+                                    </a>
+                                    <button type="button" class="btn btn-secondary" onclick="location.reload()">
+                                        <i class="bi bi-arrow-clockwise"></i> Generate New
+                                    </button>
+                                </div>
+                            `);
+                        } else {
+                            alert('Error: ' + response.message);
+                            btn.prop('disabled', false).html('<i class="bi bi-qr-code-scan"></i> Generate QR Code');
+                        }
+                    },
+                    error: function() {
+                        alert('Failed to generate QR code. Please try again.');
+                        btn.prop('disabled', false).html('<i class="bi bi-qr-code-scan"></i> Generate QR Code');
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>

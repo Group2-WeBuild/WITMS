@@ -96,12 +96,20 @@ class MaterialCategoryModel extends Model
     public function getCategoriesWithHierarchy()
     {
         return $this->select('
-            c1.*,
+            c1.id,
+            c1.code,
+            c1.name,
+            c1.description,
+            c1.parent_id,
+            c1.is_active,
+            c1.created_at,
+            c1.updated_at,
             c2.name as parent_name
         ')
         ->from('material_categories c1')
         ->join('material_categories c2', 'c2.id = c1.parent_id', 'left')
         ->where('c1.is_active', true)
+        ->groupBy('c1.id')
         ->orderBy('c1.parent_id ASC, c1.name ASC')
         ->findAll();
     }

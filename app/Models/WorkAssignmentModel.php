@@ -10,6 +10,7 @@ class WorkAssignmentModel extends Model
     protected $primaryKey = 'id';
     protected $allowedFields = [
         'user_id',
+        'warehouse_id',
         'task_type',
         'task_description',
         'location',

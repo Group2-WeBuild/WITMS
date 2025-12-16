@@ -321,28 +321,54 @@ class StockMovementModel extends Model
      */
     public function getMovementStats($warehouseId = null, $startDate = null, $endDate = null)
     {
-        $builder = $this->db->table('stock_movements');
+        $baseBuilder = $this->db->table('stock_movements');
 
         if ($warehouseId) {
-            $builder->groupStart()
+            $baseBuilder->groupStart()
                    ->where('from_warehouse_id', $warehouseId)
                    ->orWhere('to_warehouse_id', $warehouseId)
                    ->groupEnd();
         }
 
         if ($startDate && $endDate) {
-            $builder->where('movement_date >=', $startDate)
+            $baseBuilder->where('movement_date >=', $startDate)
                    ->where('movement_date <=', $endDate);
         }
 
+        // Get base count (without date filters for total)
+        $totalBuilder = clone $baseBuilder;
         $stats = [
-            'total_movements' => $builder->countAllResults(false),
-            'receipts' => (clone $builder)->where('movement_type', 'Receipt')->countAllResults(),
-            'issues' => (clone $builder)->where('movement_type', 'Issue')->countAllResults(),
-            'transfers' => (clone $builder)->where('movement_type', 'Transfer')->countAllResults(),
-            'adjustments' => (clone $builder)->where('movement_type', 'Adjustment')->countAllResults(),
-            'returns' => (clone $builder)->where('movement_type', 'Return')->countAllResults()
+            'total_movements' => $totalBuilder->countAllResults(false),
+            'receipts' => (clone $baseBuilder)->where('movement_type', 'Receipt')->countAllResults(),
+            'issues' => (clone $baseBuilder)->where('movement_type', 'Issue')->countAllResults(),
+            'transfers' => (clone $baseBuilder)->where('movement_type', 'Transfer')->countAllResults(),
+            'adjustments' => (clone $baseBuilder)->where('movement_type', 'Adjustment')->countAllResults(),
+            'returns' => (clone $baseBuilder)->where('movement_type', 'Return')->countAllResults()
         ];
+
+        // Calculate time-based statistics (only if no date range is specified)
+        if (!$startDate && !$endDate) {
+            $today = date('Y-m-d');
+            $weekStart = date('Y-m-d', strtotime('-7 days'));
+            $monthStart = date('Y-m-d', strtotime('-30 days'));
+
+            // Today's movements
+            $todayBuilder = clone $baseBuilder;
+            $stats['today_movements'] = $todayBuilder->where('DATE(movement_date)', $today)->countAllResults();
+
+            // This week's movements
+            $weekBuilder = clone $baseBuilder;
+            $stats['week_movements'] = $weekBuilder->where('movement_date >=', $weekStart)->countAllResults();
+
+            // This month's movements
+            $monthBuilder = clone $baseBuilder;
+            $stats['month_movements'] = $monthBuilder->where('movement_date >=', $monthStart)->countAllResults();
+        } else {
+            // If date range is specified, set these to null or 0
+            $stats['today_movements'] = 0;
+            $stats['week_movements'] = 0;
+            $stats['month_movements'] = 0;
+        }
 
         return $stats;
     }

@@ -95,11 +95,17 @@
                             <a href="<?= base_url('warehouse-manager/inventory/add') ?>" class="btn btn-primary mb-2 mb-md-0 me-md-2">
                                 <i class="bi bi-plus-circle"></i> Add Stock
                             </a>
+                            <button type="button" class="btn btn-success mb-2 mb-md-0 me-md-2" id="batchGenerateInventoryQR">
+                                <i class="bi bi-qr-code-scan"></i> Batch Generate QR
+                            </button>
                             <a href="<?= base_url('warehouse-manager/inventory/low-stock') ?>" class="btn btn-warning mb-2 mb-md-0 me-md-2">
                                 <i class="bi bi-exclamation-triangle"></i> Low Stock
                             </a>
-                            <a href="<?= base_url('warehouse-manager/inventory/expiring') ?>" class="btn btn-danger">
+                            <a href="<?= base_url('warehouse-manager/inventory/expiring') ?>" class="btn btn-danger mb-2 mb-md-0 me-md-2">
                                 <i class="bi bi-calendar-x"></i> Expiring Items
+                            </a>
+                            <a href="<?= base_url('warehouse-manager/inventory/recalculate-available') ?>" class="btn btn-info" onclick="return confirm('This will recalculate all available quantities. Continue?');">
+                                <i class="bi bi-calculator"></i> Recalculate Available
                             </a>
                         </div>
                     </div>
@@ -222,6 +228,7 @@
                                     <th>Category</th>
                                     <th>Warehouse</th>
                                     <th>Quantity</th>
+                                    <th>Reserved</th>
                                     <th>Available</th>
                                     <th>Unit</th>
                                     <th>Location</th>
@@ -240,19 +247,52 @@
                                             </td>
                                             <td><?= esc($item['category_name']) ?></td>
                                             <td><?= esc($item['warehouse_name']) ?></td>
-                                            <td><?= number_format($item['quantity'], 2) ?></td>
-                                            <td><?= number_format($item['available_quantity'], 2) ?></td>
+                                            <td><strong><?= number_format($item['quantity'], 2) ?></strong></td>
+                                            <td>
+                                                <?php 
+                                                $reserved = $item['reserved_quantity'] ?? 0;
+                                                if ($reserved > 0): 
+                                                ?>
+                                                    <span class="text-warning"><?= number_format($reserved, 2) ?></span>
+                                                <?php else: ?>
+                                                    <span class="text-muted"><?= number_format($reserved, 2) ?></span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td>
+                                                <?php 
+                                                // Calculate available quantity on the fly to ensure accuracy
+                                                $quantity = floatval($item['quantity'] ?? 0);
+                                                $reserved = floatval($item['reserved_quantity'] ?? 0);
+                                                // Ensure reserved doesn't exceed quantity
+                                                if ($reserved > $quantity) {
+                                                    $reserved = $quantity;
+                                                }
+                                                // Calculate and ensure it's never negative
+                                                $calculatedAvailable = max(0, $quantity - $reserved);
+                                                ?>
+                                                <strong class="text-primary">
+                                                    <?= number_format($calculatedAvailable, 2) ?>
+                                                </strong>
+                                            </td>
                                             <td><?= esc($item['unit_abbr'] ?? 'N/A') ?></td>
                                             <td><?= esc($item['location_in_warehouse'] ?? 'N/A') ?></td>
                                             <td>
                                                 <?php
-                                                $stockLevel = $item['quantity'] ?? 0;
+                                                // Calculate available quantity on the fly for status
+                                                $quantity = floatval($item['quantity'] ?? 0);
+                                                $reserved = floatval($item['reserved_quantity'] ?? 0);
+                                                // Ensure reserved doesn't exceed quantity
+                                                if ($reserved > $quantity) {
+                                                    $reserved = $quantity;
+                                                }
+                                                // Calculate and ensure it's never negative
+                                                $availableStock = max(0, $quantity - $reserved);
                                                 $reorderLevel = $item['reorder_level'] ?? 0;
                                                 
-                                                if ($stockLevel <= 0):
+                                                if ($availableStock <= 0):
                                                 ?>
                                                     <span class="badge bg-danger">Out of Stock</span>
-                                                <?php elseif ($stockLevel <= $reorderLevel): ?>
+                                                <?php elseif ($availableStock <= $reorderLevel): ?>
                                                     <span class="badge bg-warning text-dark">Low Stock</span>
                                                 <?php else: ?>
                                                     <span class="badge bg-success">In Stock</span>
@@ -272,13 +312,19 @@
                                                        class="btn btn-primary" title="Adjust Quantity">
                                                         <i class="bi bi-arrow-left-right"></i>
                                                     </a>
+                                                    <button type="button" class="btn btn-success generate-inventory-qr-btn" 
+                                                            data-id="<?= $item['id'] ?>" 
+                                                            data-name="<?= esc($item['material_name']) ?>"
+                                                            title="Generate QR Code">
+                                                        <i class="bi bi-qr-code"></i>
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
                                 <?php else: ?>
                                     <tr>
-                                        <td colspan="10" class="text-center py-4">
+                                        <td colspan="11" class="text-center py-4">
                                             <i class="bi bi-inbox display-4 text-muted"></i>
                                             <p class="text-muted mt-2">No inventory items found</p>
                                         </td>
@@ -368,6 +414,128 @@
                 $('#statusFilter').val('');
                 filterTable();
             });
+
+            // Individual Inventory QR code generation
+            $(document).on('click', '.generate-inventory-qr-btn', function() {
+                var inventoryId = $(this).data('id');
+                var itemName = $(this).data('name');
+                var btn = $(this);
+                
+                btn.prop('disabled', true).html('<i class="bi bi-hourglass-split"></i>');
+                
+                $.ajax({
+                    url: '<?= base_url("warehouse-manager/inventory/qr-generate/") ?>' + inventoryId,
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            showInventoryQRModal(itemName, response.qr_code, response.download_url);
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                        btn.prop('disabled', false).html('<i class="bi bi-qr-code"></i>');
+                    },
+                    error: function() {
+                        alert('Failed to generate QR code. Please try again.');
+                        btn.prop('disabled', false).html('<i class="bi bi-qr-code"></i>');
+                    }
+                });
+            });
+
+            // Batch Inventory QR code generation
+            $('#batchGenerateInventoryQR').on('click', function() {
+                var selectedIds = [];
+                table.rows({ search: 'applied' }).every(function() {
+                    var rowNode = this.node();
+                    // Get the ID from the first column (ID column)
+                    var idCell = $(rowNode).find('td:first-child');
+                    var id = idCell.text().trim();
+                    
+                    // Only add if ID is valid (not empty and is a number)
+                    if (id && !isNaN(id) && id !== '') {
+                        selectedIds.push(parseInt(id));
+                    }
+                });
+
+                if (selectedIds.length === 0) {
+                    alert('No inventory items found. Please make sure the table has data.');
+                    return;
+                }
+
+                // Remove duplicates
+                selectedIds = [...new Set(selectedIds)];
+
+                if (!confirm('Generate QR codes for ' + selectedIds.length + ' inventory item(s)?')) {
+                    return;
+                }
+
+                var btn = $(this);
+                btn.prop('disabled', true).html('<i class="bi bi-hourglass-split"></i> Processing...');
+
+                $.ajax({
+                    url: '<?= base_url("warehouse-manager/inventory/qr-batch-generate") ?>',
+                    type: 'POST',
+                    data: { ids: selectedIds },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            var message = 'Generated ' + response.summary.success + ' QR code(s) successfully.';
+                            if (response.summary.failed > 0) {
+                                message += '\n' + response.summary.failed + ' failed.';
+                                // Show details of failures if any
+                                var failedDetails = [];
+                                for (var id in response.results) {
+                                    if (!response.results[id].success) {
+                                        failedDetails.push('ID ' + id + ': ' + response.results[id].message);
+                                    }
+                                }
+                                if (failedDetails.length > 0) {
+                                    message += '\n\nFailed items:\n' + failedDetails.join('\n');
+                                }
+                            }
+                            alert(message);
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                        btn.prop('disabled', false).html('<i class="bi bi-qr-code-scan"></i> Batch Generate QR');
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('QR Generation Error:', xhr.responseText);
+                        alert('Failed to generate QR codes. Please check the console for details.');
+                        btn.prop('disabled', false).html('<i class="bi bi-qr-code-scan"></i> Batch Generate QR');
+                    }
+                });
+            });
+
+            function showInventoryQRModal(name, qrCodeUrl, downloadUrl) {
+                var modalHtml = `
+                    <div class="modal fade" id="inventoryQRModal" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">QR Code - ${name}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body text-center">
+                                    <img src="${qrCodeUrl}" alt="QR Code" class="img-fluid mb-3" style="max-width: 300px;">
+                                    <p class="text-muted">Scan this QR code to view inventory details</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <a href="${downloadUrl}" class="btn btn-primary" download>
+                                        <i class="bi bi-download"></i> Download
+                                    </a>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                $('#inventoryQRModal').remove();
+                $('body').append(modalHtml);
+                var modal = new bootstrap.Modal(document.getElementById('inventoryQRModal'));
+                modal.show();
+            }
         });
     </script>
 </body>

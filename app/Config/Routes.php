@@ -38,7 +38,7 @@ $routes->get('/inventory-auditor/dashboard', 'Dashboard::inventoryAuditor');
 $routes->get('/procurement-officer/dashboard', 'Dashboard::procurementOfficer');
 $routes->get('/accounts-payable/dashboard', 'Dashboard::accountsPayable');
 $routes->get('/accounts-receivable/dashboard', 'Dashboard::accountsReceivable');
-$routes->get('/it-administrator/dashboard', 'Dashboard::itAdministrator');
+$routes->get('/it-administrator/dashboard', 'ITAdministratorController::dashboard');
 $routes->get('/top-management/dashboard', 'Dashboard::topManagement');
 
 // ==========================================
@@ -56,6 +56,11 @@ $routes->group('warehouse-manager', function ($routes) {
     $routes->post('inventory/adjust-process/(:num)', 'WarehouseManagerController::inventoryAdjustProcess/$1');
     $routes->get('inventory/low-stock', 'WarehouseManagerController::inventoryLowStock');
     $routes->get('inventory/expiring', 'WarehouseManagerController::inventoryExpiring');
+    $routes->get('inventory/recalculate-available', 'WarehouseManagerController::inventoryRecalculateAvailable');
+    // Inventory QR Codes
+    $routes->post('inventory/qr-generate/(:num)', 'WarehouseManagerController::inventoryGenerateQR/$1');
+    $routes->post('inventory/qr-batch-generate', 'WarehouseManagerController::inventoryBatchGenerateQR');
+    $routes->get('inventory/qr-download/(:any)', 'WarehouseManagerController::inventoryDownloadQR/$1');
       // Materials Management
     $routes->get('materials', 'WarehouseManagerController::materials');
     $routes->get('materials/add', 'WarehouseManagerController::materialsAdd');
@@ -65,6 +70,13 @@ $routes->group('warehouse-manager', function ($routes) {
     $routes->get('materials/view/(:num)', 'WarehouseManagerController::materialsView/$1');
     $routes->get('materials/deactivate/(:num)', 'WarehouseManagerController::materialsDeactivate/$1');
     $routes->get('materials/activate/(:num)', 'WarehouseManagerController::materialsActivate/$1');
+    // Material QR Codes
+    $routes->get('materials/qr-print', 'WarehouseManagerController::materialsQRPrint');
+    $routes->post('materials/qr-generate/(:num)', 'WarehouseManagerController::materialsGenerateQR/$1');
+    $routes->post('materials/qr-batch-generate', 'WarehouseManagerController::materialsBatchGenerateQR');
+    $routes->get('materials/qr-download/(:any)', 'WarehouseManagerController::materialsDownloadQR/$1');
+    // Material Categories
+    $routes->get('materials/categories', 'WarehouseManagerController::materialsCategories');
     
     // QR Code routes
     $routes->get('qrcodes/(:any)', 'QRCodeController::serve/$1');
@@ -82,6 +94,7 @@ $routes->group('warehouse-manager', function ($routes) {
     
     // Stock Movements
     $routes->get('stock-movements', 'WarehouseManagerController::stockMovements');
+    $routes->get('stock-movements/stats', 'WarehouseManagerController::getStockMovementStats');
     
     // Reports
     $routes->get('reports', 'WarehouseManagerController::reports');
@@ -144,4 +157,66 @@ $routes->group('warehouse-staff', function ($routes) {
     // AJAX Endpoints
     $routes->get('ajax/materials-by-warehouse', 'WarehouseStaffController::getMaterialsByWarehouse');
     $routes->get('ajax/dashboard-stats', 'WarehouseStaffController::getDashboardStats');
+    $routes->get('ajax/warehouses', 'WarehouseStaffController::getWarehouses');
+    $routes->get('ajax/departments', 'WarehouseStaffController::getDepartments');
+    $routes->get('ajax/generate-requisition', 'WarehouseStaffController::generateRequisitionNumber');
+    
+    // Process scanned items actions
+    $routes->post('scan/process-issue', 'WarehouseStaffController::processIssueFromScanned');
+    $routes->post('scan/process-transfer', 'WarehouseStaffController::processTransferFromScanned');
+    $routes->post('scan/process-adjust', 'WarehouseStaffController::processAdjustFromScanned');
+});
+
+// ==========================================
+// IT ADMINISTRATOR ROUTES
+// ==========================================
+$routes->group('it-administrator', function ($routes) {
+    // User Management
+    $routes->get('users', 'ITAdministratorController::users');
+    $routes->post('users/create', 'ITAdministratorController::createUser');
+    $routes->post('users/get', 'ITAdministratorController::getUser');
+    $routes->post('users/update', 'ITAdministratorController::updateUser');
+    $routes->post('users/soft-delete', 'ITAdministratorController::softDeleteUser');
+    $routes->post('users/reactivate', 'ITAdministratorController::reactivateUser');
+    
+    // Warehouse Assignments
+    $routes->get('warehouse-assignments', 'ITAdministratorController::warehouseAssignments');
+    $routes->post('warehouse-assignments/assign', 'ITAdministratorController::assignUserToWarehouse');
+    $routes->post('warehouse-assignments/remove', 'ITAdministratorController::removeUserFromWarehouse');
+    $routes->post('warehouse-assignments/set-primary', 'ITAdministratorController::setPrimaryWarehouse');
+    $routes->post('warehouse-assignments/get-user-warehouses', 'ITAdministratorController::getUserWarehouses');
+    
+    // Department Management
+    $routes->get('departments', 'ITAdministratorController::departments');
+    $routes->post('departments/create', 'ITAdministratorController::createDepartment');
+    $routes->post('departments/get', 'ITAdministratorController::getDepartment');
+    $routes->post('departments/update', 'ITAdministratorController::updateDepartment');
+    $routes->post('departments/soft-delete', 'ITAdministratorController::softDeleteDepartment');
+    $routes->post('departments/reactivate', 'ITAdministratorController::reactivateDepartment');
+    
+    // System Settings
+    $routes->get('settings', 'ITAdministratorController::settings');
+    
+    // Database Backup
+    $routes->get('backup', 'ITAdministratorController::backup');
+    $routes->post('backup/create', 'ITAdministratorController::createBackup');
+    $routes->get('backup/download/(:any)', 'ITAdministratorController::downloadBackup/$1');
+    $routes->post('backup/delete', 'ITAdministratorController::deleteBackup');
+    
+    // System Logs
+    $routes->get('logs', 'ITAdministratorController::logs');
+    $routes->post('logs/get-entries', 'ITAdministratorController::getLogEntries');
+    $routes->get('logs/download/(:any)', 'ITAdministratorController::downloadLog/$1');
+    $routes->post('logs/delete', 'ITAdministratorController::deleteLog');
+    $routes->post('logs/clear-old', 'ITAdministratorController::clearOldLogs');
+    
+    // Configuration
+    $routes->get('config', 'ITAdministratorController::config');
+    
+    // Warehouse Management
+    $routes->get('warehouse-management', 'ITAdministratorController::warehouseManagement');
+    $routes->post('warehouse-management/create', 'ITAdministratorController::createWarehouse');
+    $routes->post('warehouse-management/get', 'ITAdministratorController::getWarehouse');
+    $routes->post('warehouse-management/update', 'ITAdministratorController::updateWarehouse');
+    $routes->post('warehouse-management/delete', 'ITAdministratorController::deleteWarehouse');
 });

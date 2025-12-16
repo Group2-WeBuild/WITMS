@@ -93,6 +93,12 @@
                             <a href="<?= base_url('warehouse-manager/materials/add') ?>" class="btn btn-primary mb-2 mb-md-0 me-md-2">
                                 <i class="bi bi-plus-circle"></i> Add Material
                             </a>
+                            <a href="<?= base_url('warehouse-manager/materials/qr-print') ?>" class="btn btn-info mb-2 mb-md-0 me-md-2" target="_blank">
+                                <i class="bi bi-printer"></i> Print QR Codes
+                            </a>
+                            <button type="button" class="btn btn-success mb-2 mb-md-0 me-md-2" id="batchGenerateQR">
+                                <i class="bi bi-qr-code-scan"></i> Batch Generate QR
+                            </button>
                             <a href="<?= base_url('warehouse-manager/materials/categories') ?>" class="btn btn-secondary">
                                 <i class="bi bi-folder"></i> Categories
                             </a>
@@ -206,6 +212,12 @@
                                                        class="btn btn-warning" title="Edit">
                                                         <i class="bi bi-pencil"></i>
                                                     </a>
+                                                    <button type="button" class="btn btn-success generate-qr-btn" 
+                                                            data-id="<?= $material['id'] ?>" 
+                                                            data-name="<?= esc($material['name']) ?>"
+                                                            title="Generate QR Code">
+                                                        <i class="bi bi-qr-code"></i>
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -236,14 +248,129 @@
     
     <script>
         $(document).ready(function() {
-            $('#materialsTable').DataTable({
+            var table = $('#materialsTable').DataTable({
                 order: [[1, 'asc']],
                 pageLength: 25,
                 language: {
                     search: "Search materials:",
                     lengthMenu: "Show _MENU_ materials per page"
-                }
+                },
+                columnDefs: [
+                    { orderable: false, targets: -1 } // Disable sorting on actions column
+                ]
             });
+
+            // Individual QR code generation
+            $(document).on('click', '.generate-qr-btn', function() {
+                var materialId = $(this).data('id');
+                var materialName = $(this).data('name');
+                var btn = $(this);
+                
+                btn.prop('disabled', true).html('<i class="bi bi-hourglass-split"></i>');
+                
+                $.ajax({
+                    url: '<?= base_url("warehouse-manager/materials/qr-generate/") ?>' + materialId,
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            showQRModal(materialName, response.qr_code, response.download_url);
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                        btn.prop('disabled', false).html('<i class="bi bi-qr-code"></i>');
+                    },
+                    error: function() {
+                        alert('Failed to generate QR code. Please try again.');
+                        btn.prop('disabled', false).html('<i class="bi bi-qr-code"></i>');
+                    }
+                });
+            });
+
+            // Batch QR code generation
+            $('#batchGenerateQR').on('click', function() {
+                var selectedIds = [];
+                table.rows({ selected: true }).every(function() {
+                    var data = this.data();
+                    var id = $(data[0]).text() || data[0];
+                    selectedIds.push(id);
+                });
+
+                if (selectedIds.length === 0) {
+                    // If no rows selected, get all visible IDs
+                    table.rows().every(function() {
+                        var data = this.data();
+                        var id = $(data[0]).text() || data[0];
+                        selectedIds.push(id);
+                    });
+                }
+
+                if (selectedIds.length === 0) {
+                    alert('No materials selected. Please select materials from the table.');
+                    return;
+                }
+
+                if (!confirm('Generate QR codes for ' + selectedIds.length + ' material(s)?')) {
+                    return;
+                }
+
+                var btn = $(this);
+                btn.prop('disabled', true).html('<i class="bi bi-hourglass-split"></i> Processing...');
+
+                $.ajax({
+                    url: '<?= base_url("warehouse-manager/materials/qr-batch-generate") ?>',
+                    type: 'POST',
+                    data: { ids: selectedIds },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            var message = 'Generated ' + response.summary.success + ' QR code(s) successfully.';
+                            if (response.summary.failed > 0) {
+                                message += ' ' + response.summary.failed + ' failed.';
+                            }
+                            alert(message);
+                            // Optionally show a modal with all QR codes
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                        btn.prop('disabled', false).html('<i class="bi bi-qr-code-scan"></i> Batch Generate QR');
+                    },
+                    error: function() {
+                        alert('Failed to generate QR codes. Please try again.');
+                        btn.prop('disabled', false).html('<i class="bi bi-qr-code-scan"></i> Batch Generate QR');
+                    }
+                });
+            });
+
+            function showQRModal(name, qrCodeUrl, downloadUrl) {
+                var modalHtml = `
+                    <div class="modal fade" id="qrModal" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">QR Code - ${name}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body text-center">
+                                    <img src="${qrCodeUrl}" alt="QR Code" class="img-fluid mb-3" style="max-width: 300px;">
+                                    <p class="text-muted">Scan this QR code to view material details</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <a href="${downloadUrl}" class="btn btn-primary" download>
+                                        <i class="bi bi-download"></i> Download
+                                    </a>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                $('#qrModal').remove();
+                $('body').append(modalHtml);
+                var modal = new bootstrap.Modal(document.getElementById('qrModal'));
+                modal.show();
+            }
         });
     </script>
 </body>

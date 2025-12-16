@@ -1,0 +1,78 @@
+ERROR - 2025-12-17 00:25:51 --> mysqli_sql_exception: Table 'witms_db.users' doesn't exist in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT *\nFROM `...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT *\nFROM `...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT *\nFROM `...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT *\nFROM `...', Array, false)
+#4 C:\xampp\htdocs\WITMS\system\Model.php(210): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\WITMS\system\BaseModel.php(611): CodeIgniter\Model->doFind(true, '2')
+#6 C:\xampp\htdocs\WITMS\app\Controllers\WarehouseStaffController.php(78): CodeIgniter\BaseModel->find('2')
+#7 C:\xampp\htdocs\WITMS\app\Controllers\WarehouseStaffController.php(214): App\Controllers\WarehouseStaffController->getUserData()
+#8 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->scanItem()
+#9 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+#10 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#11 C:\xampp\htdocs\WITMS\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#12 C:\xampp\htdocs\WITMS\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#13 C:\xampp\htdocs\WITMS\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#14 {main}
+CRITICAL - 2025-12-17 00:25:51 --> CodeIgniter\Database\Exceptions\DatabaseException: Table 'witms_db.users' doesn't exist
+[Method: GET, Route: warehouse-staff/scan-item]
+in SYSTEMPATH\Database\BaseConnection.php on line 684.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT *
+FROM `users`
+WHERE `users`.`id` = :users.id:', [...], false)
+ 2 SYSTEMPATH\Model.php(210): CodeIgniter\Database\BaseBuilder->get()
+ 3 SYSTEMPATH\BaseModel.php(611): CodeIgniter\Model->doFind(true, '2')
+ 4 APPPATH\Controllers\WarehouseStaffController.php(78): CodeIgniter\BaseModel->find('2')
+ 5 APPPATH\Controllers\WarehouseStaffController.php(214): App\Controllers\WarehouseStaffController->getUserData()
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->scanItem()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 00:25:51 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Table 'witms_db.users' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT *
+FROM `users`
+WHERE `users`.`id` = \'2\'')
+ 2 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT *
+FROM `users`
+WHERE `users`.`id` = \'2\'')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT *
+FROM `users`
+WHERE `users`.`id` = :users.id:', [...], false)
+ 4 SYSTEMPATH\Model.php(210): CodeIgniter\Database\BaseBuilder->get()
+ 5 SYSTEMPATH\BaseModel.php(611): CodeIgniter\Model->doFind(true, '2')
+ 6 APPPATH\Controllers\WarehouseStaffController.php(78): CodeIgniter\BaseModel->find('2')
+ 7 APPPATH\Controllers\WarehouseStaffController.php(214): App\Controllers\WarehouseStaffController->getUserData()
+ 8 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->scanItem()
+ 9 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+10 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 00:25:51 --> [Caused by] mysqli_sql_exception: Table 'witms_db.users' doesn't exist
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('SELECT *
+FROM `users`
+WHERE `users`.`id` = \'2\'', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT *
+FROM `users`
+WHERE `users`.`id` = \'2\'')
+ 3 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT *
+FROM `users`
+WHERE `users`.`id` = \'2\'')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT *
+FROM `users`
+WHERE `users`.`id` = :users.id:', [...], false)
+ 5 SYSTEMPATH\Model.php(210): CodeIgniter\Database\BaseBuilder->get()
+ 6 SYSTEMPATH\BaseModel.php(611): CodeIgniter\Model->doFind(true, '2')
+ 7 APPPATH\Controllers\WarehouseStaffController.php(78): CodeIgniter\BaseModel->find('2')
+ 8 APPPATH\Controllers\WarehouseStaffController.php(214): App\Controllers\WarehouseStaffController->getUserData()
+ 9 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->scanItem()
+10 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+11 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+12 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+13 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+14 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))

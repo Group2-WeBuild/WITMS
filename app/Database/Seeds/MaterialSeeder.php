@@ -6,6 +6,7 @@ use CodeIgniter\Database\Seeder;
 use App\Models\MaterialModel;
 use App\Models\MaterialCategoryModel;
 use App\Models\UnitsOfMeasureModel;
+use App\Libraries\QRCodeLibrary;
 
 class MaterialSeeder extends Seeder
 {
@@ -35,13 +36,12 @@ class MaterialSeeder extends Seeder
             $unitMap[$unit['abbreviation']] = $unit['id'];
         }
 
-        // Sample materials data
+        // Sample materials data (only 2 materials)
         $materials = [
-            // Construction Materials            
             [
                 'name' => 'Steel Rebar 12mm',
                 'code' => 'STEEL-12MM-001',
-                'qrcode' => 'QR-STL12MM001',
+                'qrcode' => null, // Will be generated using QRCodeLibrary
                 'category_id' => $categoryMap['Steel'] ?? 1,
                 'unit_id' => $unitMap['pcs'] ?? 1,
                 'description' => 'High-grade steel rebar for construction',
@@ -53,23 +53,9 @@ class MaterialSeeder extends Seeder
                 'is_active' => 1
             ],
             [
-                'name' => 'Steel Rebar 16mm',
-                'code' => 'STEEL-16MM-001',
-                'qrcode' => 'QR-STL16MM001',
-                'category_id' => $categoryMap['Steel'] ?? 1,
-                'unit_id' => $unitMap['pcs'] ?? 1,
-                'description' => 'Heavy-duty steel rebar 16mm diameter',
-                'reorder_level' => 80.00,
-                'reorder_quantity' => 400.00,
-                'unit_cost' => 385.75,
-                'is_perishable' => false,
-                'shelf_life_days' => null,
-                'is_active' => 1
-            ],
-            [
                 'name' => 'Cement Portland Type 1',
                 'code' => 'CEM-PT1-001',
-                'qrcode' => 'QR-CEMPT1001',
+                'qrcode' => null, // Will be generated using QRCodeLibrary
                 'category_id' => $categoryMap['Cement'] ?? 2,
                 'unit_id' => $unitMap['bag'] ?? 2,
                 'description' => 'Portland Type 1 Cement - 40kg bags',
@@ -80,32 +66,55 @@ class MaterialSeeder extends Seeder
                 'shelf_life_days' => null,
                 'is_active' => 1
             ],
-            [
-                'name' => 'Sand (Fine)',
-                'code' => 'SAND-FINE-001',
-                'qrcode' => 'QR-SNDFINE001',
-                'category_id' => $categoryMap['Aggregates'] ?? 3,
-                'unit_id' => $unitMap['m3'] ?? 3,
-                'description' => 'Fine construction sand',
-                'reorder_level' => 10.00,
-                'reorder_quantity' => 50.00,
-                'unit_cost' => 850.00,
-                'is_perishable' => false,
-                'shelf_life_days' => null,
-                'is_active' => 1
-            ],
         ];
 
+        $qrLibrary = new QRCodeLibrary();
         $successCount = 0;
         $errorCount = 0;
 
         foreach ($materials as $material) {
             try {
+                // Create material first
                 $result = $materialModel->createMaterial($material);
                 
                 if ($result) {
-                    $successCount++;
-                    echo "✓ Created: {$material['name']} ({$material['code']})\n";
+                    $materialId = $result;
+                    
+                    // Get the created material to generate QR code
+                    $createdMaterial = $materialModel->find($materialId);
+                    
+                    if ($createdMaterial) {
+                        // Generate QR code using QRCodeLibrary
+                        $timestamp = microtime(true);
+                        $filename = 'material_' . $materialId . '_' . str_replace('.', '_', $timestamp);
+                        $filepath = WRITEPATH . 'qrcodes/' . $filename . '.png';
+                        
+                        // Ensure directory exists
+                        $qrPath = WRITEPATH . 'qrcodes/';
+                        if (!is_dir($qrPath)) {
+                            if (!mkdir($qrPath, 0755, true)) {
+                                throw new \RuntimeException('Failed to create QR code directory');
+                            }
+                        }
+                        
+                        // Generate QR code directly to file
+                        $qrLibrary->generateMaterialQR(
+                            $createdMaterial['id'],
+                            $createdMaterial['code'],
+                            $createdMaterial['name'],
+                            $filepath
+                        );
+                        
+                        // Update material with QR code filename (optional, for reference)
+                        // The QR code is stored as a file, but we can store a reference if needed
+                        $qrCodeReference = basename($filepath);
+                        
+                        $successCount++;
+                        echo "✓ Created: {$material['name']} ({$material['code']}) - QR Code: {$qrCodeReference}\n";
+                    } else {
+                        $successCount++;
+                        echo "✓ Created: {$material['name']} ({$material['code']}) - QR Code generation skipped (material not found after creation)\n";
+                    }
                 } else {
                     $errorCount++;
                     $errors = $materialModel->errors();

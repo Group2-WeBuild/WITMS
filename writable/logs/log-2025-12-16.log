@@ -728,3 +728,145 @@ in APPPATH\Views\users\warehouse_staff\activity.php on line 92.
  9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
 10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
 11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2025-12-16 21:56:12 --> WarehouseStaff access denied - Role mismatch or not logged in
+ERROR - 2025-12-16 21:56:12 --> Expected one of: Warehouse Staff, warehouse staff, Warehouse Manager, warehouse manager, Got: ""
+ERROR - 2025-12-16 21:56:35 --> mysqli_sql_exception: Table 'witms_db.units' doesn't exist in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `invento...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `invento...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `invento...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `invento...', Array, false)
+#4 C:\xampp\htdocs\WITMS\system\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\WITMS\system\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+#6 C:\xampp\htdocs\WITMS\app\Models\InventoryModel.php(340): CodeIgniter\BaseModel->findAll()
+#7 C:\xampp\htdocs\WITMS\app\Controllers\WarehouseStaffController.php(310): App\Models\InventoryModel->getInventoryByMaterial(3)
+#8 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->qrScanData()
+#9 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+#10 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#11 C:\xampp\htdocs\WITMS\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#12 C:\xampp\htdocs\WITMS\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#13 C:\xampp\htdocs\WITMS\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#14 {main}
+ERROR - 2025-12-16 21:56:38 --> mysqli_sql_exception: Table 'witms_db.units' doesn't exist in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `invento...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `invento...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `invento...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `invento...', Array, false)
+#4 C:\xampp\htdocs\WITMS\system\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\WITMS\system\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+#6 C:\xampp\htdocs\WITMS\app\Models\InventoryModel.php(340): CodeIgniter\BaseModel->findAll()
+#7 C:\xampp\htdocs\WITMS\app\Controllers\WarehouseStaffController.php(310): App\Models\InventoryModel->getInventoryByMaterial(3)
+#8 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->qrScanData()
+#9 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+#10 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#11 C:\xampp\htdocs\WITMS\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#12 C:\xampp\htdocs\WITMS\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#13 C:\xampp\htdocs\WITMS\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#14 {main}
+ERROR - 2025-12-16 21:56:59 --> mysqli_sql_exception: Table 'witms_db.units' doesn't exist in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `invento...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `invento...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `invento...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `invento...', Array, false)
+#4 C:\xampp\htdocs\WITMS\system\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\WITMS\system\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+#6 C:\xampp\htdocs\WITMS\app\Models\InventoryModel.php(340): CodeIgniter\BaseModel->findAll()
+#7 C:\xampp\htdocs\WITMS\app\Controllers\WarehouseStaffController.php(310): App\Models\InventoryModel->getInventoryByMaterial(3)
+#8 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->qrScanData()
+#9 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+#10 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#11 C:\xampp\htdocs\WITMS\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#12 C:\xampp\htdocs\WITMS\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#13 C:\xampp\htdocs\WITMS\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#14 {main}
+ERROR - 2025-12-16 22:01:48 --> QR Code generation failed for inventory ID 13: code length overflow. (2192 > 1248 bit)
+ERROR - 2025-12-16 22:01:48 --> QR Code generation failed for inventory ID 12: code length overflow. (3492 > 1248 bit)
+ERROR - 2025-12-16 22:01:48 --> QR Code generation failed for inventory ID 11: code length overflow. (4792 > 1248 bit)
+ERROR - 2025-12-16 22:01:48 --> QR Code generation failed for inventory ID 10: code length overflow. (6092 > 1248 bit)
+ERROR - 2025-12-16 22:01:48 --> QR Code generation failed for inventory ID 9: code length overflow. (7360 > 1248 bit)
+ERROR - 2025-12-16 22:01:48 --> QR Code generation failed for inventory ID 8: code length overflow. (8628 > 1248 bit)
+ERROR - 2025-12-16 22:01:48 --> QR Code generation failed for inventory ID 7: code length overflow. (9896 > 1248 bit)
+ERROR - 2025-12-16 22:01:48 --> QR Code generation failed for inventory ID 6: code length overflow. (11188 > 1248 bit)
+ERROR - 2025-12-16 22:01:48 --> QR Code generation failed for inventory ID 5: code length overflow. (12480 > 1248 bit)
+ERROR - 2025-12-16 22:01:48 --> QR Code generation failed for inventory ID 4: code length overflow. (13772 > 1248 bit)
+ERROR - 2025-12-16 22:01:48 --> QR Code generation failed for inventory ID 3: code length overflow. (15064 > 1248 bit)
+ERROR - 2025-12-16 22:01:48 --> QR Code generation failed for inventory ID 2: code length overflow. (16356 > 1248 bit)
+ERROR - 2025-12-16 22:01:48 --> QR Code generation failed for inventory ID 1: code length overflow. (17648 > 1248 bit)
+CRITICAL - 2025-12-16 22:04:22 --> TypeError: chillerlan\QRCode\QROptions::set_version(): Argument #1 ($version) must be of type int, null given, called in C:\xampp\htdocs\WITMS\vendor\chillerlan\php-settings-container\src\SettingsContainerAbstract.php on line 82
+[Method: GET, Route: warehouse-manager/inventory]
+in FCPATH\vendor\chillerlan\php-qrcode\src\QROptionsTrait.php on line 521.
+ 1 FCPATH\vendor\chillerlan\php-settings-container\src\SettingsContainerAbstract.php(82): chillerlan\QRCode\QROptions->set_version(null)
+ 2 FCPATH\vendor\chillerlan\php-settings-container\src\SettingsContainerAbstract.php(141): chillerlan\Settings\SettingsContainerAbstract->__set('version', null)
+ 3 FCPATH\vendor\chillerlan\php-settings-container\src\SettingsContainerAbstract.php(29): chillerlan\Settings\SettingsContainerAbstract->fromIterable([...])
+ 4 APPPATH\Libraries\QRCodeLibrary.php(16): chillerlan\Settings\SettingsContainerAbstract->__construct([...])
+ 5 APPPATH\Controllers\WarehouseManagerController.php(37): App\Libraries\QRCodeLibrary->__construct()
+ 6 SYSTEMPATH\CodeIgniter.php(903): App\Controllers\WarehouseManagerController->__construct()
+ 7 SYSTEMPATH\CodeIgniter.php(498): CodeIgniter\CodeIgniter->createController()
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2025-12-16 22:15:03 --> QR Code generation failed for inventory ID 14: Invalid PNG file created: C:\xampp\htdocs\WITMS\writable\qrcodes/inventory_14_1765894503_8339.png
+ERROR - 2025-12-16 22:15:03 --> QR Code generation failed for inventory ID 13: Invalid PNG file created: C:\xampp\htdocs\WITMS\writable\qrcodes/inventory_13_1765894503_8641.png
+ERROR - 2025-12-16 22:15:03 --> QR Code generation failed for inventory ID 12: Invalid PNG file created: C:\xampp\htdocs\WITMS\writable\qrcodes/inventory_12_1765894503_9087.png
+ERROR - 2025-12-16 22:15:03 --> QR Code generation failed for inventory ID 11: Invalid PNG file created: C:\xampp\htdocs\WITMS\writable\qrcodes/inventory_11_1765894503_9699.png
+ERROR - 2025-12-16 22:15:04 --> QR Code generation failed for inventory ID 10: Invalid PNG file created: C:\xampp\htdocs\WITMS\writable\qrcodes/inventory_10_1765894504_0555.png
+ERROR - 2025-12-16 22:15:04 --> QR Code generation failed for inventory ID 9: Invalid PNG file created: C:\xampp\htdocs\WITMS\writable\qrcodes/inventory_9_1765894504_1764.png
+ERROR - 2025-12-16 22:15:04 --> QR Code generation failed for inventory ID 8: Invalid PNG file created: C:\xampp\htdocs\WITMS\writable\qrcodes/inventory_8_1765894504_2977.png
+ERROR - 2025-12-16 22:15:04 --> QR Code generation failed for inventory ID 7: Invalid PNG file created: C:\xampp\htdocs\WITMS\writable\qrcodes/inventory_7_1765894504_5119.png
+ERROR - 2025-12-16 22:15:04 --> QR Code generation failed for inventory ID 6: Invalid PNG file created: C:\xampp\htdocs\WITMS\writable\qrcodes/inventory_6_1765894504_728.png
+ERROR - 2025-12-16 22:15:04 --> QR Code generation failed for inventory ID 5: Invalid PNG file created: C:\xampp\htdocs\WITMS\writable\qrcodes/inventory_5_1765894504_9121.png
+ERROR - 2025-12-16 22:15:05 --> QR Code generation failed for inventory ID 4: Invalid PNG file created: C:\xampp\htdocs\WITMS\writable\qrcodes/inventory_4_1765894505_0908.png
+ERROR - 2025-12-16 22:15:05 --> QR Code generation failed for inventory ID 3: Invalid PNG file created: C:\xampp\htdocs\WITMS\writable\qrcodes/inventory_3_1765894505_2881.png
+ERROR - 2025-12-16 22:15:05 --> QR Code generation failed for inventory ID 2: Invalid PNG file created: C:\xampp\htdocs\WITMS\writable\qrcodes/inventory_2_1765894505_5339.png
+ERROR - 2025-12-16 22:15:05 --> QR Code generation failed for inventory ID 1: Invalid PNG file created: C:\xampp\htdocs\WITMS\writable\qrcodes/inventory_1_1765894505_7801.png
+ERROR - 2025-12-16 22:24:57 --> Material not found - Code: {"t":"m","i":3,"c":"CEM-PT1-001","n":"Cement Portland Type 1"}{"t":"m","i":4,"c":"SAND-FINE-001","n":"Sand (Fine)"}{"t":"m","i":1,"c":"STEEL-12MM-001","n":"Steel Rebar 12mm"}, ID: null
+ERROR - 2025-12-16 22:24:57 --> Scan data: {"type":"material_code","code":"{\"t\":\"m\",\"i\":3,\"c\":\"CEM-PT1-001\",\"n\":\"Cement Portland Type 1\"}{\"t\":\"m\",\"i\":4,\"c\":\"SAND-FINE-001\",\"n\":\"Sand (Fine)\"}{\"t\":\"m\",\"i\":1,\"c\":\"STEEL-12MM-001\",\"n\":\"Steel Rebar 12mm\"}"}
+ERROR - 2025-12-16 22:25:01 --> Material not found - Code: {"t":"m","i":3,"c":"CEM-PT1-001","n":"Cement Portland Type 1"}{"t":"m","i":4,"c":"SAND-FINE-001","n":"Sand (Fine)"}{"t":"m","i":1,"c":"STEEL-12MM-001","n":"Steel Rebar 12mm"}, ID: null
+ERROR - 2025-12-16 22:25:01 --> Scan data: {"type":"material_code","code":"{\"t\":\"m\",\"i\":3,\"c\":\"CEM-PT1-001\",\"n\":\"Cement Portland Type 1\"}{\"t\":\"m\",\"i\":4,\"c\":\"SAND-FINE-001\",\"n\":\"Sand (Fine)\"}{\"t\":\"m\",\"i\":1,\"c\":\"STEEL-12MM-001\",\"n\":\"Steel Rebar 12mm\"}"}
+ERROR - 2025-12-16 22:25:01 --> Material not found - Code: {"t":"m","i":3,"c":"CEM-PT1-001","n":"Cement Portland Type 1"}{"t":"m","i":4,"c":"SAND-FINE-001","n":"Sand (Fine)"}{"t":"m","i":1,"c":"STEEL-12MM-001","n":"Steel Rebar 12mm"}, ID: null
+ERROR - 2025-12-16 22:25:01 --> Scan data: {"type":"material_code","code":"{\"t\":\"m\",\"i\":3,\"c\":\"CEM-PT1-001\",\"n\":\"Cement Portland Type 1\"}{\"t\":\"m\",\"i\":4,\"c\":\"SAND-FINE-001\",\"n\":\"Sand (Fine)\"}{\"t\":\"m\",\"i\":1,\"c\":\"STEEL-12MM-001\",\"n\":\"Steel Rebar 12mm\"}"}
+ERROR - 2025-12-16 22:25:03 --> Material not found - Code: {"t":"m","i":3,"c":"CEM-PT1-001","n":"Cement Portland Type 1"}{"t":"m","i":4,"c":"SAND-FINE-001","n":"Sand (Fine)"}{"t":"m","i":1,"c":"STEEL-12MM-001","n":"Steel Rebar 12mm"}, ID: null
+ERROR - 2025-12-16 22:25:03 --> Scan data: {"type":"material_code","code":"{\"t\":\"m\",\"i\":3,\"c\":\"CEM-PT1-001\",\"n\":\"Cement Portland Type 1\"}{\"t\":\"m\",\"i\":4,\"c\":\"SAND-FINE-001\",\"n\":\"Sand (Fine)\"}{\"t\":\"m\",\"i\":1,\"c\":\"STEEL-12MM-001\",\"n\":\"Steel Rebar 12mm\"}"}
+ERROR - 2025-12-16 22:25:06 --> Material not found - Code: {"t":"m","i":3,"c":"CEM-PT1-001","n":"Cement Portland Type 1"}{"t":"m","i":4,"c":"SAND-FINE-001","n":"Sand (Fine)"}{"t":"m","i":1,"c":"STEEL-12MM-001","n":"Steel Rebar 12mm"}, ID: null
+ERROR - 2025-12-16 22:25:06 --> Scan data: {"type":"material_code","code":"{\"t\":\"m\",\"i\":3,\"c\":\"CEM-PT1-001\",\"n\":\"Cement Portland Type 1\"}{\"t\":\"m\",\"i\":4,\"c\":\"SAND-FINE-001\",\"n\":\"Sand (Fine)\"}{\"t\":\"m\",\"i\":1,\"c\":\"STEEL-12MM-001\",\"n\":\"Steel Rebar 12mm\"}"}
+ERROR - 2025-12-16 22:25:09 --> Material not found - Code: {"t":"m","i":3,"c":"CEM-PT1-001","n":"Cement Portland Type 1"}{"t":"m","i":4,"c":"SAND-FINE-001","n":"Sand (Fine)"}{"t":"m","i":1,"c":"STEEL-12MM-001","n":"Steel Rebar 12mm"}, ID: null
+ERROR - 2025-12-16 22:25:09 --> Scan data: {"type":"material_code","code":"{\"t\":\"m\",\"i\":3,\"c\":\"CEM-PT1-001\",\"n\":\"Cement Portland Type 1\"}{\"t\":\"m\",\"i\":4,\"c\":\"SAND-FINE-001\",\"n\":\"Sand (Fine)\"}{\"t\":\"m\",\"i\":1,\"c\":\"STEEL-12MM-001\",\"n\":\"Steel Rebar 12mm\"}"}
+ERROR - 2025-12-16 22:25:10 --> Material not found - Code: {"t":"m","i":3,"c":"CEM-PT1-001","n":"Cement Portland Type 1"}{"t":"m","i":4,"c":"SAND-FINE-001","n":"Sand (Fine)"}{"t":"m","i":1,"c":"STEEL-12MM-001","n":"Steel Rebar 12mm"}, ID: null
+ERROR - 2025-12-16 22:25:10 --> Scan data: {"type":"material_code","code":"{\"t\":\"m\",\"i\":3,\"c\":\"CEM-PT1-001\",\"n\":\"Cement Portland Type 1\"}{\"t\":\"m\",\"i\":4,\"c\":\"SAND-FINE-001\",\"n\":\"Sand (Fine)\"}{\"t\":\"m\",\"i\":1,\"c\":\"STEEL-12MM-001\",\"n\":\"Steel Rebar 12mm\"}"}
+ERROR - 2025-12-16 22:27:25 --> mysqli_sql_exception: Table 'witms_db.units' doesn't exist in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `invento...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `invento...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `invento...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `invento...', Array, false)
+#4 C:\xampp\htdocs\WITMS\system\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\WITMS\system\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+#6 C:\xampp\htdocs\WITMS\app\Models\InventoryModel.php(340): CodeIgniter\BaseModel->findAll()
+#7 C:\xampp\htdocs\WITMS\app\Controllers\WarehouseStaffController.php(385): App\Models\InventoryModel->getInventoryByMaterial(3)
+#8 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->qrScanData()
+#9 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+#10 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#11 C:\xampp\htdocs\WITMS\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#12 C:\xampp\htdocs\WITMS\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#13 C:\xampp\htdocs\WITMS\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#14 {main}
+ERROR - 2025-12-16 22:29:14 --> mysqli_sql_exception: Unknown column 'warehouse_locations.location_name' in 'field list' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `invento...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `invento...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `invento...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `invento...', Array, false)
+#4 C:\xampp\htdocs\WITMS\system\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\WITMS\system\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+#6 C:\xampp\htdocs\WITMS\app\Models\InventoryModel.php(340): CodeIgniter\BaseModel->findAll()
+#7 C:\xampp\htdocs\WITMS\app\Controllers\WarehouseStaffController.php(385): App\Models\InventoryModel->getInventoryByMaterial(3)
+#8 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->qrScanData()
+#9 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+#10 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#11 C:\xampp\htdocs\WITMS\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#12 C:\xampp\htdocs\WITMS\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#13 C:\xampp\htdocs\WITMS\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#14 {main}

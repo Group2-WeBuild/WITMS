@@ -58,7 +58,7 @@ class InventoryModel extends Model
         ],
         'reserved_quantity' => [
             'label' => 'Reserved Quantity',
-            'rules' => 'permit_empty|decimal|greater_than_equal_to[0]'
+            'rules' => 'permit_empty|decimal|greater_than_equal_to[0]|less_than_equal_to[quantity]'
         ],
         'batch_number' => [
             'label' => 'Batch Number',
@@ -98,13 +98,72 @@ class InventoryModel extends Model
      */
     protected function calculateAvailable(array $data)
     {
-        if (isset($data['data']['quantity']) || isset($data['data']['reserved_quantity'])) {
-            $quantity = $data['data']['quantity'] ?? 0;
-            $reserved = $data['data']['reserved_quantity'] ?? 0;
-            $data['data']['available_quantity'] = $quantity - $reserved;
+        // For updates, get existing record to ensure we have both values
+        if (isset($data['id']) && is_array($data['id']) && isset($data['id'][0])) {
+            $existing = $this->find($data['id'][0]);
+            if ($existing) {
+                // Use provided values or fall back to existing values
+                $quantity = floatval($data['data']['quantity'] ?? $existing['quantity'] ?? 0);
+                $reserved = floatval($data['data']['reserved_quantity'] ?? $existing['reserved_quantity'] ?? 0);
+            } else {
+                // If record doesn't exist, use provided values or defaults
+                $quantity = floatval($data['data']['quantity'] ?? 0);
+                $reserved = floatval($data['data']['reserved_quantity'] ?? 0);
+            }
+        } else {
+            // For inserts, use provided values or defaults
+            $quantity = floatval($data['data']['quantity'] ?? 0);
+            $reserved = floatval($data['data']['reserved_quantity'] ?? 0);
         }
         
+        // Ensure reserved_quantity never exceeds quantity
+        if ($reserved > $quantity) {
+            $reserved = $quantity;
+            $data['data']['reserved_quantity'] = $reserved;
+        }
+        
+        // Calculate available_quantity and ensure it's never negative
+        $available = $quantity - $reserved;
+        $data['data']['available_quantity'] = max(0, $available);
+        
         return $data;
+    }
+
+    /**
+     * Recalculate available quantity for all inventory items
+     * This fixes any incorrect available_quantity values in the database
+     */
+    public function recalculateAllAvailableQuantities()
+    {
+        $allInventory = $this->findAll();
+        $updated = 0;
+        
+        foreach ($allInventory as $item) {
+            $quantity = floatval($item['quantity'] ?? 0);
+            $reserved = floatval($item['reserved_quantity'] ?? 0);
+            
+            // Ensure reserved doesn't exceed quantity
+            if ($reserved > $quantity) {
+                $reserved = $quantity;
+                // Update reserved_quantity if it was too high
+                $this->update($item['id'], [
+                    'reserved_quantity' => $reserved
+                ]);
+            }
+            
+            // Calculate available (never negative)
+            $correctAvailable = max(0, $quantity - $reserved);
+            
+            // Only update if the value is incorrect
+            if (abs(floatval($item['available_quantity'] ?? 0) - $correctAvailable) > 0.01) {
+                $this->update($item['id'], [
+                    'available_quantity' => $correctAvailable
+                ]);
+                $updated++;
+            }
+        }
+        
+        return $updated;
     }
 
     /**
@@ -280,11 +339,26 @@ class InventoryModel extends Model
     {
         $inventory = $this->find($inventoryId);
 
-        if (!$inventory || $inventory['available_quantity'] < $quantity) {
+        if (!$inventory) {
             return false;
         }
 
-        $newReserved = $inventory['reserved_quantity'] + $quantity;
+        $currentQuantity = floatval($inventory['quantity'] ?? 0);
+        $currentReserved = floatval($inventory['reserved_quantity'] ?? 0);
+        $available = $currentQuantity - $currentReserved;
+        
+        // Check if there's enough available stock
+        if ($available < $quantity) {
+            return false;
+        }
+
+        $newReserved = $currentReserved + $quantity;
+        
+        // Double-check that reserved doesn't exceed quantity
+        if ($newReserved > $currentQuantity) {
+            $newReserved = $currentQuantity;
+        }
+        
         return $this->update($inventoryId, ['reserved_quantity' => $newReserved]);
     }
 
@@ -328,14 +402,13 @@ class InventoryModel extends Model
                 materials.code as material_code,
                 warehouses.name as warehouse_name,
                 warehouses.code as warehouse_code,
-                warehouse_locations.location_name as location_name,
-                units.name as unit_name,
-                units.abbreviation as unit_abbr
+                inventory.location_in_warehouse as location_name,
+                units_of_measure.name as unit_name,
+                units_of_measure.abbreviation as unit_abbr
             ')
             ->join('materials', 'materials.id = inventory.material_id')
             ->join('warehouses', 'warehouses.id = inventory.warehouse_id')
-            ->join('warehouse_locations', 'warehouse_locations.id = inventory.location_id', 'left')
-            ->join('units', 'units.id = inventory.unit_id', 'left')
+            ->join('units_of_measure', 'units_of_measure.id = materials.unit_id', 'left')
             ->where('inventory.material_id', $materialId)
             ->findAll();
     }
@@ -351,14 +424,13 @@ class InventoryModel extends Model
                 materials.code as material_code,
                 warehouses.name as warehouse_name,
                 warehouses.code as warehouse_code,
-                warehouse_locations.location_name as location_name,
-                units.name as unit_name,
-                units.abbreviation as unit_abbr
+                inventory.location_in_warehouse as location_name,
+                units_of_measure.name as unit_name,
+                units_of_measure.abbreviation as unit_abbr
             ')
             ->join('materials', 'materials.id = inventory.material_id')
             ->join('warehouses', 'warehouses.id = inventory.warehouse_id')
-            ->join('warehouse_locations', 'warehouse_locations.id = inventory.location_id', 'left')
-            ->join('units', 'units.id = inventory.unit_id', 'left')
+            ->join('units_of_measure', 'units_of_measure.id = materials.unit_id', 'left')
             ->where('inventory.warehouse_id', $warehouseId)
             ->findAll();
     }

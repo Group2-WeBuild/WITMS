@@ -134,21 +134,49 @@ class MaterialModel extends Model
      */
     public function getMaterialsWithDetails($id = null)
     {        
-        $builder = $this->select('
-            materials.*,
+        if ($id !== null) {
+            // For single material, use direct query with joins
+            return $this->select('
+                materials.*,
+                material_categories.name as category_name,
+                material_categories.code as category_code,
+                units_of_measure.name as unit_name,
+                units_of_measure.abbreviation as unit_abbreviation
+            ')
+            ->join('material_categories', 'material_categories.id = materials.category_id', 'left')
+            ->join('units_of_measure', 'units_of_measure.id = materials.unit_id', 'left')
+            ->where('materials.id', $id)
+            ->first();
+        }
+
+        // For all materials, use GROUP BY to prevent duplicates
+        // This ensures each material appears only once even if joins create multiple rows
+        return $this->select('
+            materials.id,
+            materials.code,
+            materials.name,
+            materials.qrcode,
+            materials.category_id,
+            materials.unit_id,
+            materials.description,
+            materials.reorder_level,
+            materials.reorder_quantity,
+            materials.unit_cost,
+            materials.is_perishable,
+            materials.shelf_life_days,
+            materials.is_active,
+            materials.created_at,
+            materials.updated_at,
             material_categories.name as category_name,
             material_categories.code as category_code,
             units_of_measure.name as unit_name,
             units_of_measure.abbreviation as unit_abbreviation
         ')
-        ->join('material_categories', 'material_categories.id = materials.category_id')
-        ->join('units_of_measure', 'units_of_measure.id = materials.unit_id');
-
-        if ($id !== null) {
-            return $builder->where('materials.id', $id)->first();
-        }
-
-        return $builder->findAll();
+        ->join('material_categories', 'material_categories.id = materials.category_id', 'left')
+        ->join('units_of_measure', 'units_of_measure.id = materials.unit_id', 'left')
+        ->groupBy('materials.id')
+        ->orderBy('materials.id', 'ASC')
+        ->findAll();
     }
 
     /**
