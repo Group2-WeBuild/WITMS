@@ -89,16 +89,19 @@
                             <div id="activity-list">
                                 <?php if (isset($activities) && count($activities) > 0): ?>
                                     <?php foreach ($activities as $activity): ?>
-                                        <div class="activity-item <?= strtolower($activity['type']) ?>">
+                                        <?php $movementType = $activity['movement_type'] ?? ''; ?>
+                                        <div class="activity-item <?= strtolower($movementType) ?>">
                                             <div class="d-flex justify-content-between align-items-start">
                                                 <div>
                                                     <h6 class="mb-1">
-                                                        <?php if ($activity['type'] == 'receive'): ?>
+                                                        <?php if ($movementType == 'Receipt'): ?>
                                                             <i class="bi bi-box-arrow-in-down text-success"></i> Received Stock
-                                                        <?php elseif ($activity['type'] == 'issue'): ?>
+                                                        <?php elseif ($movementType == 'Issue'): ?>
                                                             <i class="bi bi-box-arrow-up text-warning"></i> Issued Stock
-                                                        <?php else: ?>
+                                                        <?php elseif ($movementType == 'Transfer'): ?>
                                                             <i class="bi bi-arrow-left-right text-info"></i> Stock Transfer
+                                                        <?php else: ?>
+                                                            <i class="bi bi-arrow-repeat text-secondary"></i> <?= esc($movementType) ?>
                                                         <?php endif; ?>
                                                     </h6>
                                                     <p class="mb-1">
@@ -116,10 +119,10 @@
                                                             </small>
                                                         </p>
                                                     <?php endif; ?>
-                                                    <?php if (!empty($activity['reference'])): ?>
+                                                    <?php if (!empty($activity['reference_number'])): ?>
                                                         <p class="mb-1">
                                                             <small class="text-muted">
-                                                                Ref: <?= esc($activity['reference']) ?>
+                                                                Ref: <?= esc($activity['reference_number']) ?>
                                                             </small>
                                                         </p>
                                                     <?php endif; ?>

@@ -140,4 +140,8 @@ $routes->group('warehouse-staff', function ($routes) {
     
     // Stock Movements
     $routes->get('stock-movements', 'WarehouseStaffController::stockMovements');
+    
+    // AJAX Endpoints
+    $routes->get('ajax/materials-by-warehouse', 'WarehouseStaffController::getMaterialsByWarehouse');
+    $routes->get('ajax/dashboard-stats', 'WarehouseStaffController::getDashboardStats');
 });

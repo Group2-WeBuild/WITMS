@@ -654,3 +654,77 @@ WHERE `inventory`.`warehouse_id` = :inventory.warehouse_id:', [...], false)
  9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
 10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
 11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-16 21:11:36 --> ErrorException: Undefined property: App\Controllers\WarehouseStaffController::$db
+[Method: GET, Route: warehouse-staff/ajax/materials-by-warehouse]
+in APPPATH\Controllers\WarehouseStaffController.php on line 723.
+ 1 APPPATH\Controllers\WarehouseStaffController.php(723): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined property: App\\Controllers\\WarehouseStaffController::$db', 'C:\\xampp\\htdocs\\WITMS\\app\\Controllers\\WarehouseStaffController.php', 723)
+ 2 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->getMaterialsByWarehouse()
+ 3 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+ 4 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-16 21:11:42 --> ErrorException: Undefined property: App\Controllers\WarehouseStaffController::$db
+[Method: GET, Route: warehouse-staff/ajax/materials-by-warehouse]
+in APPPATH\Controllers\WarehouseStaffController.php on line 723.
+ 1 APPPATH\Controllers\WarehouseStaffController.php(723): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined property: App\\Controllers\\WarehouseStaffController::$db', 'C:\\xampp\\htdocs\\WITMS\\app\\Controllers\\WarehouseStaffController.php', 723)
+ 2 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->getMaterialsByWarehouse()
+ 3 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+ 4 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-16 21:11:46 --> ErrorException: Undefined property: App\Controllers\WarehouseStaffController::$db
+[Method: GET, Route: warehouse-staff/ajax/materials-by-warehouse]
+in APPPATH\Controllers\WarehouseStaffController.php on line 723.
+ 1 APPPATH\Controllers\WarehouseStaffController.php(723): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined property: App\\Controllers\\WarehouseStaffController::$db', 'C:\\xampp\\htdocs\\WITMS\\app\\Controllers\\WarehouseStaffController.php', 723)
+ 2 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->getMaterialsByWarehouse()
+ 3 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+ 4 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-16 21:11:54 --> ErrorException: Undefined property: App\Controllers\WarehouseStaffController::$db
+[Method: GET, Route: warehouse-staff/ajax/materials-by-warehouse]
+in APPPATH\Controllers\WarehouseStaffController.php on line 723.
+ 1 APPPATH\Controllers\WarehouseStaffController.php(723): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined property: App\\Controllers\\WarehouseStaffController::$db', 'C:\\xampp\\htdocs\\WITMS\\app\\Controllers\\WarehouseStaffController.php', 723)
+ 2 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->getMaterialsByWarehouse()
+ 3 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+ 4 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-16 21:11:55 --> ErrorException: Undefined property: App\Controllers\WarehouseStaffController::$db
+[Method: GET, Route: warehouse-staff/ajax/materials-by-warehouse]
+in APPPATH\Controllers\WarehouseStaffController.php on line 723.
+ 1 APPPATH\Controllers\WarehouseStaffController.php(723): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined property: App\\Controllers\\WarehouseStaffController::$db', 'C:\\xampp\\htdocs\\WITMS\\app\\Controllers\\WarehouseStaffController.php', 723)
+ 2 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->getMaterialsByWarehouse()
+ 3 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+ 4 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-16 21:12:07 --> ErrorException: Undefined property: App\Controllers\WarehouseStaffController::$db
+[Method: GET, Route: warehouse-staff/ajax/materials-by-warehouse]
+in APPPATH\Controllers\WarehouseStaffController.php on line 723.
+ 1 APPPATH\Controllers\WarehouseStaffController.php(723): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined property: App\\Controllers\\WarehouseStaffController::$db', 'C:\\xampp\\htdocs\\WITMS\\app\\Controllers\\WarehouseStaffController.php', 723)
+ 2 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->getMaterialsByWarehouse()
+ 3 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+ 4 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 5 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 6 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 7 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-16 21:27:08 --> ErrorException: Undefined array key "type"
+[Method: GET, Route: warehouse-staff/activity]
+in APPPATH\Views\users\warehouse_staff\activity.php on line 92.
+ 1 APPPATH\Views\users\warehouse_staff\activity.php(92): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "type"', 'C:\\xampp\\htdocs\\WITMS\\app\\Views\\users\\warehouse_staff\\activity.php', 92)
+ 2 SYSTEMPATH\View\View.php(226): include('C:\\xampp\\htdocs\\WITMS\\app\\Views\\users\\warehouse_staff\\activity.php')
+ 3 SYSTEMPATH\View\View.php(229): CodeIgniter\View\View->CodeIgniter\View\{closure}()
+ 4 SYSTEMPATH\Common.php(1167): CodeIgniter\View\View->render('users/warehouse_staff/activity', [], true)
+ 5 APPPATH\Controllers\WarehouseStaffController.php(695): view('users/warehouse_staff/activity', [...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseStaffController->activity()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseStaffController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))

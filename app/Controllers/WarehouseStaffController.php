@@ -107,9 +107,95 @@ class WarehouseStaffController extends BaseController
         $accessCheck = $this->checkAccess();
         if ($accessCheck) return $accessCheck;
 
+        $userId = session()->get('user_id');
+        $today = date('Y-m-d');
+        $thisMonth = date('Y-m');
+        
+        $db = \Config\Database::connect();
+        
+        // Total inventory items count
+        $totalItems = $db->table('inventory')
+            ->select('COUNT(DISTINCT material_id) as count')
+            ->get()->getRow()->count ?? 0;
+        
+        // Total stock quantity across all warehouses
+        $totalStock = $db->table('inventory')
+            ->selectSum('quantity')
+            ->get()->getRow()->quantity ?? 0;
+        
+        // Today's movements by type
+        $todaysReceipts = $this->stockMovementModel
+            ->where('movement_type', 'Receipt')
+            ->where('DATE(created_at)', $today)
+            ->countAllResults();
+            
+        $todaysIssues = $this->stockMovementModel
+            ->where('movement_type', 'Issue')
+            ->where('DATE(created_at)', $today)
+            ->countAllResults();
+            
+        $todaysTransfers = $this->stockMovementModel
+            ->where('movement_type', 'Transfer')
+            ->where('DATE(created_at)', $today)
+            ->countAllResults();
+        
+        // This month's movements
+        $monthlyReceipts = $this->stockMovementModel
+            ->where('movement_type', 'Receipt')
+            ->like('created_at', $thisMonth, 'after')
+            ->countAllResults();
+            
+        $monthlyIssues = $this->stockMovementModel
+            ->where('movement_type', 'Issue')
+            ->like('created_at', $thisMonth, 'after')
+            ->countAllResults();
+            
+        $monthlyTransfers = $this->stockMovementModel
+            ->where('movement_type', 'Transfer')
+            ->like('created_at', $thisMonth, 'after')
+            ->countAllResults();
+        
+        // My activities today
+        $myTodayActivities = $this->stockMovementModel
+            ->where('performed_by', $userId)
+            ->where('DATE(created_at)', $today)
+            ->countAllResults();
+        
+        // Low stock items count - use fresh model instance to avoid query builder conflicts
+        $freshInventoryModel = new \App\Models\InventoryModel();
+        $lowStockItems = $freshInventoryModel->getLowStockItems();
+        $lowStockCount = count($lowStockItems);
+        
+        // Get recent activities (last 10)
+        $recentActivities = $this->stockMovementModel
+            ->select('stock_movements.*, materials.name as material_name, materials.code as material_code, 
+                      w1.name as from_warehouse_name, w2.name as to_warehouse_name')
+            ->join('materials', 'materials.id = stock_movements.material_id')
+            ->join('warehouses w1', 'w1.id = stock_movements.from_warehouse_id', 'left')
+            ->join('warehouses w2', 'w2.id = stock_movements.to_warehouse_id', 'left')
+            ->orderBy('stock_movements.created_at', 'DESC')
+            ->limit(10)
+            ->findAll();
+        
+        // Get warehouses for quick reference
+        $warehouses = $this->warehouseModel->where('is_active', 1)->findAll();
+
         $data = [
             'title' => 'Dashboard - WITMS',
-            'user' => $this->getUserData()
+            'user' => $this->getUserData(),
+            'totalItems' => $totalItems,
+            'totalStock' => $totalStock,
+            'todaysReceipts' => $todaysReceipts,
+            'todaysIssues' => $todaysIssues,
+            'todaysTransfers' => $todaysTransfers,
+            'monthlyReceipts' => $monthlyReceipts,
+            'monthlyIssues' => $monthlyIssues,
+            'monthlyTransfers' => $monthlyTransfers,
+            'myTodayActivities' => $myTodayActivities,
+            'lowStockCount' => $lowStockCount,
+            'lowStockItems' => array_slice($lowStockItems, 0, 5),
+            'recentActivities' => $recentActivities,
+            'warehouses' => $warehouses
         ];
 
         return view('users/warehouse_staff/dashboard', $data);
@@ -392,7 +478,7 @@ class WarehouseStaffController extends BaseController
         $validation = \Config\Services::validation();
         $validation->setRules([
             'material_id' => 'required|integer',
-            'quantity' => 'required|integer|greater_than[0]',
+            'quantity' => 'required|numeric|greater_than[0]',
             'warehouse_id' => 'required|integer',
         ]);
 
@@ -402,29 +488,30 @@ class WarehouseStaffController extends BaseController
 
         $data = [
             'material_id' => $this->request->getPost('material_id'),
-            'warehouse_id' => $this->request->getPost('warehouse_id'),
+            'to_warehouse_id' => $this->request->getPost('warehouse_id'),
+            'from_warehouse_id' => null,
             'quantity' => $this->request->getPost('quantity'),
-            'location' => $this->request->getPost('location'),
-            'type' => 'receive',
-            'reference' => $this->request->getPost('reference'),
+            'batch_number' => $this->request->getPost('batch_number'),
             'notes' => $this->request->getPost('notes'),
-            'user_id' => session()->get('user_id'),
-            'created_at' => date('Y-m-d H:i:s')
+            'performed_by' => session()->get('user_id'),
+            'movement_date' => date('Y-m-d H:i:s')
         ];
 
-        if ($this->stockMovementModel->insert($data)) {
-            // Update inventory
-            $this->inventoryModel->updateStock(
-                $data['material_id'],
-                $data['warehouse_id'],
-                $data['quantity'],
-                'add'
-            );
-
-            return redirect()->to('warehouse-staff/dashboard')->with('success', 'Stock received successfully');
+        // Add reference info if provided
+        $reference = $this->request->getPost('reference');
+        if ($reference) {
+            $data['reference_type'] = 'purchase_order';
+            $data['notes'] = ($data['notes'] ? $data['notes'] . "\n" : '') . 'PO/Reference: ' . $reference;
         }
 
-        return redirect()->back()->with('error', 'Failed to receive stock');
+        // Use model's recordReceipt method (handles movement_type and inventory update via callback)
+        $movementId = $this->stockMovementModel->recordReceipt($data);
+        
+        if ($movementId) {
+            return redirect()->to('warehouse-staff/dashboard')->with('success', 'Stock received successfully! Reference: SM-REC-' . date('Ymd'));
+        }
+
+        return redirect()->back()->withInput()->with('error', 'Failed to receive stock. Please check all fields.');
     }
 
     /**
@@ -435,11 +522,14 @@ class WarehouseStaffController extends BaseController
         $accessCheck = $this->checkAccess();
         if ($accessCheck) return $accessCheck;
 
+        $departmentModel = new \App\Models\DepartmentModel();
+
         $data = [
             'title' => 'Issue Stock - WITMS',
             'user' => $this->getUserData(),
             'materials' => $this->materialModel->findAll(),
-            'warehouses' => $this->warehouseModel->where('is_active', 1)->findAll()
+            'warehouses' => $this->warehouseModel->where('is_active', 1)->findAll(),
+            'departments' => $departmentModel->getActiveDepartments()
         ];
 
         return view('users/warehouse_staff/issue_stock', $data);
@@ -456,7 +546,7 @@ class WarehouseStaffController extends BaseController
         $validation = \Config\Services::validation();
         $validation->setRules([
             'material_id' => 'required|integer',
-            'quantity' => 'required|integer|greater_than[0]',
+            'quantity' => 'required|numeric|greater_than[0]',
             'warehouse_id' => 'required|integer',
             'issued_to' => 'required|string'
         ]);
@@ -465,31 +555,37 @@ class WarehouseStaffController extends BaseController
             return redirect()->back()->withInput()->with('errors', $validation->getErrors());
         }
 
-        $data = [
-            'material_id' => $this->request->getPost('material_id'),
-            'warehouse_id' => $this->request->getPost('warehouse_id'),
-            'quantity' => $this->request->getPost('quantity'),
-            'type' => 'issue',
-            'issued_to' => $this->request->getPost('issued_to'),
-            'reference' => $this->request->getPost('reference'),
-            'notes' => $this->request->getPost('notes'),
-            'user_id' => session()->get('user_id'),
-            'created_at' => date('Y-m-d H:i:s')
-        ];
-
-        if ($this->stockMovementModel->insert($data)) {
-            // Update inventory
-            $this->inventoryModel->updateStock(
-                $data['material_id'],
-                $data['warehouse_id'],
-                $data['quantity'],
-                'subtract'
-            );
-
-            return redirect()->to('warehouse-staff/dashboard')->with('success', 'Stock issued successfully');
+        $issuedTo = $this->request->getPost('issued_to');
+        $reference = $this->request->getPost('reference');
+        $notes = $this->request->getPost('notes');
+        
+        // Build comprehensive notes
+        $fullNotes = 'Issued to: ' . $issuedTo;
+        if ($reference) {
+            $fullNotes .= "\nRequisition #: " . $reference;
+        }
+        if ($notes) {
+            $fullNotes .= "\n" . $notes;
         }
 
-        return redirect()->back()->with('error', 'Failed to issue stock');
+        $data = [
+            'material_id' => $this->request->getPost('material_id'),
+            'from_warehouse_id' => $this->request->getPost('warehouse_id'),
+            'to_warehouse_id' => null,
+            'quantity' => $this->request->getPost('quantity'),
+            'notes' => $fullNotes,
+            'performed_by' => session()->get('user_id'),
+            'movement_date' => date('Y-m-d H:i:s')
+        ];
+
+        // Use model's recordIssue method (handles movement_type and inventory update via callback)
+        $movementId = $this->stockMovementModel->recordIssue($data);
+        
+        if ($movementId) {
+            return redirect()->to('warehouse-staff/dashboard')->with('success', 'Stock issued successfully to ' . $issuedTo);
+        }
+
+        return redirect()->back()->withInput()->with('error', 'Failed to issue stock. Please check available quantity.');
     }
 
     /**
@@ -521,7 +617,7 @@ class WarehouseStaffController extends BaseController
         $validation = \Config\Services::validation();
         $validation->setRules([
             'material_id' => 'required|integer',
-            'quantity' => 'required|integer|greater_than[0]',
+            'quantity' => 'required|numeric|greater_than[0]',
             'from_warehouse_id' => 'required|integer',
             'to_warehouse_id' => 'required|integer|differs[from_warehouse_id]'
         ]);
@@ -530,39 +626,33 @@ class WarehouseStaffController extends BaseController
             return redirect()->back()->withInput()->with('errors', $validation->getErrors());
         }
 
+        $reference = $this->request->getPost('reference');
+        $notes = $this->request->getPost('notes');
+        
+        // Build notes with reference if provided
+        $fullNotes = $notes ?? '';
+        if ($reference) {
+            $fullNotes = 'Transfer Ref: ' . $reference . ($fullNotes ? "\n" . $fullNotes : '');
+        }
+
         $data = [
             'material_id' => $this->request->getPost('material_id'),
             'from_warehouse_id' => $this->request->getPost('from_warehouse_id'),
             'to_warehouse_id' => $this->request->getPost('to_warehouse_id'),
             'quantity' => $this->request->getPost('quantity'),
-            'type' => 'transfer',
-            'reference' => $this->request->getPost('reference'),
-            'notes' => $this->request->getPost('notes'),
-            'user_id' => session()->get('user_id'),
-            'created_at' => date('Y-m-d H:i:s')
+            'notes' => $fullNotes,
+            'performed_by' => session()->get('user_id'),
+            'movement_date' => date('Y-m-d H:i:s')
         ];
 
-        if ($this->stockMovementModel->insert($data)) {
-            // Update inventory - subtract from source
-            $this->inventoryModel->updateStock(
-                $data['material_id'],
-                $data['from_warehouse_id'],
-                $data['quantity'],
-                'subtract'
-            );
-
-            // Update inventory - add to destination
-            $this->inventoryModel->updateStock(
-                $data['material_id'],
-                $data['to_warehouse_id'],
-                $data['quantity'],
-                'add'
-            );
-
-            return redirect()->to('warehouse-staff/dashboard')->with('success', 'Stock transferred successfully');
+        // Use model's recordTransfer method (handles movement_type and inventory update via callback)
+        $movementId = $this->stockMovementModel->recordTransfer($data);
+        
+        if ($movementId) {
+            return redirect()->to('warehouse-staff/dashboard')->with('success', 'Stock transferred successfully!');
         }
 
-        return redirect()->back()->with('error', 'Failed to transfer stock');
+        return redirect()->back()->withInput()->with('error', 'Failed to transfer stock. Please check available quantity.');
     }
 
     /**
@@ -662,6 +752,153 @@ class WarehouseStaffController extends BaseController
             }
 
             return view('users/warehouse_staff/search_inventory', $data);
+        }
+    }
+
+    /**
+     * AJAX: Get dashboard stats for real-time updates
+     */
+    public function getDashboardStats()
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Invalid request']);
+        }
+
+        try {
+            $userId = session()->get('user_id');
+            $today = date('Y-m-d');
+            $thisMonth = date('Y-m');
+            
+            $db = \Config\Database::connect();
+            
+            // Total inventory items count
+            $totalItems = $db->table('inventory')
+                ->select('COUNT(DISTINCT material_id) as count')
+                ->get()->getRow()->count ?? 0;
+            
+            // Total stock quantity
+            $totalStock = $db->table('inventory')
+                ->selectSum('quantity')
+                ->get()->getRow()->quantity ?? 0;
+            
+            // Today's movements
+            $todaysReceipts = $this->stockMovementModel
+                ->where('movement_type', 'Receipt')
+                ->where('DATE(created_at)', $today)
+                ->countAllResults();
+                
+            $todaysIssues = $this->stockMovementModel
+                ->where('movement_type', 'Issue')
+                ->where('DATE(created_at)', $today)
+                ->countAllResults();
+                
+            $todaysTransfers = $this->stockMovementModel
+                ->where('movement_type', 'Transfer')
+                ->where('DATE(created_at)', $today)
+                ->countAllResults();
+            
+            // Monthly movements
+            $monthlyReceipts = $this->stockMovementModel
+                ->where('movement_type', 'Receipt')
+                ->like('created_at', $thisMonth, 'after')
+                ->countAllResults();
+                
+            $monthlyIssues = $this->stockMovementModel
+                ->where('movement_type', 'Issue')
+                ->like('created_at', $thisMonth, 'after')
+                ->countAllResults();
+                
+            $monthlyTransfers = $this->stockMovementModel
+                ->where('movement_type', 'Transfer')
+                ->like('created_at', $thisMonth, 'after')
+                ->countAllResults();
+            
+            // My activities today
+            $myTodayActivities = $this->stockMovementModel
+                ->where('performed_by', $userId)
+                ->where('DATE(created_at)', $today)
+                ->countAllResults();
+            
+            // Low stock count - use fresh model instance to avoid query builder conflicts
+            $freshInventoryModel = new \App\Models\InventoryModel();
+            $lowStockItems = $freshInventoryModel->getLowStockItems();
+            $lowStockCount = count($lowStockItems);
+
+            return $this->response->setJSON([
+                'success' => true,
+                'stats' => [
+                    'totalItems' => (int)$totalItems,
+                    'totalStock' => number_format((float)$totalStock, 0),
+                    'lowStockCount' => $lowStockCount,
+                    'myTodayActivities' => $myTodayActivities,
+                    'todaysReceipts' => $todaysReceipts,
+                    'todaysIssues' => $todaysIssues,
+                    'todaysTransfers' => $todaysTransfers,
+                    'monthlyReceipts' => $monthlyReceipts,
+                    'monthlyIssues' => $monthlyIssues,
+                    'monthlyTransfers' => $monthlyTransfers
+                ],
+                'timestamp' => date('H:i:s')
+            ]);
+        } catch (\Exception $e) {
+            log_message('error', 'getDashboardStats error: ' . $e->getMessage());
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Error fetching stats'
+            ]);
+        }
+    }
+
+    /**
+     * AJAX: Get materials with quantities for a specific warehouse
+     */
+    public function getMaterialsByWarehouse()
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Invalid request']);
+        }
+
+        $warehouseId = $this->request->getGet('warehouse_id');
+        
+        if (!$warehouseId) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Warehouse ID required']);
+        }
+
+        try {
+            // Get all materials with their quantities in the specified warehouse
+            $db = \Config\Database::connect();
+            $builder = $db->table('materials');
+            $builder->select('
+                materials.id,
+                materials.name,
+                materials.code,
+                units_of_measure.abbreviation as unit,
+                COALESCE(inventory.quantity, 0) as total_qty,
+                COALESCE(inventory.available_quantity, 0) as available_qty
+            ');
+            $builder->join('units_of_measure', 'units_of_measure.id = materials.unit_id', 'left');
+            $builder->join('inventory', 'inventory.material_id = materials.id AND inventory.warehouse_id = ' . (int)$warehouseId, 'left');
+            $builder->where('materials.is_active', 1);
+            $builder->orderBy('materials.name', 'ASC');
+            
+            $materials = $builder->get()->getResultArray();
+
+            return $this->response->setJSON([
+                'success' => true,
+                'materials' => $materials
+            ]);
+        } catch (\Exception $e) {
+            log_message('error', 'getMaterialsByWarehouse error: ' . $e->getMessage());
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Database error: ' . $e->getMessage()
+            ]);
         }
     }
 }

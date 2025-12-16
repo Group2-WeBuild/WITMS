@@ -53,11 +53,11 @@ class StockMovementModel extends Model
     protected $validationRules = [
         'reference_number' => [
             'label' => 'Reference Number',
-            'rules' => 'required|max_length[50]|is_unique[stock_movements.reference_number,id,{id}]'
+            'rules' => 'permit_empty|max_length[50]|is_unique[stock_movements.reference_number,id,{id}]'
         ],
         'material_id' => [
             'label' => 'Material',
-            'rules' => 'required|integer|is_not_unique[materials.id]'
+            'rules' => 'required|integer'
         ],
         'movement_type' => [
             'label' => 'Movement Type',
@@ -65,15 +65,15 @@ class StockMovementModel extends Model
         ],
         'quantity' => [
             'label' => 'Quantity',
-            'rules' => 'required|decimal|greater_than[0]'
+            'rules' => 'required|numeric|greater_than[0]'
         ],
         'movement_date' => [
             'label' => 'Movement Date',
-            'rules' => 'required|valid_date'
+            'rules' => 'required'
         ],
         'performed_by' => [
             'label' => 'Performed By',
-            'rules' => 'required|integer|is_not_unique[users.id]'
+            'rules' => 'required|integer'
         ]
     ];
 
