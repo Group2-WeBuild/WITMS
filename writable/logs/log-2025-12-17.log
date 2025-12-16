@@ -76,3 +76,15 @@ WHERE `users`.`id` = :users.id:', [...], false)
 12 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
 13 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
 14 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 00:38:36 --> ErrorException: Undefined array key "error"
+[Method: GET, Route: it-administrator/dashboard]
+in APPPATH\Controllers\ITAdministratorController.php on line 1411.
+ 1 APPPATH\Controllers\ITAdministratorController.php(1411): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "error"', 'C:\\xampp\\htdocs\\WITMS\\app\\Controllers\\ITAdministratorController.php', 1411)
+ 2 APPPATH\Controllers\ITAdministratorController.php(1042): App\Controllers\ITAdministratorController->parseLogFile('C:\\xampp\\htdocs\\WITMS\\writable\\logs\\log-2025-12-17.log', [], null, null)
+ 3 APPPATH\Controllers\ITAdministratorController.php(993): App\Controllers\ITAdministratorController->getRecentSystemAlerts(10)
+ 4 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->dashboard()
+ 5 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+ 6 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
