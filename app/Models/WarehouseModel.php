@@ -10,7 +10,7 @@ class WarehouseModel extends Model
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = false;
+    protected $useSoftDeletes   = true;
     protected $protectFields    = true;
       protected $allowedFields    = [
         'name',
@@ -38,11 +38,11 @@ class WarehouseModel extends Model
     protected $validationRules = [
         'name' => [
             'label' => 'Warehouse Name',
-            'rules' => 'required|max_length[100]|is_unique[warehouses.name,id,{id}]'
+            'rules' => 'required|max_length[100]|regex_match[/^[A-Za-z\s]+$/]|is_unique[warehouses.name,id,{id}]'
         ],        
         'code' => [
             'label' => 'Warehouse Code',
-            'rules' => 'required|max_length[20]|is_unique[warehouses.code,id,{id}]|alpha_dash'
+            'rules' => 'required|max_length[20]|regex_match[/^WH-?\d{3,}$/]|is_unique[warehouses.code,id,{id}]'
         ],
         'warehouse_location_id' => [
             'label' => 'Warehouse Location',
@@ -50,7 +50,7 @@ class WarehouseModel extends Model
         ],
         'capacity' => [
             'label' => 'Capacity',
-            'rules' => 'permit_empty|decimal'
+            'rules' => 'permit_empty|numeric|greater_than_equal_to[0]'
         ],
         'manager_id' => [
             'label' => 'Manager',
@@ -64,10 +64,16 @@ class WarehouseModel extends Model
     
     protected $validationMessages = [
         'name' => [
-            'is_unique' => 'This warehouse name already exists.'
+            'is_unique' => 'This warehouse name already exists.',
+            'regex_match' => 'Warehouse name can only contain letters and spaces. Special characters are not allowed.'
         ],
         'code' => [
-            'is_unique' => 'This warehouse code already exists.'
+            'is_unique' => 'This warehouse code already exists.',
+            'regex_match' => 'Warehouse code must be in format WH-001 or WH001 (e.g., WH-001, WH001, WH-123). Special characters are not allowed.'
+        ],
+        'capacity' => [
+            'numeric' => 'Capacity must be a number.',
+            'greater_than_equal_to' => 'Capacity must be a positive number or zero.'
         ]
     ];
     
@@ -86,11 +92,27 @@ class WarehouseModel extends Model
     protected $afterDelete    = [];
 
     /**
-     * Get active warehouses only
+     * Get active warehouses only (excludes soft-deleted)
      */
     public function getActiveWarehouses()
     {
         return $this->where('is_active', 1)->findAll();
+    }
+    
+    /**
+     * Get warehouses including soft-deleted ones
+     */
+    public function getAllWarehousesWithDeleted()
+    {
+        return $this->withDeleted()->findAll();
+    }
+    
+    /**
+     * Restore a soft-deleted warehouse
+     */
+    public function restoreWarehouse(int $warehouseId): bool
+    {
+        return $this->withDeleted()->update($warehouseId, ['deleted_at' => null]);
     }
 
     /**

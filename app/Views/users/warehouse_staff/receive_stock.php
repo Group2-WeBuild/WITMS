@@ -114,6 +114,7 @@
                                         <div class="mb-3">
                                             <label class="form-label">Quantity to Receive <span class="text-danger">*</span></label>
                                             <input type="number" name="quantity" id="quantity-input" class="form-control" min="0.01" step="0.01" value="<?= old('quantity') ?>" required>
+                                            <small class="text-muted">Must be greater than 0</small>
                                         </div>
                                     </div>
                                     <div class="col-md-4">
@@ -137,13 +138,15 @@
                                 <!-- Batch Number -->
                                 <div class="mb-3">
                                     <label class="form-label">Batch Number</label>
-                                    <input type="text" name="batch_number" class="form-control" placeholder="e.g., BATCH-2024-001" value="<?= old('batch_number') ?>">
+                                    <input type="text" name="batch_number" id="batch-number" class="form-control" placeholder="Will be auto-generated on save" readonly>
+                                    <small class="text-muted">Batch number is auto-generated.</small>
                                 </div>
                                 
                                 <!-- Reference -->
                                 <div class="mb-3">
                                     <label class="form-label">Reference/PO Number</label>
-                                    <input type="text" name="reference" class="form-control" placeholder="Purchase Order or Delivery Note Number" value="<?= old('reference') ?>">
+                                    <input type="text" name="reference" id="reference-number" class="form-control" placeholder="Will be auto-generated on save" readonly>
+                                    <small class="text-muted">Reference/PO number is auto-generated.</small>
                                 </div>
                                 
                                 <!-- Notes -->
@@ -248,15 +251,40 @@
         // Update "After Receipt" when quantity changes
         quantityInput.addEventListener('input', updateAfterReceipt);
         
+        // Validate quantity cannot be negative
+        quantityInput.addEventListener('change', function() {
+            const value = parseFloat(this.value);
+            if (value <= 0 || isNaN(value)) {
+                alert('Quantity must be greater than 0');
+                this.value = '';
+                this.focus();
+            }
+        });
+        
         function updateAfterReceipt() {
             if (currentMaterialData) {
                 const receiveQty = parseFloat(quantityInput.value) || 0;
+                if (receiveQty < 0) {
+                    receiveQty = 0;
+                    quantityInput.value = '';
+                }
                 const newTotal = currentMaterialData.currentQty + receiveQty;
                 afterReceiptDisplay.innerHTML = `<strong class="text-success">${newTotal.toFixed(2)}</strong> <small>${currentMaterialData.unit}</small>`;
             } else {
                 afterReceiptDisplay.innerHTML = '<span class="text-muted">--</span>';
             }
         }
+        
+        // Form validation before submit
+        document.getElementById('receive-stock-form').addEventListener('submit', function(e) {
+            const quantity = parseFloat(quantityInput.value);
+            if (quantity <= 0 || isNaN(quantity)) {
+                e.preventDefault();
+                alert('Quantity must be greater than 0');
+                quantityInput.focus();
+                return false;
+            }
+        });
     </script>
 </body>
 </html>

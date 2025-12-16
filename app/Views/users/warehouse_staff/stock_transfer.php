@@ -102,14 +102,15 @@
                                         <label class="form-label">To Warehouse <span class="text-danger">*</span></label>
                                         <select name="to_warehouse_id" id="to-warehouse" class="form-select" required>
                                             <option value="">Select Destination</option>
-                                            <?php if (isset($warehouses)): ?>
-                                                <?php foreach ($warehouses as $warehouse): ?>
+                                            <?php if (isset($allWarehouses)): ?>
+                                                <?php foreach ($allWarehouses as $warehouse): ?>
                                                     <option value="<?= $warehouse['id'] ?>" <?= old('to_warehouse_id') == $warehouse['id'] ? 'selected' : '' ?>>
                                                         <?= esc($warehouse['name']) ?>
                                                     </option>
                                                 <?php endforeach; ?>
                                             <?php endif; ?>
                                         </select>
+                                    
                                     </div>
                                 </div>
                                 
@@ -130,6 +131,7 @@
                                         <div class="mb-3">
                                             <label class="form-label">Quantity <span class="text-danger">*</span></label>
                                             <input type="number" name="quantity" id="quantity-input" class="form-control" min="0.01" step="0.01" value="<?= old('quantity') ?>" required>
+                                            <small class="text-muted">Must be greater than 0</small>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -144,7 +146,8 @@
                                 
                                 <div class="mb-3">
                                     <label class="form-label">Transfer Reference Number</label>
-                                    <input type="text" name="reference" class="form-control" placeholder="e.g., TR-2024-001" value="<?= old('reference') ?>">
+                                    <input type="text" name="reference" id="transfer-reference" class="form-control" placeholder="Will be auto-generated on save" readonly>
+                                    <small class="text-muted">Transfer reference number is auto-generated.</small>
                                 </div>
                                 
                                 <div class="mb-3">
@@ -268,16 +271,39 @@
             }
         });
         
+        // Validate quantity cannot be negative
+        quantityInput.addEventListener('change', function() {
+            const value = parseFloat(this.value);
+            if (value <= 0 || isNaN(value)) {
+                alert('Quantity must be greater than 0');
+                this.value = '';
+                this.focus();
+            }
+        });
+        
         // Validate quantity on form submit
         document.querySelector('form').addEventListener('submit', function(e) {
-            const selected = materialSelect.options[materialSelect.selectedIndex];
-            const available = parseFloat(selected.dataset.available) || 0;
             const quantity = parseFloat(quantityInput.value) || 0;
             
-            if (quantity > available) {
+            // Check if quantity is negative or zero
+            if (quantity <= 0 || isNaN(quantity)) {
                 e.preventDefault();
-                alert('Quantity cannot exceed available stock (' + available.toFixed(2) + ')');
+                alert('Quantity must be greater than 0');
                 quantityInput.focus();
+                return false;
+            }
+            
+            // Check if quantity exceeds available stock
+            if (materialSelect.value) {
+                const selected = materialSelect.options[materialSelect.selectedIndex];
+                const available = parseFloat(selected.dataset.available) || 0;
+                
+                if (quantity > available) {
+                    e.preventDefault();
+                    alert('Quantity cannot exceed available stock (' + available.toFixed(2) + ')');
+                    quantityInput.focus();
+                    return false;
+                }
             }
         });
     </script>

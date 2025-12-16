@@ -88,3 +88,1601 @@ in APPPATH\Controllers\ITAdministratorController.php on line 1411.
  7 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
  8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
  9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 00:48:41 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "users/it_administrator/configuration.php"
+[Method: GET, Route: it-administrator/config]
+in SYSTEMPATH\Exceptions\FrameworkException.php on line 39.
+ 1 SYSTEMPATH\View\View.php(214): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('users/it_administrator/configuration.php')
+ 2 SYSTEMPATH\Common.php(1167): CodeIgniter\View\View->render('users/it_administrator/configuration', [], true)
+ 3 APPPATH\Controllers\ITAdministratorController.php(1513): view('users/it_administrator/configuration', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->config()
+ 5 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+ 6 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 00:49:26 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "users/it_administrator/system_settings.php"
+[Method: GET, Route: it-administrator/settings]
+in SYSTEMPATH\Exceptions\FrameworkException.php on line 39.
+ 1 SYSTEMPATH\View\View.php(214): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('users/it_administrator/system_settings.php')
+ 2 SYSTEMPATH\Common.php(1167): CodeIgniter\View\View->render('users/it_administrator/system_settings', [], true)
+ 3 APPPATH\Controllers\ITAdministratorController.php(720): view('users/it_administrator/system_settings', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->settings()
+ 5 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+ 6 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 00:49:37 --> CodeIgniter\View\Exceptions\ViewException: Invalid file: "users/it_administrator/system_settings.php"
+[Method: GET, Route: it-administrator/settings]
+in SYSTEMPATH\Exceptions\FrameworkException.php on line 39.
+ 1 SYSTEMPATH\View\View.php(214): CodeIgniter\Exceptions\FrameworkException::forInvalidFile('users/it_administrator/system_settings.php')
+ 2 SYSTEMPATH\Common.php(1167): CodeIgniter\View\View->render('users/it_administrator/system_settings', [], true)
+ 3 APPPATH\Controllers\ITAdministratorController.php(720): view('users/it_administrator/system_settings', [...])
+ 4 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->settings()
+ 5 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+ 6 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2025-12-17 01:30:14 --> Failed to assign user to warehouse: {"is_primary":"The Is Primary field must be one of: 0,1.","is_active":"The Is Active field must be one of: 0,1."}
+ERROR - 2025-12-17 01:32:34 --> Error assigning user to warehouse: There is no data to update.
+ERROR - 2025-12-17 01:33:11 --> Error assigning user to warehouse: There is no data to update.
+ERROR - 2025-12-17 01:40:19 --> Error removing user from warehouse: There is no data to update.
+ERROR - 2025-12-17 01:40:26 --> Error removing user from warehouse: There is no data to update.
+ERROR - 2025-12-17 01:43:08 --> Error removing user from warehouse: There is no data to update.
+ERROR - 2025-12-17 01:43:36 --> Error removing user from warehouse: There is no data to update.
+ERROR - 2025-12-17 01:44:17 --> Error assigning user to warehouse: There is no data to update.
+ERROR - 2025-12-17 02:13:41 --> Failed to create user: {"password":"Password must be at least 8 characters long."}
+ERROR - 2025-12-17 02:13:47 --> Failed to create user: {"password":"Password must contain uppercase, lowercase, number, and special character."}
+ERROR - 2025-12-17 02:47:52 --> mysqli_sql_exception: Unknown column 'warehouses.deleted_at' in 'where clause' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT *\nFROM `...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT *\nFROM `...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT *\nFROM `...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT *\nFROM `...', Array, false)
+#4 C:\xampp\htdocs\WITMS\system\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\WITMS\system\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+#6 C:\xampp\htdocs\WITMS\app\Models\WarehouseModel.php(99): CodeIgniter\BaseModel->findAll()
+#7 C:\xampp\htdocs\WITMS\app\Controllers\ITAdministratorController.php(412): App\Models\WarehouseModel->getActiveWarehouses()
+#8 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(933): App\Controllers\ITAdministratorController->warehouseAssignments()
+#9 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+#10 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#11 C:\xampp\htdocs\WITMS\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#12 C:\xampp\htdocs\WITMS\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#13 C:\xampp\htdocs\WITMS\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#14 {main}
+CRITICAL - 2025-12-17 02:47:52 --> CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'warehouses.deleted_at' in 'where clause'
+[Method: GET, Route: it-administrator/warehouse-assignments]
+in SYSTEMPATH\Database\BaseConnection.php on line 684.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT *
+FROM `warehouses`
+WHERE `is_active` = :is_active:
+AND `warehouses`.`deleted_at` IS NULL', [...], false)
+ 2 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 3 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 4 APPPATH\Models\WarehouseModel.php(99): CodeIgniter\BaseModel->findAll()
+ 5 APPPATH\Controllers\ITAdministratorController.php(412): App\Models\WarehouseModel->getActiveWarehouses()
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->warehouseAssignments()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 02:47:52 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'warehouses.deleted_at' in 'where clause'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT *
+FROM `warehouses`
+WHERE `is_active` = 1
+AND `warehouses`.`deleted_at` IS NULL')
+ 2 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT *
+FROM `warehouses`
+WHERE `is_active` = 1
+AND `warehouses`.`deleted_at` IS NULL')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT *
+FROM `warehouses`
+WHERE `is_active` = :is_active:
+AND `warehouses`.`deleted_at` IS NULL', [...], false)
+ 4 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 5 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 6 APPPATH\Models\WarehouseModel.php(99): CodeIgniter\BaseModel->findAll()
+ 7 APPPATH\Controllers\ITAdministratorController.php(412): App\Models\WarehouseModel->getActiveWarehouses()
+ 8 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->warehouseAssignments()
+ 9 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+10 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 02:47:52 --> [Caused by] mysqli_sql_exception: Unknown column 'warehouses.deleted_at' in 'where clause'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('SELECT *
+FROM `warehouses`
+WHERE `is_active` = 1
+AND `warehouses`.`deleted_at` IS NULL', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT *
+FROM `warehouses`
+WHERE `is_active` = 1
+AND `warehouses`.`deleted_at` IS NULL')
+ 3 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT *
+FROM `warehouses`
+WHERE `is_active` = 1
+AND `warehouses`.`deleted_at` IS NULL')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT *
+FROM `warehouses`
+WHERE `is_active` = :is_active:
+AND `warehouses`.`deleted_at` IS NULL', [...], false)
+ 5 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 6 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 7 APPPATH\Models\WarehouseModel.php(99): CodeIgniter\BaseModel->findAll()
+ 8 APPPATH\Controllers\ITAdministratorController.php(412): App\Models\WarehouseModel->getActiveWarehouses()
+ 9 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->warehouseAssignments()
+10 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+11 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+12 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+13 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+14 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2025-12-17 02:48:23 --> mysqli_sql_exception: Unknown column 'warehouses.deleted_at' in 'where clause' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `warehou...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `warehou...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `warehou...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `warehou...', Array, false)
+#4 C:\xampp\htdocs\WITMS\system\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\WITMS\system\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+#6 C:\xampp\htdocs\WITMS\app\Models\WarehouseModel.php(134): CodeIgniter\BaseModel->findAll()
+#7 C:\xampp\htdocs\WITMS\app\Controllers\ITAdministratorController.php(1770): App\Models\WarehouseModel->getWarehousesWithManagers()
+#8 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(933): App\Controllers\ITAdministratorController->warehouseManagement()
+#9 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+#10 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#11 C:\xampp\htdocs\WITMS\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#12 C:\xampp\htdocs\WITMS\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#13 C:\xampp\htdocs\WITMS\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#14 {main}
+CRITICAL - 2025-12-17 02:48:23 --> CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'warehouses.deleted_at' in 'where clause'
+[Method: GET, Route: it-administrator/warehouse-management]
+in SYSTEMPATH\Database\BaseConnection.php on line 684.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `warehouses`.*, `users`.`first_name`, `users`.`last_name`, `users`.`email` as `manager_email`
+FROM `warehouses`
+LEFT JOIN `users` ON `users`.`id` = `warehouses`.`manager_id`
+WHERE `warehouses`.`is_active` = :warehouses.is_active:
+AND `warehouses`.`deleted_at` IS NULL', [...], false)
+ 2 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 3 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 4 APPPATH\Models\WarehouseModel.php(134): CodeIgniter\BaseModel->findAll()
+ 5 APPPATH\Controllers\ITAdministratorController.php(1770): App\Models\WarehouseModel->getWarehousesWithManagers()
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->warehouseManagement()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 02:48:23 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'warehouses.deleted_at' in 'where clause'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `warehouses`.*, `users`.`first_name`, `users`.`last_name`, `users`.`email` as `manager_email`
+FROM `warehouses`
+LEFT JOIN `users` ON `users`.`id` = `warehouses`.`manager_id`
+WHERE `warehouses`.`is_active` = 1
+AND `warehouses`.`deleted_at` IS NULL')
+ 2 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `warehouses`.*, `users`.`first_name`, `users`.`last_name`, `users`.`email` as `manager_email`
+FROM `warehouses`
+LEFT JOIN `users` ON `users`.`id` = `warehouses`.`manager_id`
+WHERE `warehouses`.`is_active` = 1
+AND `warehouses`.`deleted_at` IS NULL')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `warehouses`.*, `users`.`first_name`, `users`.`last_name`, `users`.`email` as `manager_email`
+FROM `warehouses`
+LEFT JOIN `users` ON `users`.`id` = `warehouses`.`manager_id`
+WHERE `warehouses`.`is_active` = :warehouses.is_active:
+AND `warehouses`.`deleted_at` IS NULL', [...], false)
+ 4 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 5 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 6 APPPATH\Models\WarehouseModel.php(134): CodeIgniter\BaseModel->findAll()
+ 7 APPPATH\Controllers\ITAdministratorController.php(1770): App\Models\WarehouseModel->getWarehousesWithManagers()
+ 8 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->warehouseManagement()
+ 9 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+10 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 02:48:23 --> [Caused by] mysqli_sql_exception: Unknown column 'warehouses.deleted_at' in 'where clause'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `warehouses`.*, `users`.`first_name`, `users`.`last_name`, `users`.`email` as `manager_email`
+FROM `warehouses`
+LEFT JOIN `users` ON `users`.`id` = `warehouses`.`manager_id`
+WHERE `warehouses`.`is_active` = 1
+AND `warehouses`.`deleted_at` IS NULL', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `warehouses`.*, `users`.`first_name`, `users`.`last_name`, `users`.`email` as `manager_email`
+FROM `warehouses`
+LEFT JOIN `users` ON `users`.`id` = `warehouses`.`manager_id`
+WHERE `warehouses`.`is_active` = 1
+AND `warehouses`.`deleted_at` IS NULL')
+ 3 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `warehouses`.*, `users`.`first_name`, `users`.`last_name`, `users`.`email` as `manager_email`
+FROM `warehouses`
+LEFT JOIN `users` ON `users`.`id` = `warehouses`.`manager_id`
+WHERE `warehouses`.`is_active` = 1
+AND `warehouses`.`deleted_at` IS NULL')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `warehouses`.*, `users`.`first_name`, `users`.`last_name`, `users`.`email` as `manager_email`
+FROM `warehouses`
+LEFT JOIN `users` ON `users`.`id` = `warehouses`.`manager_id`
+WHERE `warehouses`.`is_active` = :warehouses.is_active:
+AND `warehouses`.`deleted_at` IS NULL', [...], false)
+ 5 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 6 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 7 APPPATH\Models\WarehouseModel.php(134): CodeIgniter\BaseModel->findAll()
+ 8 APPPATH\Controllers\ITAdministratorController.php(1770): App\Models\WarehouseModel->getWarehousesWithManagers()
+ 9 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->warehouseManagement()
+10 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+11 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+12 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+13 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+14 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2025-12-17 02:49:20 --> mysqli_sql_exception: Unknown column 'warehouses.location' in 'field list' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `departm...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `departm...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `departm...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `departm...', Array, false)
+#4 C:\xampp\htdocs\WITMS\system\Model.php(330): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\WITMS\system\BaseModel.php(715): CodeIgniter\Model->doFirst()
+#6 C:\xampp\htdocs\WITMS\app\Models\DepartmentModel.php(241): CodeIgniter\BaseModel->first()
+#7 C:\xampp\htdocs\WITMS\app\Controllers\ITAdministratorController.php(786): App\Models\DepartmentModel->getDepartmentWithWarehouse(1)
+#8 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(933): App\Controllers\ITAdministratorController->getDepartment()
+#9 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+#10 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#11 C:\xampp\htdocs\WITMS\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#12 C:\xampp\htdocs\WITMS\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#13 C:\xampp\htdocs\WITMS\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#14 {main}
+CRITICAL - 2025-12-17 02:49:20 --> CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'warehouses.location' in 'field list'
+[Method: POST, Route: it-administrator/departments/get]
+in SYSTEMPATH\Database\BaseConnection.php on line 684.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `departments`.*, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`, `warehouses`.`location` as `warehouse_location`
+FROM `departments`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `departments`.`warehouse_id`
+WHERE `departments`.`id` = :departments.id:
+ LIMIT 1', [...], false)
+ 2 SYSTEMPATH\Model.php(330): CodeIgniter\Database\BaseBuilder->get()
+ 3 SYSTEMPATH\BaseModel.php(715): CodeIgniter\Model->doFirst()
+ 4 APPPATH\Models\DepartmentModel.php(241): CodeIgniter\BaseModel->first()
+ 5 APPPATH\Controllers\ITAdministratorController.php(786): App\Models\DepartmentModel->getDepartmentWithWarehouse(1)
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->getDepartment()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 02:49:20 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'warehouses.location' in 'field list'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `departments`.*, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`, `warehouses`.`location` as `warehouse_location`
+FROM `departments`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `departments`.`warehouse_id`
+WHERE `departments`.`id` = 1
+ LIMIT 1')
+ 2 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `departments`.*, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`, `warehouses`.`location` as `warehouse_location`
+FROM `departments`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `departments`.`warehouse_id`
+WHERE `departments`.`id` = 1
+ LIMIT 1')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `departments`.*, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`, `warehouses`.`location` as `warehouse_location`
+FROM `departments`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `departments`.`warehouse_id`
+WHERE `departments`.`id` = :departments.id:
+ LIMIT 1', [...], false)
+ 4 SYSTEMPATH\Model.php(330): CodeIgniter\Database\BaseBuilder->get()
+ 5 SYSTEMPATH\BaseModel.php(715): CodeIgniter\Model->doFirst()
+ 6 APPPATH\Models\DepartmentModel.php(241): CodeIgniter\BaseModel->first()
+ 7 APPPATH\Controllers\ITAdministratorController.php(786): App\Models\DepartmentModel->getDepartmentWithWarehouse(1)
+ 8 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->getDepartment()
+ 9 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+10 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 02:49:20 --> [Caused by] mysqli_sql_exception: Unknown column 'warehouses.location' in 'field list'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `departments`.*, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`, `warehouses`.`location` as `warehouse_location`
+FROM `departments`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `departments`.`warehouse_id`
+WHERE `departments`.`id` = 1
+ LIMIT 1', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `departments`.*, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`, `warehouses`.`location` as `warehouse_location`
+FROM `departments`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `departments`.`warehouse_id`
+WHERE `departments`.`id` = 1
+ LIMIT 1')
+ 3 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `departments`.*, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`, `warehouses`.`location` as `warehouse_location`
+FROM `departments`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `departments`.`warehouse_id`
+WHERE `departments`.`id` = 1
+ LIMIT 1')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `departments`.*, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`, `warehouses`.`location` as `warehouse_location`
+FROM `departments`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `departments`.`warehouse_id`
+WHERE `departments`.`id` = :departments.id:
+ LIMIT 1', [...], false)
+ 5 SYSTEMPATH\Model.php(330): CodeIgniter\Database\BaseBuilder->get()
+ 6 SYSTEMPATH\BaseModel.php(715): CodeIgniter\Model->doFirst()
+ 7 APPPATH\Models\DepartmentModel.php(241): CodeIgniter\BaseModel->first()
+ 8 APPPATH\Controllers\ITAdministratorController.php(786): App\Models\DepartmentModel->getDepartmentWithWarehouse(1)
+ 9 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->getDepartment()
+10 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+11 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+12 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+13 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+14 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2025-12-17 02:54:58 --> mysqli_sql_exception: Unknown column 'warehouses.location' in 'field list' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `departm...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `departm...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `departm...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `departm...', Array, false)
+#4 C:\xampp\htdocs\WITMS\system\Model.php(330): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\WITMS\system\BaseModel.php(715): CodeIgniter\Model->doFirst()
+#6 C:\xampp\htdocs\WITMS\app\Models\DepartmentModel.php(251): CodeIgniter\BaseModel->first()
+#7 C:\xampp\htdocs\WITMS\app\Controllers\ITAdministratorController.php(786): App\Models\DepartmentModel->getDepartmentWithWarehouse(1)
+#8 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(933): App\Controllers\ITAdministratorController->getDepartment()
+#9 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+#10 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#11 C:\xampp\htdocs\WITMS\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#12 C:\xampp\htdocs\WITMS\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#13 C:\xampp\htdocs\WITMS\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#14 {main}
+CRITICAL - 2025-12-17 02:54:58 --> CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'warehouses.location' in 'field list'
+[Method: POST, Route: it-administrator/departments/get]
+in SYSTEMPATH\Database\BaseConnection.php on line 684.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `departments`.*, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`, `warehouses`.`location` as `warehouse_location`
+FROM `departments`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `departments`.`warehouse_id`
+WHERE `departments`.`id` = :departments.id:
+ LIMIT 1', [...], false)
+ 2 SYSTEMPATH\Model.php(330): CodeIgniter\Database\BaseBuilder->get()
+ 3 SYSTEMPATH\BaseModel.php(715): CodeIgniter\Model->doFirst()
+ 4 APPPATH\Models\DepartmentModel.php(251): CodeIgniter\BaseModel->first()
+ 5 APPPATH\Controllers\ITAdministratorController.php(786): App\Models\DepartmentModel->getDepartmentWithWarehouse(1)
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->getDepartment()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 02:54:58 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'warehouses.location' in 'field list'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `departments`.*, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`, `warehouses`.`location` as `warehouse_location`
+FROM `departments`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `departments`.`warehouse_id`
+WHERE `departments`.`id` = 1
+ LIMIT 1')
+ 2 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `departments`.*, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`, `warehouses`.`location` as `warehouse_location`
+FROM `departments`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `departments`.`warehouse_id`
+WHERE `departments`.`id` = 1
+ LIMIT 1')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `departments`.*, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`, `warehouses`.`location` as `warehouse_location`
+FROM `departments`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `departments`.`warehouse_id`
+WHERE `departments`.`id` = :departments.id:
+ LIMIT 1', [...], false)
+ 4 SYSTEMPATH\Model.php(330): CodeIgniter\Database\BaseBuilder->get()
+ 5 SYSTEMPATH\BaseModel.php(715): CodeIgniter\Model->doFirst()
+ 6 APPPATH\Models\DepartmentModel.php(251): CodeIgniter\BaseModel->first()
+ 7 APPPATH\Controllers\ITAdministratorController.php(786): App\Models\DepartmentModel->getDepartmentWithWarehouse(1)
+ 8 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->getDepartment()
+ 9 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+10 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 02:54:58 --> [Caused by] mysqli_sql_exception: Unknown column 'warehouses.location' in 'field list'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `departments`.*, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`, `warehouses`.`location` as `warehouse_location`
+FROM `departments`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `departments`.`warehouse_id`
+WHERE `departments`.`id` = 1
+ LIMIT 1', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `departments`.*, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`, `warehouses`.`location` as `warehouse_location`
+FROM `departments`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `departments`.`warehouse_id`
+WHERE `departments`.`id` = 1
+ LIMIT 1')
+ 3 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `departments`.*, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`, `warehouses`.`location` as `warehouse_location`
+FROM `departments`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `departments`.`warehouse_id`
+WHERE `departments`.`id` = 1
+ LIMIT 1')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `departments`.*, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`, `warehouses`.`location` as `warehouse_location`
+FROM `departments`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `departments`.`warehouse_id`
+WHERE `departments`.`id` = :departments.id:
+ LIMIT 1', [...], false)
+ 5 SYSTEMPATH\Model.php(330): CodeIgniter\Database\BaseBuilder->get()
+ 6 SYSTEMPATH\BaseModel.php(715): CodeIgniter\Model->doFirst()
+ 7 APPPATH\Models\DepartmentModel.php(251): CodeIgniter\BaseModel->first()
+ 8 APPPATH\Controllers\ITAdministratorController.php(786): App\Models\DepartmentModel->getDepartmentWithWarehouse(1)
+ 9 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->getDepartment()
+10 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+11 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+12 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+13 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+14 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2025-12-17 02:55:12 --> mysqli_sql_exception: Unknown column 'warehouses.location' in 'field list' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `departm...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `departm...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `departm...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `departm...', Array, false)
+#4 C:\xampp\htdocs\WITMS\system\Model.php(330): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\WITMS\system\BaseModel.php(715): CodeIgniter\Model->doFirst()
+#6 C:\xampp\htdocs\WITMS\app\Models\DepartmentModel.php(251): CodeIgniter\BaseModel->first()
+#7 C:\xampp\htdocs\WITMS\app\Controllers\ITAdministratorController.php(786): App\Models\DepartmentModel->getDepartmentWithWarehouse(1)
+#8 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(933): App\Controllers\ITAdministratorController->getDepartment()
+#9 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+#10 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#11 C:\xampp\htdocs\WITMS\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#12 C:\xampp\htdocs\WITMS\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#13 C:\xampp\htdocs\WITMS\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#14 {main}
+CRITICAL - 2025-12-17 02:55:12 --> CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'warehouses.location' in 'field list'
+[Method: POST, Route: it-administrator/departments/get]
+in SYSTEMPATH\Database\BaseConnection.php on line 684.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `departments`.*, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`, `warehouses`.`location` as `warehouse_location`
+FROM `departments`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `departments`.`warehouse_id`
+WHERE `departments`.`id` = :departments.id:
+ LIMIT 1', [...], false)
+ 2 SYSTEMPATH\Model.php(330): CodeIgniter\Database\BaseBuilder->get()
+ 3 SYSTEMPATH\BaseModel.php(715): CodeIgniter\Model->doFirst()
+ 4 APPPATH\Models\DepartmentModel.php(251): CodeIgniter\BaseModel->first()
+ 5 APPPATH\Controllers\ITAdministratorController.php(786): App\Models\DepartmentModel->getDepartmentWithWarehouse(1)
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->getDepartment()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 02:55:12 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'warehouses.location' in 'field list'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `departments`.*, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`, `warehouses`.`location` as `warehouse_location`
+FROM `departments`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `departments`.`warehouse_id`
+WHERE `departments`.`id` = 1
+ LIMIT 1')
+ 2 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `departments`.*, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`, `warehouses`.`location` as `warehouse_location`
+FROM `departments`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `departments`.`warehouse_id`
+WHERE `departments`.`id` = 1
+ LIMIT 1')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `departments`.*, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`, `warehouses`.`location` as `warehouse_location`
+FROM `departments`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `departments`.`warehouse_id`
+WHERE `departments`.`id` = :departments.id:
+ LIMIT 1', [...], false)
+ 4 SYSTEMPATH\Model.php(330): CodeIgniter\Database\BaseBuilder->get()
+ 5 SYSTEMPATH\BaseModel.php(715): CodeIgniter\Model->doFirst()
+ 6 APPPATH\Models\DepartmentModel.php(251): CodeIgniter\BaseModel->first()
+ 7 APPPATH\Controllers\ITAdministratorController.php(786): App\Models\DepartmentModel->getDepartmentWithWarehouse(1)
+ 8 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->getDepartment()
+ 9 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+10 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 02:55:12 --> [Caused by] mysqli_sql_exception: Unknown column 'warehouses.location' in 'field list'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `departments`.*, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`, `warehouses`.`location` as `warehouse_location`
+FROM `departments`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `departments`.`warehouse_id`
+WHERE `departments`.`id` = 1
+ LIMIT 1', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `departments`.*, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`, `warehouses`.`location` as `warehouse_location`
+FROM `departments`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `departments`.`warehouse_id`
+WHERE `departments`.`id` = 1
+ LIMIT 1')
+ 3 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `departments`.*, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`, `warehouses`.`location` as `warehouse_location`
+FROM `departments`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `departments`.`warehouse_id`
+WHERE `departments`.`id` = 1
+ LIMIT 1')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `departments`.*, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`, `warehouses`.`location` as `warehouse_location`
+FROM `departments`
+LEFT JOIN `warehouses` ON `warehouses`.`id` = `departments`.`warehouse_id`
+WHERE `departments`.`id` = :departments.id:
+ LIMIT 1', [...], false)
+ 5 SYSTEMPATH\Model.php(330): CodeIgniter\Database\BaseBuilder->get()
+ 6 SYSTEMPATH\BaseModel.php(715): CodeIgniter\Model->doFirst()
+ 7 APPPATH\Models\DepartmentModel.php(251): CodeIgniter\BaseModel->first()
+ 8 APPPATH\Controllers\ITAdministratorController.php(786): App\Models\DepartmentModel->getDepartmentWithWarehouse(1)
+ 9 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->getDepartment()
+10 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+11 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+12 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+13 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+14 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2025-12-17 03:24:11 --> mysqli_sql_exception: Duplicate column name 'deleted_at' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('ALTER TABLE `wa...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('ALTER TABLE `wa...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('ALTER TABLE `wa...')
+#3 C:\xampp\htdocs\WITMS\system\Database\Forge.php(772): CodeIgniter\Database\BaseConnection->query('ALTER TABLE `wa...')
+#4 C:\xampp\htdocs\WITMS\app\Database\Migrations\2025-11-10-130000_AddDeletedAtToWarehousesTable.php(11): CodeIgniter\Database\Forge->addColumn('warehouses', Array)
+#5 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(876): App\Database\Migrations\AddDeletedAtToWarehousesTable->up()
+#6 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(182): CodeIgniter\Database\MigrationRunner->migrate('up', Object(stdClass))
+#7 C:\xampp\htdocs\WITMS\system\Commands\Database\Migrate.php(85): CodeIgniter\Database\MigrationRunner->latest(NULL)
+#8 C:\xampp\htdocs\WITMS\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\Migrate->run(Array)
+#9 C:\xampp\htdocs\WITMS\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate', Array)
+#10 C:\xampp\htdocs\WITMS\system\Boot.php(388): CodeIgniter\CLI\Console->run()
+#11 C:\xampp\htdocs\WITMS\system\Boot.php(133): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#12 C:\xampp\htdocs\WITMS\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#13 {main}
+ERROR - 2025-12-17 03:25:01 --> mysqli_sql_exception: Duplicate column name 'deleted_at' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('ALTER TABLE `wa...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('ALTER TABLE `wa...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('ALTER TABLE `wa...')
+#3 C:\xampp\htdocs\WITMS\system\Database\Forge.php(772): CodeIgniter\Database\BaseConnection->query('ALTER TABLE `wa...')
+#4 C:\xampp\htdocs\WITMS\app\Database\Migrations\2025-11-10-130000_AddDeletedAtToWarehousesTable.php(11): CodeIgniter\Database\Forge->addColumn('warehouses', Array)
+#5 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(876): App\Database\Migrations\AddDeletedAtToWarehousesTable->up()
+#6 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(182): CodeIgniter\Database\MigrationRunner->migrate('up', Object(stdClass))
+#7 C:\xampp\htdocs\WITMS\system\Commands\Database\Migrate.php(85): CodeIgniter\Database\MigrationRunner->latest(NULL)
+#8 C:\xampp\htdocs\WITMS\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\Migrate->run(Array)
+#9 C:\xampp\htdocs\WITMS\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate', Array)
+#10 C:\xampp\htdocs\WITMS\system\Boot.php(388): CodeIgniter\CLI\Console->run()
+#11 C:\xampp\htdocs\WITMS\system\Boot.php(133): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#12 C:\xampp\htdocs\WITMS\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#13 {main}
+ERROR - 2025-12-17 03:25:45 --> mysqli_sql_exception: Duplicate column name 'deleted_at' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('ALTER TABLE `wa...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('ALTER TABLE `wa...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('ALTER TABLE `wa...')
+#3 C:\xampp\htdocs\WITMS\system\Database\Forge.php(772): CodeIgniter\Database\BaseConnection->query('ALTER TABLE `wa...')
+#4 C:\xampp\htdocs\WITMS\app\Database\Migrations\2025-11-10-130000_AddDeletedAtToWarehousesTable.php(11): CodeIgniter\Database\Forge->addColumn('warehouses', Array)
+#5 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(876): App\Database\Migrations\AddDeletedAtToWarehousesTable->up()
+#6 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(182): CodeIgniter\Database\MigrationRunner->migrate('up', Object(stdClass))
+#7 C:\xampp\htdocs\WITMS\system\Commands\Database\Migrate.php(85): CodeIgniter\Database\MigrationRunner->latest(NULL)
+#8 C:\xampp\htdocs\WITMS\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\Migrate->run(Array)
+#9 C:\xampp\htdocs\WITMS\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate', Array)
+#10 C:\xampp\htdocs\WITMS\system\Boot.php(388): CodeIgniter\CLI\Console->run()
+#11 C:\xampp\htdocs\WITMS\system\Boot.php(133): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#12 C:\xampp\htdocs\WITMS\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#13 {main}
+ERROR - 2025-12-17 03:26:22 --> mysqli_sql_exception: Duplicate column name 'deleted_at' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('ALTER TABLE `wa...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('ALTER TABLE `wa...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('ALTER TABLE `wa...')
+#3 C:\xampp\htdocs\WITMS\system\Database\Forge.php(772): CodeIgniter\Database\BaseConnection->query('ALTER TABLE `wa...')
+#4 C:\xampp\htdocs\WITMS\app\Database\Migrations\2025-11-10-130000_AddDeletedAtToWarehousesTable.php(11): CodeIgniter\Database\Forge->addColumn('warehouses', Array)
+#5 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(876): App\Database\Migrations\AddDeletedAtToWarehousesTable->up()
+#6 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(182): CodeIgniter\Database\MigrationRunner->migrate('up', Object(stdClass))
+#7 C:\xampp\htdocs\WITMS\system\Commands\Database\Migrate.php(85): CodeIgniter\Database\MigrationRunner->latest(NULL)
+#8 C:\xampp\htdocs\WITMS\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\Migrate->run(Array)
+#9 C:\xampp\htdocs\WITMS\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate', Array)
+#10 C:\xampp\htdocs\WITMS\system\Boot.php(388): CodeIgniter\CLI\Console->run()
+#11 C:\xampp\htdocs\WITMS\system\Boot.php(133): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#12 C:\xampp\htdocs\WITMS\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#13 {main}
+ERROR - 2025-12-17 03:26:59 --> mysqli_sql_exception: Duplicate column name 'deleted_at' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('ALTER TABLE `wa...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('ALTER TABLE `wa...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('ALTER TABLE `wa...')
+#3 C:\xampp\htdocs\WITMS\system\Database\Forge.php(772): CodeIgniter\Database\BaseConnection->query('ALTER TABLE `wa...')
+#4 C:\xampp\htdocs\WITMS\app\Database\Migrations\2025-11-10-130000_AddDeletedAtToWarehousesTable.php(11): CodeIgniter\Database\Forge->addColumn('warehouses', Array)
+#5 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(876): App\Database\Migrations\AddDeletedAtToWarehousesTable->up()
+#6 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(182): CodeIgniter\Database\MigrationRunner->migrate('up', Object(stdClass))
+#7 C:\xampp\htdocs\WITMS\system\Commands\Database\Migrate.php(85): CodeIgniter\Database\MigrationRunner->latest(NULL)
+#8 C:\xampp\htdocs\WITMS\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\Migrate->run(Array)
+#9 C:\xampp\htdocs\WITMS\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate', Array)
+#10 C:\xampp\htdocs\WITMS\system\Boot.php(388): CodeIgniter\CLI\Console->run()
+#11 C:\xampp\htdocs\WITMS\system\Boot.php(133): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#12 C:\xampp\htdocs\WITMS\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#13 {main}
+ERROR - 2025-12-17 03:27:42 --> mysqli_sql_exception: Duplicate column name 'deleted_at' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('ALTER TABLE `wa...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('ALTER TABLE `wa...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('ALTER TABLE `wa...')
+#3 C:\xampp\htdocs\WITMS\system\Database\Forge.php(772): CodeIgniter\Database\BaseConnection->query('ALTER TABLE `wa...')
+#4 C:\xampp\htdocs\WITMS\app\Database\Migrations\2025-11-10-130000_AddDeletedAtToWarehousesTable.php(11): CodeIgniter\Database\Forge->addColumn('warehouses', Array)
+#5 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(876): App\Database\Migrations\AddDeletedAtToWarehousesTable->up()
+#6 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(182): CodeIgniter\Database\MigrationRunner->migrate('up', Object(stdClass))
+#7 C:\xampp\htdocs\WITMS\system\Commands\Database\Migrate.php(85): CodeIgniter\Database\MigrationRunner->latest(NULL)
+#8 C:\xampp\htdocs\WITMS\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\Migrate->run(Array)
+#9 C:\xampp\htdocs\WITMS\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate', Array)
+#10 C:\xampp\htdocs\WITMS\system\Boot.php(388): CodeIgniter\CLI\Console->run()
+#11 C:\xampp\htdocs\WITMS\system\Boot.php(133): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#12 C:\xampp\htdocs\WITMS\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#13 {main}
+ERROR - 2025-12-17 03:49:01 --> mysqli_sql_exception: Unknown column 'inventory.deleted_at' in 'where clause' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `invento...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `invento...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `invento...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `invento...', Array, false)
+#4 C:\xampp\htdocs\WITMS\system\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\WITMS\system\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+#6 C:\xampp\htdocs\WITMS\app\Models\InventoryModel.php(195): CodeIgniter\BaseModel->findAll()
+#7 C:\xampp\htdocs\WITMS\app\Controllers\ITAdministratorController.php(2065): App\Models\InventoryModel->getInventoryWithDetails()
+#8 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(933): App\Controllers\ITAdministratorController->inventory()
+#9 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+#10 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#11 C:\xampp\htdocs\WITMS\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#12 C:\xampp\htdocs\WITMS\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#13 C:\xampp\htdocs\WITMS\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#14 {main}
+CRITICAL - 2025-12-17 03:49:01 --> CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'inventory.deleted_at' in 'where clause'
+[Method: GET, Route: it-administrator/inventory]
+in SYSTEMPATH\Database\BaseConnection.php on line 684.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `inventory`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`qrcode` as `material_qrcode`, `materials`.`unit_cost`, `materials`.`reorder_level`, `material_categories`.`name` as `category_name`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbr`, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+WHERE `inventory`.`deleted_at` IS NULL', [], false)
+ 2 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 3 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 4 APPPATH\Models\InventoryModel.php(195): CodeIgniter\BaseModel->findAll()
+ 5 APPPATH\Controllers\ITAdministratorController.php(2065): App\Models\InventoryModel->getInventoryWithDetails()
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->inventory()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 03:49:01 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'inventory.deleted_at' in 'where clause'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `inventory`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`qrcode` as `material_qrcode`, `materials`.`unit_cost`, `materials`.`reorder_level`, `material_categories`.`name` as `category_name`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbr`, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+WHERE `inventory`.`deleted_at` IS NULL')
+ 2 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `inventory`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`qrcode` as `material_qrcode`, `materials`.`unit_cost`, `materials`.`reorder_level`, `material_categories`.`name` as `category_name`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbr`, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+WHERE `inventory`.`deleted_at` IS NULL')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `inventory`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`qrcode` as `material_qrcode`, `materials`.`unit_cost`, `materials`.`reorder_level`, `material_categories`.`name` as `category_name`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbr`, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+WHERE `inventory`.`deleted_at` IS NULL', [], false)
+ 4 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 5 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 6 APPPATH\Models\InventoryModel.php(195): CodeIgniter\BaseModel->findAll()
+ 7 APPPATH\Controllers\ITAdministratorController.php(2065): App\Models\InventoryModel->getInventoryWithDetails()
+ 8 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->inventory()
+ 9 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+10 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 03:49:01 --> [Caused by] mysqli_sql_exception: Unknown column 'inventory.deleted_at' in 'where clause'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `inventory`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`qrcode` as `material_qrcode`, `materials`.`unit_cost`, `materials`.`reorder_level`, `material_categories`.`name` as `category_name`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbr`, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+WHERE `inventory`.`deleted_at` IS NULL', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `inventory`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`qrcode` as `material_qrcode`, `materials`.`unit_cost`, `materials`.`reorder_level`, `material_categories`.`name` as `category_name`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbr`, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+WHERE `inventory`.`deleted_at` IS NULL')
+ 3 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `inventory`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`qrcode` as `material_qrcode`, `materials`.`unit_cost`, `materials`.`reorder_level`, `material_categories`.`name` as `category_name`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbr`, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+WHERE `inventory`.`deleted_at` IS NULL')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `inventory`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`qrcode` as `material_qrcode`, `materials`.`unit_cost`, `materials`.`reorder_level`, `material_categories`.`name` as `category_name`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbr`, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+WHERE `inventory`.`deleted_at` IS NULL', [], false)
+ 5 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 6 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 7 APPPATH\Models\InventoryModel.php(195): CodeIgniter\BaseModel->findAll()
+ 8 APPPATH\Controllers\ITAdministratorController.php(2065): App\Models\InventoryModel->getInventoryWithDetails()
+ 9 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->inventory()
+10 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+11 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+12 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+13 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+14 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2025-12-17 03:49:04 --> mysqli_sql_exception: Unknown column 'materials.deleted_at' in 'where clause' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `materia...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `materia...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `materia...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `materia...', Array, false)
+#4 C:\xampp\htdocs\WITMS\system\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\WITMS\system\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+#6 C:\xampp\htdocs\WITMS\app\Models\MaterialModel.php(179): CodeIgniter\BaseModel->findAll()
+#7 C:\xampp\htdocs\WITMS\app\Controllers\ITAdministratorController.php(2265): App\Models\MaterialModel->getMaterialsWithDetails()
+#8 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(933): App\Controllers\ITAdministratorController->materials()
+#9 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+#10 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#11 C:\xampp\htdocs\WITMS\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#12 C:\xampp\htdocs\WITMS\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#13 C:\xampp\htdocs\WITMS\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#14 {main}
+CRITICAL - 2025-12-17 03:49:04 --> CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'materials.deleted_at' in 'where clause'
+[Method: GET, Route: it-administrator/materials]
+in SYSTEMPATH\Database\BaseConnection.php on line 684.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `materials`.`id`, `materials`.`code`, `materials`.`name`, `materials`.`qrcode`, `materials`.`category_id`, `materials`.`unit_id`, `materials`.`description`, `materials`.`reorder_level`, `materials`.`reorder_quantity`, `materials`.`unit_cost`, `materials`.`is_perishable`, `materials`.`shelf_life_days`, `materials`.`is_active`, `materials`.`created_at`, `materials`.`updated_at`, `material_categories`.`name` as `category_name`, `material_categories`.`code` as `category_code`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbreviation`
+FROM `materials`
+LEFT JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `materials`.`deleted_at` IS NULL
+GROUP BY `materials`.`id`
+ORDER BY `materials`.`id` ASC', [], false)
+ 2 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 3 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 4 APPPATH\Models\MaterialModel.php(179): CodeIgniter\BaseModel->findAll()
+ 5 APPPATH\Controllers\ITAdministratorController.php(2265): App\Models\MaterialModel->getMaterialsWithDetails()
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->materials()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 03:49:04 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'materials.deleted_at' in 'where clause'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `materials`.`id`, `materials`.`code`, `materials`.`name`, `materials`.`qrcode`, `materials`.`category_id`, `materials`.`unit_id`, `materials`.`description`, `materials`.`reorder_level`, `materials`.`reorder_quantity`, `materials`.`unit_cost`, `materials`.`is_perishable`, `materials`.`shelf_life_days`, `materials`.`is_active`, `materials`.`created_at`, `materials`.`updated_at`, `material_categories`.`name` as `category_name`, `material_categories`.`code` as `category_code`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbreviation`
+FROM `materials`
+LEFT JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `materials`.`deleted_at` IS NULL
+GROUP BY `materials`.`id`
+ORDER BY `materials`.`id` ASC')
+ 2 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `materials`.`id`, `materials`.`code`, `materials`.`name`, `materials`.`qrcode`, `materials`.`category_id`, `materials`.`unit_id`, `materials`.`description`, `materials`.`reorder_level`, `materials`.`reorder_quantity`, `materials`.`unit_cost`, `materials`.`is_perishable`, `materials`.`shelf_life_days`, `materials`.`is_active`, `materials`.`created_at`, `materials`.`updated_at`, `material_categories`.`name` as `category_name`, `material_categories`.`code` as `category_code`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbreviation`
+FROM `materials`
+LEFT JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `materials`.`deleted_at` IS NULL
+GROUP BY `materials`.`id`
+ORDER BY `materials`.`id` ASC')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `materials`.`id`, `materials`.`code`, `materials`.`name`, `materials`.`qrcode`, `materials`.`category_id`, `materials`.`unit_id`, `materials`.`description`, `materials`.`reorder_level`, `materials`.`reorder_quantity`, `materials`.`unit_cost`, `materials`.`is_perishable`, `materials`.`shelf_life_days`, `materials`.`is_active`, `materials`.`created_at`, `materials`.`updated_at`, `material_categories`.`name` as `category_name`, `material_categories`.`code` as `category_code`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbreviation`
+FROM `materials`
+LEFT JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `materials`.`deleted_at` IS NULL
+GROUP BY `materials`.`id`
+ORDER BY `materials`.`id` ASC', [], false)
+ 4 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 5 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 6 APPPATH\Models\MaterialModel.php(179): CodeIgniter\BaseModel->findAll()
+ 7 APPPATH\Controllers\ITAdministratorController.php(2265): App\Models\MaterialModel->getMaterialsWithDetails()
+ 8 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->materials()
+ 9 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+10 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 03:49:04 --> [Caused by] mysqli_sql_exception: Unknown column 'materials.deleted_at' in 'where clause'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `materials`.`id`, `materials`.`code`, `materials`.`name`, `materials`.`qrcode`, `materials`.`category_id`, `materials`.`unit_id`, `materials`.`description`, `materials`.`reorder_level`, `materials`.`reorder_quantity`, `materials`.`unit_cost`, `materials`.`is_perishable`, `materials`.`shelf_life_days`, `materials`.`is_active`, `materials`.`created_at`, `materials`.`updated_at`, `material_categories`.`name` as `category_name`, `material_categories`.`code` as `category_code`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbreviation`
+FROM `materials`
+LEFT JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `materials`.`deleted_at` IS NULL
+GROUP BY `materials`.`id`
+ORDER BY `materials`.`id` ASC', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `materials`.`id`, `materials`.`code`, `materials`.`name`, `materials`.`qrcode`, `materials`.`category_id`, `materials`.`unit_id`, `materials`.`description`, `materials`.`reorder_level`, `materials`.`reorder_quantity`, `materials`.`unit_cost`, `materials`.`is_perishable`, `materials`.`shelf_life_days`, `materials`.`is_active`, `materials`.`created_at`, `materials`.`updated_at`, `material_categories`.`name` as `category_name`, `material_categories`.`code` as `category_code`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbreviation`
+FROM `materials`
+LEFT JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `materials`.`deleted_at` IS NULL
+GROUP BY `materials`.`id`
+ORDER BY `materials`.`id` ASC')
+ 3 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `materials`.`id`, `materials`.`code`, `materials`.`name`, `materials`.`qrcode`, `materials`.`category_id`, `materials`.`unit_id`, `materials`.`description`, `materials`.`reorder_level`, `materials`.`reorder_quantity`, `materials`.`unit_cost`, `materials`.`is_perishable`, `materials`.`shelf_life_days`, `materials`.`is_active`, `materials`.`created_at`, `materials`.`updated_at`, `material_categories`.`name` as `category_name`, `material_categories`.`code` as `category_code`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbreviation`
+FROM `materials`
+LEFT JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `materials`.`deleted_at` IS NULL
+GROUP BY `materials`.`id`
+ORDER BY `materials`.`id` ASC')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `materials`.`id`, `materials`.`code`, `materials`.`name`, `materials`.`qrcode`, `materials`.`category_id`, `materials`.`unit_id`, `materials`.`description`, `materials`.`reorder_level`, `materials`.`reorder_quantity`, `materials`.`unit_cost`, `materials`.`is_perishable`, `materials`.`shelf_life_days`, `materials`.`is_active`, `materials`.`created_at`, `materials`.`updated_at`, `material_categories`.`name` as `category_name`, `material_categories`.`code` as `category_code`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbreviation`
+FROM `materials`
+LEFT JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `materials`.`deleted_at` IS NULL
+GROUP BY `materials`.`id`
+ORDER BY `materials`.`id` ASC', [], false)
+ 5 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 6 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 7 APPPATH\Models\MaterialModel.php(179): CodeIgniter\BaseModel->findAll()
+ 8 APPPATH\Controllers\ITAdministratorController.php(2265): App\Models\MaterialModel->getMaterialsWithDetails()
+ 9 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->materials()
+10 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+11 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+12 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+13 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+14 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2025-12-17 03:49:05 --> mysqli_sql_exception: Unknown column 'inventory.deleted_at' in 'where clause' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `invento...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `invento...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `invento...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `invento...', Array, false)
+#4 C:\xampp\htdocs\WITMS\system\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\WITMS\system\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+#6 C:\xampp\htdocs\WITMS\app\Models\InventoryModel.php(195): CodeIgniter\BaseModel->findAll()
+#7 C:\xampp\htdocs\WITMS\app\Controllers\ITAdministratorController.php(2065): App\Models\InventoryModel->getInventoryWithDetails()
+#8 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(933): App\Controllers\ITAdministratorController->inventory()
+#9 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+#10 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#11 C:\xampp\htdocs\WITMS\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#12 C:\xampp\htdocs\WITMS\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#13 C:\xampp\htdocs\WITMS\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#14 {main}
+CRITICAL - 2025-12-17 03:49:05 --> CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'inventory.deleted_at' in 'where clause'
+[Method: GET, Route: it-administrator/inventory]
+in SYSTEMPATH\Database\BaseConnection.php on line 684.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `inventory`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`qrcode` as `material_qrcode`, `materials`.`unit_cost`, `materials`.`reorder_level`, `material_categories`.`name` as `category_name`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbr`, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+WHERE `inventory`.`deleted_at` IS NULL', [], false)
+ 2 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 3 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 4 APPPATH\Models\InventoryModel.php(195): CodeIgniter\BaseModel->findAll()
+ 5 APPPATH\Controllers\ITAdministratorController.php(2065): App\Models\InventoryModel->getInventoryWithDetails()
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->inventory()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 03:49:05 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'inventory.deleted_at' in 'where clause'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `inventory`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`qrcode` as `material_qrcode`, `materials`.`unit_cost`, `materials`.`reorder_level`, `material_categories`.`name` as `category_name`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbr`, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+WHERE `inventory`.`deleted_at` IS NULL')
+ 2 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `inventory`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`qrcode` as `material_qrcode`, `materials`.`unit_cost`, `materials`.`reorder_level`, `material_categories`.`name` as `category_name`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbr`, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+WHERE `inventory`.`deleted_at` IS NULL')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `inventory`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`qrcode` as `material_qrcode`, `materials`.`unit_cost`, `materials`.`reorder_level`, `material_categories`.`name` as `category_name`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbr`, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+WHERE `inventory`.`deleted_at` IS NULL', [], false)
+ 4 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 5 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 6 APPPATH\Models\InventoryModel.php(195): CodeIgniter\BaseModel->findAll()
+ 7 APPPATH\Controllers\ITAdministratorController.php(2065): App\Models\InventoryModel->getInventoryWithDetails()
+ 8 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->inventory()
+ 9 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+10 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 03:49:05 --> [Caused by] mysqli_sql_exception: Unknown column 'inventory.deleted_at' in 'where clause'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `inventory`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`qrcode` as `material_qrcode`, `materials`.`unit_cost`, `materials`.`reorder_level`, `material_categories`.`name` as `category_name`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbr`, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+WHERE `inventory`.`deleted_at` IS NULL', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `inventory`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`qrcode` as `material_qrcode`, `materials`.`unit_cost`, `materials`.`reorder_level`, `material_categories`.`name` as `category_name`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbr`, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+WHERE `inventory`.`deleted_at` IS NULL')
+ 3 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `inventory`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`qrcode` as `material_qrcode`, `materials`.`unit_cost`, `materials`.`reorder_level`, `material_categories`.`name` as `category_name`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbr`, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+WHERE `inventory`.`deleted_at` IS NULL')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `inventory`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`qrcode` as `material_qrcode`, `materials`.`unit_cost`, `materials`.`reorder_level`, `material_categories`.`name` as `category_name`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbr`, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+WHERE `inventory`.`deleted_at` IS NULL', [], false)
+ 5 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 6 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 7 APPPATH\Models\InventoryModel.php(195): CodeIgniter\BaseModel->findAll()
+ 8 APPPATH\Controllers\ITAdministratorController.php(2065): App\Models\InventoryModel->getInventoryWithDetails()
+ 9 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->inventory()
+10 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+11 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+12 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+13 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+14 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2025-12-17 03:49:06 --> mysqli_sql_exception: Unknown column 'materials.deleted_at' in 'where clause' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `materia...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `materia...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `materia...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `materia...', Array, false)
+#4 C:\xampp\htdocs\WITMS\system\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\WITMS\system\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+#6 C:\xampp\htdocs\WITMS\app\Models\MaterialModel.php(179): CodeIgniter\BaseModel->findAll()
+#7 C:\xampp\htdocs\WITMS\app\Controllers\ITAdministratorController.php(2265): App\Models\MaterialModel->getMaterialsWithDetails()
+#8 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(933): App\Controllers\ITAdministratorController->materials()
+#9 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+#10 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#11 C:\xampp\htdocs\WITMS\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#12 C:\xampp\htdocs\WITMS\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#13 C:\xampp\htdocs\WITMS\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#14 {main}
+CRITICAL - 2025-12-17 03:49:06 --> CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'materials.deleted_at' in 'where clause'
+[Method: GET, Route: it-administrator/materials]
+in SYSTEMPATH\Database\BaseConnection.php on line 684.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `materials`.`id`, `materials`.`code`, `materials`.`name`, `materials`.`qrcode`, `materials`.`category_id`, `materials`.`unit_id`, `materials`.`description`, `materials`.`reorder_level`, `materials`.`reorder_quantity`, `materials`.`unit_cost`, `materials`.`is_perishable`, `materials`.`shelf_life_days`, `materials`.`is_active`, `materials`.`created_at`, `materials`.`updated_at`, `material_categories`.`name` as `category_name`, `material_categories`.`code` as `category_code`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbreviation`
+FROM `materials`
+LEFT JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `materials`.`deleted_at` IS NULL
+GROUP BY `materials`.`id`
+ORDER BY `materials`.`id` ASC', [], false)
+ 2 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 3 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 4 APPPATH\Models\MaterialModel.php(179): CodeIgniter\BaseModel->findAll()
+ 5 APPPATH\Controllers\ITAdministratorController.php(2265): App\Models\MaterialModel->getMaterialsWithDetails()
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->materials()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 03:49:06 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'materials.deleted_at' in 'where clause'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `materials`.`id`, `materials`.`code`, `materials`.`name`, `materials`.`qrcode`, `materials`.`category_id`, `materials`.`unit_id`, `materials`.`description`, `materials`.`reorder_level`, `materials`.`reorder_quantity`, `materials`.`unit_cost`, `materials`.`is_perishable`, `materials`.`shelf_life_days`, `materials`.`is_active`, `materials`.`created_at`, `materials`.`updated_at`, `material_categories`.`name` as `category_name`, `material_categories`.`code` as `category_code`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbreviation`
+FROM `materials`
+LEFT JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `materials`.`deleted_at` IS NULL
+GROUP BY `materials`.`id`
+ORDER BY `materials`.`id` ASC')
+ 2 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `materials`.`id`, `materials`.`code`, `materials`.`name`, `materials`.`qrcode`, `materials`.`category_id`, `materials`.`unit_id`, `materials`.`description`, `materials`.`reorder_level`, `materials`.`reorder_quantity`, `materials`.`unit_cost`, `materials`.`is_perishable`, `materials`.`shelf_life_days`, `materials`.`is_active`, `materials`.`created_at`, `materials`.`updated_at`, `material_categories`.`name` as `category_name`, `material_categories`.`code` as `category_code`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbreviation`
+FROM `materials`
+LEFT JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `materials`.`deleted_at` IS NULL
+GROUP BY `materials`.`id`
+ORDER BY `materials`.`id` ASC')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `materials`.`id`, `materials`.`code`, `materials`.`name`, `materials`.`qrcode`, `materials`.`category_id`, `materials`.`unit_id`, `materials`.`description`, `materials`.`reorder_level`, `materials`.`reorder_quantity`, `materials`.`unit_cost`, `materials`.`is_perishable`, `materials`.`shelf_life_days`, `materials`.`is_active`, `materials`.`created_at`, `materials`.`updated_at`, `material_categories`.`name` as `category_name`, `material_categories`.`code` as `category_code`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbreviation`
+FROM `materials`
+LEFT JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `materials`.`deleted_at` IS NULL
+GROUP BY `materials`.`id`
+ORDER BY `materials`.`id` ASC', [], false)
+ 4 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 5 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 6 APPPATH\Models\MaterialModel.php(179): CodeIgniter\BaseModel->findAll()
+ 7 APPPATH\Controllers\ITAdministratorController.php(2265): App\Models\MaterialModel->getMaterialsWithDetails()
+ 8 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->materials()
+ 9 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+10 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 03:49:06 --> [Caused by] mysqli_sql_exception: Unknown column 'materials.deleted_at' in 'where clause'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `materials`.`id`, `materials`.`code`, `materials`.`name`, `materials`.`qrcode`, `materials`.`category_id`, `materials`.`unit_id`, `materials`.`description`, `materials`.`reorder_level`, `materials`.`reorder_quantity`, `materials`.`unit_cost`, `materials`.`is_perishable`, `materials`.`shelf_life_days`, `materials`.`is_active`, `materials`.`created_at`, `materials`.`updated_at`, `material_categories`.`name` as `category_name`, `material_categories`.`code` as `category_code`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbreviation`
+FROM `materials`
+LEFT JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `materials`.`deleted_at` IS NULL
+GROUP BY `materials`.`id`
+ORDER BY `materials`.`id` ASC', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `materials`.`id`, `materials`.`code`, `materials`.`name`, `materials`.`qrcode`, `materials`.`category_id`, `materials`.`unit_id`, `materials`.`description`, `materials`.`reorder_level`, `materials`.`reorder_quantity`, `materials`.`unit_cost`, `materials`.`is_perishable`, `materials`.`shelf_life_days`, `materials`.`is_active`, `materials`.`created_at`, `materials`.`updated_at`, `material_categories`.`name` as `category_name`, `material_categories`.`code` as `category_code`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbreviation`
+FROM `materials`
+LEFT JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `materials`.`deleted_at` IS NULL
+GROUP BY `materials`.`id`
+ORDER BY `materials`.`id` ASC')
+ 3 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `materials`.`id`, `materials`.`code`, `materials`.`name`, `materials`.`qrcode`, `materials`.`category_id`, `materials`.`unit_id`, `materials`.`description`, `materials`.`reorder_level`, `materials`.`reorder_quantity`, `materials`.`unit_cost`, `materials`.`is_perishable`, `materials`.`shelf_life_days`, `materials`.`is_active`, `materials`.`created_at`, `materials`.`updated_at`, `material_categories`.`name` as `category_name`, `material_categories`.`code` as `category_code`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbreviation`
+FROM `materials`
+LEFT JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `materials`.`deleted_at` IS NULL
+GROUP BY `materials`.`id`
+ORDER BY `materials`.`id` ASC')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `materials`.`id`, `materials`.`code`, `materials`.`name`, `materials`.`qrcode`, `materials`.`category_id`, `materials`.`unit_id`, `materials`.`description`, `materials`.`reorder_level`, `materials`.`reorder_quantity`, `materials`.`unit_cost`, `materials`.`is_perishable`, `materials`.`shelf_life_days`, `materials`.`is_active`, `materials`.`created_at`, `materials`.`updated_at`, `material_categories`.`name` as `category_name`, `material_categories`.`code` as `category_code`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbreviation`
+FROM `materials`
+LEFT JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+LEFT JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+WHERE `materials`.`deleted_at` IS NULL
+GROUP BY `materials`.`id`
+ORDER BY `materials`.`id` ASC', [], false)
+ 5 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 6 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 7 APPPATH\Models\MaterialModel.php(179): CodeIgniter\BaseModel->findAll()
+ 8 APPPATH\Controllers\ITAdministratorController.php(2265): App\Models\MaterialModel->getMaterialsWithDetails()
+ 9 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->materials()
+10 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+11 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+12 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+13 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+14 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2025-12-17 03:49:07 --> mysqli_sql_exception: Unknown column 'inventory.deleted_at' in 'where clause' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `invento...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `invento...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `invento...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `invento...', Array, false)
+#4 C:\xampp\htdocs\WITMS\system\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\WITMS\system\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+#6 C:\xampp\htdocs\WITMS\app\Models\InventoryModel.php(195): CodeIgniter\BaseModel->findAll()
+#7 C:\xampp\htdocs\WITMS\app\Controllers\ITAdministratorController.php(2065): App\Models\InventoryModel->getInventoryWithDetails()
+#8 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(933): App\Controllers\ITAdministratorController->inventory()
+#9 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+#10 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#11 C:\xampp\htdocs\WITMS\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#12 C:\xampp\htdocs\WITMS\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#13 C:\xampp\htdocs\WITMS\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#14 {main}
+CRITICAL - 2025-12-17 03:49:07 --> CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'inventory.deleted_at' in 'where clause'
+[Method: GET, Route: it-administrator/inventory]
+in SYSTEMPATH\Database\BaseConnection.php on line 684.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `inventory`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`qrcode` as `material_qrcode`, `materials`.`unit_cost`, `materials`.`reorder_level`, `material_categories`.`name` as `category_name`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbr`, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+WHERE `inventory`.`deleted_at` IS NULL', [], false)
+ 2 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 3 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 4 APPPATH\Models\InventoryModel.php(195): CodeIgniter\BaseModel->findAll()
+ 5 APPPATH\Controllers\ITAdministratorController.php(2065): App\Models\InventoryModel->getInventoryWithDetails()
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->inventory()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 03:49:07 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'inventory.deleted_at' in 'where clause'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `inventory`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`qrcode` as `material_qrcode`, `materials`.`unit_cost`, `materials`.`reorder_level`, `material_categories`.`name` as `category_name`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbr`, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+WHERE `inventory`.`deleted_at` IS NULL')
+ 2 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `inventory`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`qrcode` as `material_qrcode`, `materials`.`unit_cost`, `materials`.`reorder_level`, `material_categories`.`name` as `category_name`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbr`, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+WHERE `inventory`.`deleted_at` IS NULL')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `inventory`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`qrcode` as `material_qrcode`, `materials`.`unit_cost`, `materials`.`reorder_level`, `material_categories`.`name` as `category_name`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbr`, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+WHERE `inventory`.`deleted_at` IS NULL', [], false)
+ 4 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 5 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 6 APPPATH\Models\InventoryModel.php(195): CodeIgniter\BaseModel->findAll()
+ 7 APPPATH\Controllers\ITAdministratorController.php(2065): App\Models\InventoryModel->getInventoryWithDetails()
+ 8 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->inventory()
+ 9 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+10 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 03:49:07 --> [Caused by] mysqli_sql_exception: Unknown column 'inventory.deleted_at' in 'where clause'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `inventory`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`qrcode` as `material_qrcode`, `materials`.`unit_cost`, `materials`.`reorder_level`, `material_categories`.`name` as `category_name`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbr`, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+WHERE `inventory`.`deleted_at` IS NULL', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `inventory`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`qrcode` as `material_qrcode`, `materials`.`unit_cost`, `materials`.`reorder_level`, `material_categories`.`name` as `category_name`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbr`, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+WHERE `inventory`.`deleted_at` IS NULL')
+ 3 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `inventory`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`qrcode` as `material_qrcode`, `materials`.`unit_cost`, `materials`.`reorder_level`, `material_categories`.`name` as `category_name`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbr`, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+WHERE `inventory`.`deleted_at` IS NULL')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `inventory`.*, `materials`.`name` as `material_name`, `materials`.`code` as `material_code`, `materials`.`qrcode` as `material_qrcode`, `materials`.`unit_cost`, `materials`.`reorder_level`, `material_categories`.`name` as `category_name`, `units_of_measure`.`name` as `unit_name`, `units_of_measure`.`abbreviation` as `unit_abbr`, `warehouses`.`name` as `warehouse_name`, `warehouses`.`code` as `warehouse_code`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+JOIN `material_categories` ON `material_categories`.`id` = `materials`.`category_id`
+JOIN `units_of_measure` ON `units_of_measure`.`id` = `materials`.`unit_id`
+JOIN `warehouses` ON `warehouses`.`id` = `inventory`.`warehouse_id`
+WHERE `inventory`.`deleted_at` IS NULL', [], false)
+ 5 SYSTEMPATH\Model.php(286): CodeIgniter\Database\BaseBuilder->get()
+ 6 SYSTEMPATH\BaseModel.php(677): CodeIgniter\Model->doFindAll(0, 0)
+ 7 APPPATH\Models\InventoryModel.php(195): CodeIgniter\BaseModel->findAll()
+ 8 APPPATH\Controllers\ITAdministratorController.php(2065): App\Models\InventoryModel->getInventoryWithDetails()
+ 9 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\ITAdministratorController->inventory()
+10 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\ITAdministratorController))
+11 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+12 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+13 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+14 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2025-12-17 03:49:56 --> mysqli_sql_exception: Unknown column 'inventory.deleted_at' in 'where clause' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT SUM(inve...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT SUM(inve...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT SUM(inve...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT SUM(inve...', Array, false)
+#4 C:\xampp\htdocs\WITMS\system\Model.php(330): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\WITMS\system\BaseModel.php(715): CodeIgniter\Model->doFirst()
+#6 C:\xampp\htdocs\WITMS\app\Models\InventoryModel.php(392): CodeIgniter\BaseModel->first()
+#7 C:\xampp\htdocs\WITMS\app\Models\InventoryModel.php(462): App\Models\InventoryModel->getTotalInventoryValue(NULL)
+#8 C:\xampp\htdocs\WITMS\app\Controllers\Dashboard.php(273): App\Models\InventoryModel->getInventoryStats()
+#9 C:\xampp\htdocs\WITMS\app\Controllers\Dashboard.php(70): App\Controllers\Dashboard->getWarehouseStats()
+#10 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(933): App\Controllers\Dashboard->warehouseManager()
+#11 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Dashboard))
+#12 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#13 C:\xampp\htdocs\WITMS\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#14 C:\xampp\htdocs\WITMS\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#15 C:\xampp\htdocs\WITMS\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#16 {main}
+CRITICAL - 2025-12-17 03:49:56 --> CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'inventory.deleted_at' in 'where clause'
+[Method: GET, Route: warehouse-manager/dashboard]
+in SYSTEMPATH\Database\BaseConnection.php on line 684.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT SUM(inventory.quantity * materials.unit_cost) as total_value
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+WHERE `inventory`.`deleted_at` IS NULL
+ LIMIT 1', [], false)
+ 2 SYSTEMPATH\Model.php(330): CodeIgniter\Database\BaseBuilder->get()
+ 3 SYSTEMPATH\BaseModel.php(715): CodeIgniter\Model->doFirst()
+ 4 APPPATH\Models\InventoryModel.php(392): CodeIgniter\BaseModel->first()
+ 5 APPPATH\Models\InventoryModel.php(462): App\Models\InventoryModel->getTotalInventoryValue(null)
+ 6 APPPATH\Controllers\Dashboard.php(273): App\Models\InventoryModel->getInventoryStats()
+ 7 APPPATH\Controllers\Dashboard.php(70): App\Controllers\Dashboard->getWarehouseStats()
+ 8 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Dashboard->warehouseManager()
+ 9 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Dashboard))
+10 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 03:49:56 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'inventory.deleted_at' in 'where clause'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT SUM(inventory.quantity * materials.unit_cost) as total_value
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+WHERE `inventory`.`deleted_at` IS NULL
+ LIMIT 1')
+ 2 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT SUM(inventory.quantity * materials.unit_cost) as total_value
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+WHERE `inventory`.`deleted_at` IS NULL
+ LIMIT 1')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT SUM(inventory.quantity * materials.unit_cost) as total_value
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+WHERE `inventory`.`deleted_at` IS NULL
+ LIMIT 1', [], false)
+ 4 SYSTEMPATH\Model.php(330): CodeIgniter\Database\BaseBuilder->get()
+ 5 SYSTEMPATH\BaseModel.php(715): CodeIgniter\Model->doFirst()
+ 6 APPPATH\Models\InventoryModel.php(392): CodeIgniter\BaseModel->first()
+ 7 APPPATH\Models\InventoryModel.php(462): App\Models\InventoryModel->getTotalInventoryValue(null)
+ 8 APPPATH\Controllers\Dashboard.php(273): App\Models\InventoryModel->getInventoryStats()
+ 9 APPPATH\Controllers\Dashboard.php(70): App\Controllers\Dashboard->getWarehouseStats()
+10 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Dashboard->warehouseManager()
+11 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Dashboard))
+12 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+13 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+14 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+15 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 03:49:56 --> [Caused by] mysqli_sql_exception: Unknown column 'inventory.deleted_at' in 'where clause'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('SELECT SUM(inventory.quantity * materials.unit_cost) as total_value
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+WHERE `inventory`.`deleted_at` IS NULL
+ LIMIT 1', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT SUM(inventory.quantity * materials.unit_cost) as total_value
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+WHERE `inventory`.`deleted_at` IS NULL
+ LIMIT 1')
+ 3 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT SUM(inventory.quantity * materials.unit_cost) as total_value
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+WHERE `inventory`.`deleted_at` IS NULL
+ LIMIT 1')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT SUM(inventory.quantity * materials.unit_cost) as total_value
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+WHERE `inventory`.`deleted_at` IS NULL
+ LIMIT 1', [], false)
+ 5 SYSTEMPATH\Model.php(330): CodeIgniter\Database\BaseBuilder->get()
+ 6 SYSTEMPATH\BaseModel.php(715): CodeIgniter\Model->doFirst()
+ 7 APPPATH\Models\InventoryModel.php(392): CodeIgniter\BaseModel->first()
+ 8 APPPATH\Models\InventoryModel.php(462): App\Models\InventoryModel->getTotalInventoryValue(null)
+ 9 APPPATH\Controllers\Dashboard.php(273): App\Models\InventoryModel->getInventoryStats()
+10 APPPATH\Controllers\Dashboard.php(70): App\Controllers\Dashboard->getWarehouseStats()
+11 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Dashboard->warehouseManager()
+12 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Dashboard))
+13 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+14 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+15 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+16 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2025-12-17 03:50:34 --> mysqli_sql_exception: Duplicate column name 'deleted_at' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('ALTER TABLE `wa...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('ALTER TABLE `wa...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('ALTER TABLE `wa...')
+#3 C:\xampp\htdocs\WITMS\system\Database\Forge.php(772): CodeIgniter\Database\BaseConnection->query('ALTER TABLE `wa...')
+#4 C:\xampp\htdocs\WITMS\app\Database\Migrations\2025-11-10-130000_AddDeletedAtToWarehousesTable.php(11): CodeIgniter\Database\Forge->addColumn('warehouses', Array)
+#5 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(876): App\Database\Migrations\AddDeletedAtToWarehousesTable->up()
+#6 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(182): CodeIgniter\Database\MigrationRunner->migrate('up', Object(stdClass))
+#7 C:\xampp\htdocs\WITMS\system\Commands\Database\Migrate.php(85): CodeIgniter\Database\MigrationRunner->latest(NULL)
+#8 C:\xampp\htdocs\WITMS\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\Migrate->run(Array)
+#9 C:\xampp\htdocs\WITMS\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate', Array)
+#10 C:\xampp\htdocs\WITMS\system\Boot.php(388): CodeIgniter\CLI\Console->run()
+#11 C:\xampp\htdocs\WITMS\system\Boot.php(133): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#12 C:\xampp\htdocs\WITMS\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#13 {main}
+ERROR - 2025-12-17 03:55:33 --> mysqli_sql_exception: Duplicate column name 'department_head_user_id' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('ALTER TABLE `de...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('ALTER TABLE `de...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('ALTER TABLE `de...')
+#3 C:\xampp\htdocs\WITMS\system\Database\Forge.php(772): CodeIgniter\Database\BaseConnection->query('ALTER TABLE `de...')
+#4 C:\xampp\htdocs\WITMS\app\Database\Migrations\2025-11-10-140000_ChangeDepartmentHeadToUserId.php(12): CodeIgniter\Database\Forge->addColumn('departments', Array)
+#5 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(876): App\Database\Migrations\ChangeDepartmentHeadToUserId->up()
+#6 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(182): CodeIgniter\Database\MigrationRunner->migrate('up', Object(stdClass))
+#7 C:\xampp\htdocs\WITMS\system\Commands\Database\Migrate.php(85): CodeIgniter\Database\MigrationRunner->latest(NULL)
+#8 C:\xampp\htdocs\WITMS\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\Migrate->run(Array)
+#9 C:\xampp\htdocs\WITMS\system\CLI\BaseCommand.php(119): CodeIgniter\CLI\Commands->run('migrate', Array)
+#10 C:\xampp\htdocs\WITMS\system\Commands\Database\MigrateRefresh.php(87): CodeIgniter\CLI\BaseCommand->call('migrate', Array)
+#11 C:\xampp\htdocs\WITMS\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\MigrateRefresh->run(Array)
+#12 C:\xampp\htdocs\WITMS\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate:refresh', Array)
+#13 C:\xampp\htdocs\WITMS\system\Boot.php(388): CodeIgniter\CLI\Console->run()
+#14 C:\xampp\htdocs\WITMS\system\Boot.php(133): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#15 C:\xampp\htdocs\WITMS\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#16 {main}
+ERROR - 2025-12-17 03:56:02 --> mysqli_sql_exception: Duplicate column name 'department_head_user_id' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('ALTER TABLE `de...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('ALTER TABLE `de...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('ALTER TABLE `de...')
+#3 C:\xampp\htdocs\WITMS\system\Database\Forge.php(772): CodeIgniter\Database\BaseConnection->query('ALTER TABLE `de...')
+#4 C:\xampp\htdocs\WITMS\app\Database\Migrations\2025-11-10-140000_ChangeDepartmentHeadToUserId.php(12): CodeIgniter\Database\Forge->addColumn('departments', Array)
+#5 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(876): App\Database\Migrations\ChangeDepartmentHeadToUserId->up()
+#6 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(182): CodeIgniter\Database\MigrationRunner->migrate('up', Object(stdClass))
+#7 C:\xampp\htdocs\WITMS\system\Commands\Database\Migrate.php(85): CodeIgniter\Database\MigrationRunner->latest(NULL)
+#8 C:\xampp\htdocs\WITMS\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\Migrate->run(Array)
+#9 C:\xampp\htdocs\WITMS\system\CLI\BaseCommand.php(119): CodeIgniter\CLI\Commands->run('migrate', Array)
+#10 C:\xampp\htdocs\WITMS\system\Commands\Database\MigrateRefresh.php(87): CodeIgniter\CLI\BaseCommand->call('migrate', Array)
+#11 C:\xampp\htdocs\WITMS\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\MigrateRefresh->run(Array)
+#12 C:\xampp\htdocs\WITMS\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate:refresh', Array)
+#13 C:\xampp\htdocs\WITMS\system\Boot.php(388): CodeIgniter\CLI\Console->run()
+#14 C:\xampp\htdocs\WITMS\system\Boot.php(133): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#15 C:\xampp\htdocs\WITMS\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#16 {main}
+CRITICAL - 2025-12-17 03:56:54 --> ErrorException: Cannot declare class App\Database\Migrations\ChangeDepartmentHeadToUserId, because the name is already in use
+[Method: CLI, Route: migrate]
+in APPPATH\Database\Migrations\2025-11-11-040000_ChangeDepartmentHeadToUserId.php on line 7.
+ 1 [internal function]: CodeIgniter\Debug\Exceptions->shutdownHandler()
+ERROR - 2025-12-17 03:57:29 --> mysqli_sql_exception: Duplicate column name 'department_head_user_id' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('ALTER TABLE `de...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('ALTER TABLE `de...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('ALTER TABLE `de...')
+#3 C:\xampp\htdocs\WITMS\system\Database\Forge.php(772): CodeIgniter\Database\BaseConnection->query('ALTER TABLE `de...')
+#4 C:\xampp\htdocs\WITMS\app\Database\Migrations\2025-11-11-040000_ChangeDepartmentHeadToUserId.php(12): CodeIgniter\Database\Forge->addColumn('departments', Array)
+#5 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(876): App\Database\Migrations\ChangeDepartmentHeadToUserId->up()
+#6 C:\xampp\htdocs\WITMS\system\Database\MigrationRunner.php(182): CodeIgniter\Database\MigrationRunner->migrate('up', Object(stdClass))
+#7 C:\xampp\htdocs\WITMS\system\Commands\Database\Migrate.php(85): CodeIgniter\Database\MigrationRunner->latest(NULL)
+#8 C:\xampp\htdocs\WITMS\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\Migrate->run(Array)
+#9 C:\xampp\htdocs\WITMS\system\CLI\BaseCommand.php(119): CodeIgniter\CLI\Commands->run('migrate', Array)
+#10 C:\xampp\htdocs\WITMS\system\Commands\Database\MigrateRefresh.php(87): CodeIgniter\CLI\BaseCommand->call('migrate', Array)
+#11 C:\xampp\htdocs\WITMS\system\CLI\Commands.php(74): CodeIgniter\Commands\Database\MigrateRefresh->run(Array)
+#12 C:\xampp\htdocs\WITMS\system\CLI\Console.php(47): CodeIgniter\CLI\Commands->run('migrate:refresh', Array)
+#13 C:\xampp\htdocs\WITMS\system\Boot.php(388): CodeIgniter\CLI\Console->run()
+#14 C:\xampp\htdocs\WITMS\system\Boot.php(133): CodeIgniter\Boot::runCommand(Object(CodeIgniter\CLI\Console))
+#15 C:\xampp\htdocs\WITMS\spark(87): CodeIgniter\Boot::bootSpark(Object(Config\Paths))
+#16 {main}
+CRITICAL - 2025-12-17 04:14:33 --> ErrorException: Undefined array key "warehouse_id"
+[Method: GET, Route: warehouse-manager/warehouse/map]
+in APPPATH\Controllers\WarehouseManagerController.php on line 1180.
+ 1 APPPATH\Controllers\WarehouseManagerController.php(1180): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "warehouse_id"', 'C:\\xampp\\htdocs\\WITMS\\app\\Controllers\\WarehouseManagerController.php', 1180)
+ 2 [internal function]: App\Controllers\WarehouseManagerController->App\Controllers\{closure}([...])
+ 3 APPPATH\Controllers\WarehouseManagerController.php(1179): array_filter([...], Object(Closure))
+ 4 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->warehouseMap()
+ 5 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 6 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 04:14:36 --> ErrorException: Undefined array key "warehouse_id"
+[Method: GET, Route: warehouse-manager/warehouse/map]
+in APPPATH\Controllers\WarehouseManagerController.php on line 1180.
+ 1 APPPATH\Controllers\WarehouseManagerController.php(1180): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "warehouse_id"', 'C:\\xampp\\htdocs\\WITMS\\app\\Controllers\\WarehouseManagerController.php', 1180)
+ 2 [internal function]: App\Controllers\WarehouseManagerController->App\Controllers\{closure}([...])
+ 3 APPPATH\Controllers\WarehouseManagerController.php(1179): array_filter([...], Object(Closure))
+ 4 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->warehouseMap()
+ 5 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 6 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 7 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 8 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 9 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 04:25:17 --> ErrorException: Undefined array key "warehouse_id"
+[Method: GET, Route: warehouse-manager/warehouse/view/1]
+in APPPATH\Models\WarehouseLocationModel.php on line 340.
+ 1 APPPATH\Models\WarehouseLocationModel.php(340): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "warehouse_id"', 'C:\\xampp\\htdocs\\WITMS\\app\\Models\\WarehouseLocationModel.php', 340)
+ 2 APPPATH\Controllers\WarehouseManagerController.php(1177): App\Models\WarehouseLocationModel->getMapData([...], '1')
+ 3 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->warehouseView('1')
+ 4 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 5 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 7 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 8 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 04:26:48 --> ErrorException: Undefined array key "warehouse_id"
+[Method: GET, Route: warehouse-manager/warehouse/view/1]
+in APPPATH\Models\WarehouseLocationModel.php on line 340.
+ 1 APPPATH\Models\WarehouseLocationModel.php(340): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "warehouse_id"', 'C:\\xampp\\htdocs\\WITMS\\app\\Models\\WarehouseLocationModel.php', 340)
+ 2 APPPATH\Controllers\WarehouseManagerController.php(1180): App\Models\WarehouseLocationModel->getMapData([...], '1')
+ 3 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->warehouseView('1')
+ 4 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 5 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 7 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 8 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 04:27:43 --> ErrorException: Undefined array key "warehouse_id"
+[Method: GET, Route: warehouse-manager/warehouse/view/1]
+in APPPATH\Models\WarehouseLocationModel.php on line 340.
+ 1 APPPATH\Models\WarehouseLocationModel.php(340): CodeIgniter\Debug\Exceptions->errorHandler(2, 'Undefined array key "warehouse_id"', 'C:\\xampp\\htdocs\\WITMS\\app\\Models\\WarehouseLocationModel.php', 340)
+ 2 APPPATH\Controllers\WarehouseManagerController.php(1180): App\Models\WarehouseLocationModel->getMapData([...], '1')
+ 3 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\WarehouseManagerController->warehouseView('1')
+ 4 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\WarehouseManagerController))
+ 5 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 6 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+ 7 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+ 8 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2025-12-17 04:31:08 --> mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '`materials`.`unit_cost`) AS `total_value`
+FROM `inventory`
+JOIN `materials` ON `' at line 1 in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT SUM(`inv...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT SUM(`inv...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT SUM(`inv...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT SUM(`inv...', Array, false)
+#4 C:\xampp\htdocs\WITMS\app\Controllers\Dashboard.php(372): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\WITMS\app\Controllers\Dashboard.php(338): App\Controllers\Dashboard->getTotalInventoryValueForWarehouses(Array)
+#6 C:\xampp\htdocs\WITMS\app\Controllers\Dashboard.php(290): App\Controllers\Dashboard->getInventoryStatsForWarehouses(Array)
+#7 C:\xampp\htdocs\WITMS\app\Controllers\Dashboard.php(85): App\Controllers\Dashboard->getWarehouseStats(Array)
+#8 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(933): App\Controllers\Dashboard->warehouseManager()
+#9 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Dashboard))
+#10 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#11 C:\xampp\htdocs\WITMS\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#12 C:\xampp\htdocs\WITMS\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#13 C:\xampp\htdocs\WITMS\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#14 {main}
+CRITICAL - 2025-12-17 04:31:08 --> CodeIgniter\Database\Exceptions\DatabaseException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '`materials`.`unit_cost`) AS `total_value`
+FROM `inventory`
+JOIN `materials` ON `' at line 1
+[Method: GET, Route: warehouse-manager/dashboard]
+in SYSTEMPATH\Database\BaseConnection.php on line 684.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT SUM(`inventory`.`available_quantity *` `materials`.`unit_cost`) AS `total_value`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+WHERE `inventory`.`available_quantity` > :inventory.available_quantity:
+AND `inventory`.`warehouse_id` IN :inventory.warehouse_id:', [...], false)
+ 2 APPPATH\Controllers\Dashboard.php(372): CodeIgniter\Database\BaseBuilder->get()
+ 3 APPPATH\Controllers\Dashboard.php(338): App\Controllers\Dashboard->getTotalInventoryValueForWarehouses([...])
+ 4 APPPATH\Controllers\Dashboard.php(290): App\Controllers\Dashboard->getInventoryStatsForWarehouses([...])
+ 5 APPPATH\Controllers\Dashboard.php(85): App\Controllers\Dashboard->getWarehouseStats([...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Dashboard->warehouseManager()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Dashboard))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 04:31:08 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '`materials`.`unit_cost`) AS `total_value`
+FROM `inventory`
+JOIN `materials` ON `' at line 1
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT SUM(`inventory`.`available_quantity *` `materials`.`unit_cost`) AS `total_value`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+WHERE `inventory`.`available_quantity` > 0
+AND `inventory`.`warehouse_id` IN (1)')
+ 2 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT SUM(`inventory`.`available_quantity *` `materials`.`unit_cost`) AS `total_value`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+WHERE `inventory`.`available_quantity` > 0
+AND `inventory`.`warehouse_id` IN (1)')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT SUM(`inventory`.`available_quantity *` `materials`.`unit_cost`) AS `total_value`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+WHERE `inventory`.`available_quantity` > :inventory.available_quantity:
+AND `inventory`.`warehouse_id` IN :inventory.warehouse_id:', [...], false)
+ 4 APPPATH\Controllers\Dashboard.php(372): CodeIgniter\Database\BaseBuilder->get()
+ 5 APPPATH\Controllers\Dashboard.php(338): App\Controllers\Dashboard->getTotalInventoryValueForWarehouses([...])
+ 6 APPPATH\Controllers\Dashboard.php(290): App\Controllers\Dashboard->getInventoryStatsForWarehouses([...])
+ 7 APPPATH\Controllers\Dashboard.php(85): App\Controllers\Dashboard->getWarehouseStats([...])
+ 8 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Dashboard->warehouseManager()
+ 9 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Dashboard))
+10 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 04:31:08 --> [Caused by] mysqli_sql_exception: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '`materials`.`unit_cost`) AS `total_value`
+FROM `inventory`
+JOIN `materials` ON `' at line 1
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('SELECT SUM(`inventory`.`available_quantity *` `materials`.`unit_cost`) AS `total_value`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+WHERE `inventory`.`available_quantity` > 0
+AND `inventory`.`warehouse_id` IN (1)', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT SUM(`inventory`.`available_quantity *` `materials`.`unit_cost`) AS `total_value`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+WHERE `inventory`.`available_quantity` > 0
+AND `inventory`.`warehouse_id` IN (1)')
+ 3 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT SUM(`inventory`.`available_quantity *` `materials`.`unit_cost`) AS `total_value`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+WHERE `inventory`.`available_quantity` > 0
+AND `inventory`.`warehouse_id` IN (1)')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT SUM(`inventory`.`available_quantity *` `materials`.`unit_cost`) AS `total_value`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+WHERE `inventory`.`available_quantity` > :inventory.available_quantity:
+AND `inventory`.`warehouse_id` IN :inventory.warehouse_id:', [...], false)
+ 5 APPPATH\Controllers\Dashboard.php(372): CodeIgniter\Database\BaseBuilder->get()
+ 6 APPPATH\Controllers\Dashboard.php(338): App\Controllers\Dashboard->getTotalInventoryValueForWarehouses([...])
+ 7 APPPATH\Controllers\Dashboard.php(290): App\Controllers\Dashboard->getInventoryStatsForWarehouses([...])
+ 8 APPPATH\Controllers\Dashboard.php(85): App\Controllers\Dashboard->getWarehouseStats([...])
+ 9 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Dashboard->warehouseManager()
+10 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Dashboard))
+11 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+12 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+13 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+14 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2025-12-17 04:32:32 --> mysqli_sql_exception: Unknown column 'materials.minimum_stock' in 'field list' in C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php:327
+Stack trace:
+#0 C:\xampp\htdocs\WITMS\system\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `invento...', 0)
+#1 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `invento...')
+#2 C:\xampp\htdocs\WITMS\system\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `invento...')
+#3 C:\xampp\htdocs\WITMS\system\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `invento...', Array, false)
+#4 C:\xampp\htdocs\WITMS\app\Controllers\Dashboard.php(391): CodeIgniter\Database\BaseBuilder->get()
+#5 C:\xampp\htdocs\WITMS\app\Controllers\Dashboard.php(341): App\Controllers\Dashboard->getLowStockItemsForWarehouses(Array)
+#6 C:\xampp\htdocs\WITMS\app\Controllers\Dashboard.php(290): App\Controllers\Dashboard->getInventoryStatsForWarehouses(Array)
+#7 C:\xampp\htdocs\WITMS\app\Controllers\Dashboard.php(85): App\Controllers\Dashboard->getWarehouseStats(Array)
+#8 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(933): App\Controllers\Dashboard->warehouseManager()
+#9 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Dashboard))
+#10 C:\xampp\htdocs\WITMS\system\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(NULL, Object(Config\Cache), false)
+#11 C:\xampp\htdocs\WITMS\system\Boot.php(363): CodeIgniter\CodeIgniter->run()
+#12 C:\xampp\htdocs\WITMS\system\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+#13 C:\xampp\htdocs\WITMS\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+#14 {main}
+CRITICAL - 2025-12-17 04:32:32 --> CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'materials.minimum_stock' in 'field list'
+[Method: GET, Route: warehouse-manager/dashboard]
+in SYSTEMPATH\Database\BaseConnection.php on line 684.
+ 1 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `inventory`.*, `materials`.`reorder_level`, `materials`.`minimum_stock`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+WHERE inventory.available_quantity <= :inventory.available_quantity:
+AND `materials`.`reorder_level` > :materials.reorder_level:
+AND `inventory`.`warehouse_id` IN :inventory.warehouse_id:', [...], false)
+ 2 APPPATH\Controllers\Dashboard.php(391): CodeIgniter\Database\BaseBuilder->get()
+ 3 APPPATH\Controllers\Dashboard.php(341): App\Controllers\Dashboard->getLowStockItemsForWarehouses([...])
+ 4 APPPATH\Controllers\Dashboard.php(290): App\Controllers\Dashboard->getInventoryStatsForWarehouses([...])
+ 5 APPPATH\Controllers\Dashboard.php(85): App\Controllers\Dashboard->getWarehouseStats([...])
+ 6 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Dashboard->warehouseManager()
+ 7 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Dashboard))
+ 8 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+ 9 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+10 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+11 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 04:32:32 --> [Caused by] CodeIgniter\Database\Exceptions\DatabaseException: Unknown column 'materials.minimum_stock' in 'field list'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 332.
+ 1 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `inventory`.*, `materials`.`reorder_level`, `materials`.`minimum_stock`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+WHERE inventory.available_quantity <= materials.reorder_level
+AND `materials`.`reorder_level` > 0
+AND `inventory`.`warehouse_id` IN (1)')
+ 2 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `inventory`.*, `materials`.`reorder_level`, `materials`.`minimum_stock`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+WHERE inventory.available_quantity <= materials.reorder_level
+AND `materials`.`reorder_level` > 0
+AND `inventory`.`warehouse_id` IN (1)')
+ 3 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `inventory`.*, `materials`.`reorder_level`, `materials`.`minimum_stock`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+WHERE inventory.available_quantity <= :inventory.available_quantity:
+AND `materials`.`reorder_level` > :materials.reorder_level:
+AND `inventory`.`warehouse_id` IN :inventory.warehouse_id:', [...], false)
+ 4 APPPATH\Controllers\Dashboard.php(391): CodeIgniter\Database\BaseBuilder->get()
+ 5 APPPATH\Controllers\Dashboard.php(341): App\Controllers\Dashboard->getLowStockItemsForWarehouses([...])
+ 6 APPPATH\Controllers\Dashboard.php(290): App\Controllers\Dashboard->getInventoryStatsForWarehouses([...])
+ 7 APPPATH\Controllers\Dashboard.php(85): App\Controllers\Dashboard->getWarehouseStats([...])
+ 8 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Dashboard->warehouseManager()
+ 9 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Dashboard))
+10 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+11 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+12 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+13 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+CRITICAL - 2025-12-17 04:32:32 --> [Caused by] mysqli_sql_exception: Unknown column 'materials.minimum_stock' in 'field list'
+in SYSTEMPATH\Database\MySQLi\Connection.php on line 327.
+ 1 SYSTEMPATH\Database\MySQLi\Connection.php(327): mysqli->query('SELECT `inventory`.*, `materials`.`reorder_level`, `materials`.`minimum_stock`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+WHERE inventory.available_quantity <= materials.reorder_level
+AND `materials`.`reorder_level` > 0
+AND `inventory`.`warehouse_id` IN (1)', 0)
+ 2 SYSTEMPATH\Database\BaseConnection.php(729): CodeIgniter\Database\MySQLi\Connection->execute('SELECT `inventory`.*, `materials`.`reorder_level`, `materials`.`minimum_stock`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+WHERE inventory.available_quantity <= materials.reorder_level
+AND `materials`.`reorder_level` > 0
+AND `inventory`.`warehouse_id` IN (1)')
+ 3 SYSTEMPATH\Database\BaseConnection.php(646): CodeIgniter\Database\BaseConnection->simpleQuery('SELECT `inventory`.*, `materials`.`reorder_level`, `materials`.`minimum_stock`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+WHERE inventory.available_quantity <= materials.reorder_level
+AND `materials`.`reorder_level` > 0
+AND `inventory`.`warehouse_id` IN (1)')
+ 4 SYSTEMPATH\Database\BaseBuilder.php(1649): CodeIgniter\Database\BaseConnection->query('SELECT `inventory`.*, `materials`.`reorder_level`, `materials`.`minimum_stock`
+FROM `inventory`
+JOIN `materials` ON `materials`.`id` = `inventory`.`material_id`
+WHERE inventory.available_quantity <= :inventory.available_quantity:
+AND `materials`.`reorder_level` > :materials.reorder_level:
+AND `inventory`.`warehouse_id` IN :inventory.warehouse_id:', [...], false)
+ 5 APPPATH\Controllers\Dashboard.php(391): CodeIgniter\Database\BaseBuilder->get()
+ 6 APPPATH\Controllers\Dashboard.php(341): App\Controllers\Dashboard->getLowStockItemsForWarehouses([...])
+ 7 APPPATH\Controllers\Dashboard.php(290): App\Controllers\Dashboard->getInventoryStatsForWarehouses([...])
+ 8 APPPATH\Controllers\Dashboard.php(85): App\Controllers\Dashboard->getWarehouseStats([...])
+ 9 SYSTEMPATH\CodeIgniter.php(933): App\Controllers\Dashboard->warehouseManager()
+10 SYSTEMPATH\CodeIgniter.php(507): CodeIgniter\CodeIgniter->runController(Object(App\Controllers\Dashboard))
+11 SYSTEMPATH\CodeIgniter.php(354): CodeIgniter\CodeIgniter->handleRequest(null, Object(Config\Cache), false)
+12 SYSTEMPATH\Boot.php(363): CodeIgniter\CodeIgniter->run()
+13 SYSTEMPATH\Boot.php(68): CodeIgniter\Boot::runCodeIgniter(Object(CodeIgniter\CodeIgniter))
+14 FCPATH\index.php(59): CodeIgniter\Boot::bootWeb(Object(Config\Paths))
+ERROR - 2025-12-17 05:09:48 --> Failed to create user: {"password":"Password must contain uppercase, lowercase, number, and special character."}
+ERROR - 2025-12-17 05:10:16 --> Error assigning user to warehouse: There is no data to update.
+ERROR - 2025-12-17 05:52:02 --> WarehouseStaff access denied - Role mismatch or not logged in
+ERROR - 2025-12-17 05:52:02 --> Expected one of: Warehouse Staff, warehouse staff, Warehouse Manager, warehouse manager, Got: "IT Administrator"

@@ -10,7 +10,7 @@ class InventoryModel extends Model
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = false;
+    protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [
         'material_id',
@@ -84,9 +84,9 @@ class InventoryModel extends Model
 
     // Callbacks
     protected $allowCallbacks = true;
-    protected $beforeInsert   = ['calculateAvailable'];
+    protected $beforeInsert   = ['generateBatchNumber', 'calculateAvailable'];
     protected $afterInsert    = [];
-    protected $beforeUpdate   = ['calculateAvailable'];
+    protected $beforeUpdate   = ['generateBatchNumber', 'calculateAvailable'];
     protected $afterUpdate    = [];
     protected $beforeFind     = [];
     protected $afterFind      = [];
@@ -125,6 +125,75 @@ class InventoryModel extends Model
         // Calculate available_quantity and ensure it's never negative
         $available = $quantity - $reserved;
         $data['data']['available_quantity'] = max(0, $available);
+        
+        return $data;
+    }
+
+    /**
+     * Generate batch number if not provided
+     */
+    protected function generateBatchNumber(array $data)
+    {
+        // Only generate if batch_number is empty
+        if (empty($data['data']['batch_number'])) {
+            $date = date('Ymd');
+            
+            // For updates, get existing record to retrieve material_id and warehouse_id if not in data
+            $materialId = $data['data']['material_id'] ?? null;
+            $warehouseId = $data['data']['warehouse_id'] ?? null;
+            
+            // If updating and IDs not in data, get from existing record
+            if (isset($data['id']) && is_array($data['id']) && isset($data['id'][0])) {
+                $existing = $this->find($data['id'][0]);
+                if ($existing) {
+                    $materialId = $materialId ?? $existing['material_id'] ?? null;
+                    $warehouseId = $warehouseId ?? $existing['warehouse_id'] ?? null;
+                }
+            }
+            
+            // Get material code if available for better batch identification
+            $materialCode = '';
+            if ($materialId) {
+                $materialModel = new \App\Models\MaterialModel();
+                $material = $materialModel->find($materialId);
+                if ($material && !empty($material['code'])) {
+                    $materialCode = strtoupper(substr($material['code'], 0, 6));
+                }
+            }
+            
+            // Get warehouse code if available
+            $warehouseCode = '';
+            if ($warehouseId) {
+                $warehouseModel = new \App\Models\WarehouseModel();
+                $warehouse = $warehouseModel->find($warehouseId);
+                if ($warehouse && !empty($warehouse['code'])) {
+                    $warehouseCode = strtoupper(substr($warehouse['code'], 0, 3));
+                }
+            }
+            
+            // Build prefix
+            $prefix = 'BATCH';
+            if ($materialCode && $warehouseCode) {
+                $prefix = $warehouseCode . '-' . $materialCode;
+            } elseif ($warehouseCode) {
+                $prefix = $warehouseCode . '-BATCH';
+            } elseif ($materialCode) {
+                $prefix = $materialCode . '-BATCH';
+            }
+            
+            // Find the next available number for today with this prefix
+            $lastBatch = $this->where('batch_number LIKE', "{$prefix}-{$date}%")
+                             ->orderBy('batch_number', 'DESC')
+                             ->first();
+            
+            $nextNumber = 1;
+            if ($lastBatch && !empty($lastBatch['batch_number'])) {
+                $lastNumber = (int) substr($lastBatch['batch_number'], -4);
+                $nextNumber = $lastNumber + 1;
+            }
+            
+            $data['data']['batch_number'] = "{$prefix}-{$date}-" . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+        }
         
         return $data;
     }

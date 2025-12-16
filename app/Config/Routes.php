@@ -49,6 +49,7 @@ $routes->group('warehouse-manager', function ($routes) {
     $routes->get('inventory', 'WarehouseManagerController::inventory');
     $routes->get('inventory/add', 'WarehouseManagerController::inventoryAdd');
     $routes->post('inventory/store', 'WarehouseManagerController::inventoryStore');
+    $routes->post('inventory/get-material-quantity', 'WarehouseManagerController::getMaterialQuantity');
     $routes->get('inventory/edit/(:num)', 'WarehouseManagerController::inventoryEdit/$1');
     $routes->post('inventory/update/(:num)', 'WarehouseManagerController::inventoryUpdate/$1');
     $routes->get('inventory/view/(:num)', 'WarehouseManagerController::inventoryView/$1');
@@ -162,9 +163,15 @@ $routes->group('warehouse-staff', function ($routes) {
     $routes->get('ajax/generate-requisition', 'WarehouseStaffController::generateRequisitionNumber');
     
     // Process scanned items actions
+    $routes->post('scan/process-receive', 'WarehouseStaffController::processReceiveFromScanned');
     $routes->post('scan/process-issue', 'WarehouseStaffController::processIssueFromScanned');
     $routes->post('scan/process-transfer', 'WarehouseStaffController::processTransferFromScanned');
     $routes->post('scan/process-adjust', 'WarehouseStaffController::processAdjustFromScanned');
+    
+    // Additional AJAX endpoints
+    $routes->get('ajax/unassigned-warehouses', 'WarehouseStaffController::getUnassignedWarehouses');
+    $routes->get('ajax/generate-po', 'WarehouseStaffController::generatePONumber');
+    $routes->get('ajax/generate-transfer-reference', 'WarehouseStaffController::generateTransferReference');
 });
 
 // ==========================================
@@ -183,6 +190,7 @@ $routes->group('it-administrator', function ($routes) {
     $routes->get('warehouse-assignments', 'ITAdministratorController::warehouseAssignments');
     $routes->post('warehouse-assignments/assign', 'ITAdministratorController::assignUserToWarehouse');
     $routes->post('warehouse-assignments/remove', 'ITAdministratorController::removeUserFromWarehouse');
+    $routes->post('warehouse-assignments/reactivate', 'ITAdministratorController::reactivateAssignment');
     $routes->post('warehouse-assignments/set-primary', 'ITAdministratorController::setPrimaryWarehouse');
     $routes->post('warehouse-assignments/get-user-warehouses', 'ITAdministratorController::getUserWarehouses');
     
@@ -219,4 +227,18 @@ $routes->group('it-administrator', function ($routes) {
     $routes->post('warehouse-management/get', 'ITAdministratorController::getWarehouse');
     $routes->post('warehouse-management/update', 'ITAdministratorController::updateWarehouse');
     $routes->post('warehouse-management/delete', 'ITAdministratorController::deleteWarehouse');
+    
+    // Inventory Management (Full CRUD)
+    $routes->get('inventory', 'ITAdministratorController::inventory');
+    $routes->post('inventory/create', 'ITAdministratorController::createInventory');
+    $routes->post('inventory/get', 'ITAdministratorController::getInventory');
+    $routes->post('inventory/update', 'ITAdministratorController::updateInventory');
+    $routes->post('inventory/delete', 'ITAdministratorController::deleteInventory');
+    
+    // Materials Management (Full CRUD)
+    $routes->get('materials', 'ITAdministratorController::materials');
+    $routes->post('materials/create', 'ITAdministratorController::createMaterial');
+    $routes->post('materials/get', 'ITAdministratorController::getMaterial');
+    $routes->post('materials/update', 'ITAdministratorController::updateMaterial');
+    $routes->post('materials/delete', 'ITAdministratorController::deleteMaterial');
 });

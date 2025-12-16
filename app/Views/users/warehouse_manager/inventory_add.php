@@ -51,31 +51,39 @@
                                 </div>
                             <?php endif; ?>
 
-                            <form action="<?= base_url('warehouse-manager/inventory/store') ?>" method="post">
+                            <form action="<?= base_url('warehouse-manager/inventory/store') ?>" method="post" id="addStockForm">
                                 <?= csrf_field() ?>
                                 
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Material <span class="text-danger">*</span></label>
-                                        <select name="material_id" class="form-select" required>
+                                        <select name="material_id" id="material_id" class="form-select" required>
                                             <option value="">Select Material</option>
                                             <?php if (!empty($materials)): ?>
                                                 <?php foreach ($materials as $material): ?>
-                                                    <option value="<?= $material['id'] ?>">
+                                                    <option value="<?= $material['id'] ?>" 
+                                                            data-code="<?= esc($material['code']) ?>"
+                                                            data-name="<?= esc($material['name']) ?>">
                                                         <?= esc($material['name']) ?> (<?= esc($material['code']) ?>)
                                                     </option>
                                                 <?php endforeach; ?>
                                             <?php endif; ?>
                                         </select>
+                                        <div id="materialQuantityInfo" class="mt-2" style="display: none;">
+                                            <small class="text-info">
+                                                <i class="bi bi-info-circle"></i> 
+                                                <span id="materialQuantityText"></span>
+                                            </small>
+                                        </div>
                                     </div>
 
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Warehouse <span class="text-danger">*</span></label>
-                                        <select name="warehouse_id" class="form-select" required>
+                                        <select name="warehouse_id" id="warehouse_id" class="form-select" required>
                                             <option value="">Select Warehouse</option>
                                             <?php if (!empty($warehouses)): ?>
                                                 <?php foreach ($warehouses as $warehouse): ?>
-                                                    <option value="<?= $warehouse['id'] ?>">
+                                                    <option value="<?= $warehouse['id'] ?>" data-code="<?= esc($warehouse['code']) ?>">
                                                         <?= esc($warehouse['name']) ?>
                                                     </option>
                                                 <?php endforeach; ?>
@@ -92,7 +100,8 @@
 
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Batch Number</label>
-                                        <input type="text" name="batch_number" class="form-control" placeholder="Optional">
+                                        <input type="text" name="batch_number" class="form-control" placeholder="Will be auto-generated on save" readonly>
+                                        <small class="text-muted">Batch number is auto-generated.</small>
                                     </div>
                                 </div>
 
@@ -104,8 +113,8 @@
 
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label">Expiration Date</label>
-                                        <input type="date" name="expiration_date" class="form-control">
-                                        <small class="text-muted">For perishable items only</small>
+                                        <input type="date" name="expiration_date" id="expiration_date" class="form-control" min="<?= date('Y-m-d', strtotime('+1 day')) ?>">
+                                        <small class="text-muted">For perishable items only. Must be a future date.</small>
                                     </div>
                                 </div>
 
@@ -132,5 +141,101 @@
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // Set minimum date for expiration date to tomorrow
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const minDate = tomorrow.toISOString().split('T')[0];
+            $('#expiration_date').attr('min', minDate);
+            
+            // Validate expiration date on change
+            $('#expiration_date').on('change', function() {
+                const selectedDate = new Date($(this).val());
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                if ($(this).val() && selectedDate <= today) {
+                    alert('Expiration date must be in the future. Please select a future date.');
+                    $(this).val('');
+                    $(this).focus();
+                }
+            });
+            
+            // Fetch material quantity when material and warehouse are selected
+            function fetchMaterialQuantity() {
+                const materialId = $('#material_id').val();
+                const warehouseId = $('#warehouse_id').val();
+                const materialQuantityInfo = $('#materialQuantityInfo');
+                const materialQuantityText = $('#materialQuantityText');
+                
+                if (!materialId || !warehouseId) {
+                    materialQuantityInfo.hide();
+                    return;
+                }
+                
+                // Show loading
+                materialQuantityText.html('<i class="bi bi-hourglass-split"></i> Loading quantity...');
+                materialQuantityInfo.show();
+                
+                $.ajax({
+                    url: '<?= base_url('warehouse-manager/inventory/get-material-quantity') ?>',
+                    method: 'POST',
+                    data: {
+                        material_id: materialId,
+                        warehouse_id: warehouseId
+                    },
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            const materialName = $('#material_id option:selected').data('name') || 'Material';
+                            const quantity = parseFloat(response.quantity || 0);
+                            const availableQty = parseFloat(response.available_quantity || 0);
+                            const unit = response.unit || '';
+                            
+                            let text = `<strong>${materialName}</strong> - `;
+                            text += `Total Quantity: <strong>${quantity.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${unit}</strong>`;
+                            if (availableQty !== quantity) {
+                                text += ` | Available: <strong>${availableQty.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} ${unit}</strong>`;
+                            }
+                            
+                            materialQuantityText.html(text);
+                        } else {
+                            materialQuantityText.html('<span class="text-muted">No existing inventory found for this material in this warehouse.</span>');
+                        }
+                    },
+                    error: function() {
+                        materialQuantityText.html('<span class="text-danger">Error loading quantity information.</span>');
+                    }
+                });
+            }
+            
+            // Trigger quantity fetch when material or warehouse changes
+            $('#material_id, #warehouse_id').on('change', fetchMaterialQuantity);
+            
+            // Form validation for expiration date
+            $('#addStockForm').on('submit', function(e) {
+                const expirationDate = $('#expiration_date').val();
+                
+                if (expirationDate) {
+                    const selectedDate = new Date(expirationDate);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    
+                    if (selectedDate <= today) {
+                        e.preventDefault();
+                        alert('Expiration date must be in the future. Please select a future date or leave it empty.');
+                        $('#expiration_date').focus();
+                        return false;
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>

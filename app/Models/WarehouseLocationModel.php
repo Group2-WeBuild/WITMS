@@ -37,17 +37,20 @@ class WarehouseLocationModel extends Model
         'barangay'       => 'permit_empty|max_length[100]',
         'province'       => 'permit_empty|max_length[100]',
         'region'         => 'permit_empty|max_length[100]',
-        'postal_code'    => 'permit_empty|max_length[20]',
+        'postal_code'    => 'permit_empty|max_length[20]|regex_match[/^\d+$/]',
         'latitude'       => 'permit_empty|decimal',
         'longitude'      => 'permit_empty|decimal',
     ];
-
+    
     protected $validationMessages = [
         'city' => [
             'required' => 'City is required'
         ],
         'country' => [
             'required' => 'Country is required'
+        ],
+        'postal_code' => [
+            'regex_match' => 'Postal code must contain numbers only. Special characters and letters are not allowed.'
         ]
     ];
 
@@ -192,6 +195,114 @@ class WarehouseLocationModel extends Model
     }
 
     /**
+     * Get all unique provinces
+     */
+    public function getAllProvinces()
+    {
+        return $this->select('province')
+                    ->distinct()
+                    ->where('province IS NOT NULL')
+                    ->orderBy('province', 'ASC')
+                    ->findAll();
+    }
+
+    /**
+     * Get all unique provinces by region
+     */
+    public function getProvincesByRegion($region)
+    {
+        return $this->select('province')
+                    ->distinct()
+                    ->where('region', $region)
+                    ->where('province IS NOT NULL')
+                    ->orderBy('province', 'ASC')
+                    ->findAll();
+    }
+
+    /**
+     * Get all cities by province
+     */
+    public function getCitiesByProvince($province)
+    {
+        return $this->select('city, id')
+                    ->where('province', $province)
+                    ->orderBy('city', 'ASC')
+                    ->findAll();
+    }
+
+    /**
+     * Get all cities by region
+     */
+    public function getCitiesByRegion($region)
+    {
+        return $this->select('city, id, province')
+                    ->where('region', $region)
+                    ->orderBy('city', 'ASC')
+                    ->findAll();
+    }
+
+    /**
+     * Get dropdown data for location selection
+     * Returns structured data for cascading dropdowns (Region -> Province -> City)
+     */
+    public function getDropdownData()
+    {
+        $regions = $this->getAllRegions();
+        $data = [];
+        
+        foreach ($regions as $regionRow) {
+            $region = $regionRow['region'];
+            $provinces = $this->getProvincesByRegion($region);
+            
+            $regionData = [
+                'region' => $region,
+                'provinces' => []
+            ];
+            
+            foreach ($provinces as $provinceRow) {
+                $province = $provinceRow['province'];
+                $cities = $this->getCitiesByProvince($province);
+                
+                $provinceData = [
+                    'province' => $province,
+                    'cities' => array_map(function($city) {
+                        return [
+                            'id' => $city['id'],
+                            'city' => $city['city']
+                        ];
+                    }, $cities)
+                ];
+                
+                $regionData['provinces'][] = $provinceData;
+            }
+            
+            $data[] = $regionData;
+        }
+        
+        return $data;
+    }
+
+    /**
+     * Get location details by ID for dropdown display
+     */
+    public function getLocationForDropdown($locationId)
+    {
+        $location = $this->find($locationId);
+        if (!$location) {
+            return null;
+        }
+        
+        return [
+            'id' => $location['id'],
+            'display' => $location['city'] . ', ' . $location['province'] . ' (' . $location['region'] . ')',
+            'city' => $location['city'],
+            'province' => $location['province'],
+            'region' => $location['region'],
+            'full_address' => $this->formatAddress($location)
+        ];
+    }
+
+    /**
      * Check if location has coordinates for Google Maps
      */
     public function hasCoordinates($location)
@@ -226,7 +337,7 @@ class WarehouseLocationModel extends Model
     {
         $mapData = [
             'id'           => $location['id'],
-            'warehouse_id' => $location['warehouse_id'],
+            'warehouse_id' => $warehouseId ?? $location['warehouse_id'] ?? null,
             'title'        => $location['city'] ?? 'Warehouse Location',
             'address'      => $this->formatAddress($location),
             'shortAddress' => $this->getShortAddress($location),

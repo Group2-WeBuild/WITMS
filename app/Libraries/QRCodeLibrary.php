@@ -10,7 +10,6 @@ use chillerlan\QRCode\Output\QRGdImagePNG;
 
 class QRCodeLibrary
 {
-    protected $qrCode;
     protected $options;
 
     public function __construct()
@@ -44,8 +43,15 @@ class QRCodeLibrary
                 QRMatrix::M_DATA           => [255, 255, 255], // White for data light
             ],
         ]);
-        
-        $this->qrCode = new QRCode($this->options);
+    }
+
+    /**
+     * Create a fresh QRCode instance for each generation
+     * This prevents data accumulation between renders
+     */
+    private function createQRCode()
+    {
+        return new QRCode($this->options);
     }
 
     /**
@@ -68,14 +74,17 @@ class QRCodeLibrary
         
         $qrData = json_encode($data, JSON_UNESCAPED_UNICODE);
         
+        // Create a fresh QRCode instance to prevent data accumulation
+        $qrCode = $this->createQRCode();
+        
         // If file path is provided, let the library save directly
         if ($filePath !== null) {
-            $this->qrCode->render($qrData, $filePath);
+            $qrCode->render($qrData, $filePath);
             return $filePath; // Return the file path
         }
         
         // Otherwise return the image data
-        return $this->qrCode->render($qrData);
+        return $qrCode->render($qrData);
     }
 
     /**
@@ -103,14 +112,17 @@ class QRCodeLibrary
         
         $qrData = json_encode($data, JSON_UNESCAPED_UNICODE);
         
+        // Create a fresh QRCode instance to prevent data accumulation
+        $qrCode = $this->createQRCode();
+        
         // If file path is provided, let the library save directly
         if ($filePath !== null) {
-            $this->qrCode->render($qrData, $filePath);
+            $qrCode->render($qrData, $filePath);
             return $filePath; // Return the file path
         }
         
         // Otherwise return the image data
-        return $this->qrCode->render($qrData);
+        return $qrCode->render($qrData);
     }
 
     /**
@@ -131,7 +143,10 @@ class QRCodeLibrary
         }
         
         $qrData = json_encode($data, JSON_UNESCAPED_UNICODE);
-        return $this->qrCode->render($qrData);
+        
+        // Create a fresh QRCode instance to prevent data accumulation
+        $qrCode = $this->createQRCode();
+        return $qrCode->render($qrData);
     }
 
     /**
@@ -147,7 +162,10 @@ class QRCodeLibrary
         ];
         
         $qrData = json_encode($data, JSON_UNESCAPED_UNICODE);
-        return $this->qrCode->render($qrData);
+        
+        // Create a fresh QRCode instance to prevent data accumulation
+        $qrCode = $this->createQRCode();
+        return $qrCode->render($qrData);
     }
 
     /**
@@ -226,7 +244,8 @@ class QRCodeLibrary
      */
     public function generateTextQR($text)
     {
-        return $this->qrCode->render($text);
+        $qrCode = $this->createQRCode();
+        return $qrCode->render($text);
     }
 
     /**
@@ -234,6 +253,7 @@ class QRCodeLibrary
      */
     public function generateURLQR($url)
     {
-        return $this->qrCode->render($url);
+        $qrCode = $this->createQRCode();
+        return $qrCode->render($url);
     }
 }

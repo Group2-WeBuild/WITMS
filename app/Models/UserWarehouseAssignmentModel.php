@@ -164,37 +164,112 @@ class UserWarehouseAssignmentModel extends Model
                         ->where('warehouse_id', $warehouseId)
                         ->first();
 
+        // Ensure is_primary is integer (0 or 1) for validation
+        if (isset($data['is_primary'])) {
+            $data['is_primary'] = $data['is_primary'] ? 1 : 0;
+        }
+        
+        // Ensure is_active is integer (0 or 1) for validation
+        if (isset($data['is_active'])) {
+            $data['is_active'] = $data['is_active'] ? 1 : 0;
+        }
+
         if ($existing) {
             // Update existing assignment
             $updateData = array_merge([
-                'is_active' => true,
+                'is_active' => 1,  // Use integer 1 instead of boolean true
                 'assigned_at' => date('Y-m-d H:i:s'),
                 'assigned_by' => session()->get('user_id')
             ], $data);
             
-            return $this->update($existing['id'], $updateData);
+            // Remove null values to avoid overwriting with null
+            $updateData = array_filter($updateData, function($value) {
+                return $value !== null;
+            });
+            
+            // Always ensure assigned_at is updated (will always be different due to timestamp)
+            // This prevents "no data to update" error when other values are the same
+            $updateData['assigned_at'] = date('Y-m-d H:i:s');
+            $updateData['assigned_by'] = session()->get('user_id');
+            
+            // Temporarily disable updateOnlyChanged to ensure update happens
+            // This is needed because CodeIgniter might skip update if it thinks nothing changed
+            $originalUpdateOnlyChanged = $this->updateOnlyChanged;
+            $this->updateOnlyChanged = false;
+            
+            $result = $this->update($existing['id'], $updateData);
+            
+            // Restore original setting
+            $this->updateOnlyChanged = $originalUpdateOnlyChanged;
+            
+            return $result;
         } else {
             // Create new assignment
             $insertData = array_merge([
                 'user_id' => $userId,
                 'warehouse_id' => $warehouseId,
-                'is_active' => true,
+                'is_active' => 1,  // Use integer 1 instead of boolean true
                 'assigned_at' => date('Y-m-d H:i:s'),
                 'assigned_by' => session()->get('user_id')
             ], $data);
+            
+            // Ensure role_id is set (required)
+            if (!isset($insertData['role_id']) || empty($insertData['role_id'])) {
+                // Get user's default role_id
+                $userModel = new \App\Models\UserModel();
+                $user = $userModel->find($userId);
+                if ($user && isset($user['role_id'])) {
+                    $insertData['role_id'] = $user['role_id'];
+                } else {
+                    log_message('error', 'User does not have a role_id: ' . $userId);
+                    return false;
+                }
+            }
             
             return $this->insert($insertData) ? $this->getInsertID() : false;
         }
     }
 
     /**
-     * Remove user from warehouse (soft delete by setting is_active = false)
+     * Remove user from warehouse (soft delete by setting is_active = 0)
      */
     public function removeUserFromWarehouse($userId, $warehouseId)
     {
-        return $this->where('user_id', $userId)
-                   ->where('warehouse_id', $warehouseId)
-                   ->update(['is_active' => false]);
+        // Find the assignment first
+        $assignment = $this->where('user_id', $userId)
+                          ->where('warehouse_id', $warehouseId)
+                          ->first();
+        
+        if (!$assignment) {
+            log_message('error', 'Assignment not found for user_id: ' . $userId . ', warehouse_id: ' . $warehouseId);
+            return false;
+        }
+        
+        // Check if already inactive
+        if ((int)$assignment['is_active'] === 0) {
+            return true; // Already removed
+        }
+        
+        // Temporarily disable updateOnlyChanged to ensure update happens
+        $originalUpdateOnlyChanged = $this->updateOnlyChanged;
+        $this->updateOnlyChanged = false;
+        
+        // Use the assignment ID directly for update
+        $updateData = [
+            'is_active' => 0  // Use integer 0 instead of boolean false
+        ];
+        
+        $result = $this->update($assignment['id'], $updateData);
+        
+        // Restore original setting
+        $this->updateOnlyChanged = $originalUpdateOnlyChanged;
+        
+        if (!$result) {
+            $errors = $this->errors();
+            log_message('error', 'Failed to remove assignment: ' . json_encode($errors));
+        }
+        
+        return $result;
     }
 
     /**
@@ -202,13 +277,39 @@ class UserWarehouseAssignmentModel extends Model
      */
     public function setPrimaryWarehouse($userId, $warehouseId)
     {
+        // Find the assignment first
+        $assignment = $this->where('user_id', $userId)
+                          ->where('warehouse_id', $warehouseId)
+                          ->first();
+        
+        if (!$assignment) {
+            log_message('error', 'Assignment not found for setPrimaryWarehouse: user_id: ' . $userId . ', warehouse_id: ' . $warehouseId);
+            return false;
+        }
+        
+        // Check if already primary
+        if ((int)$assignment['is_primary'] === 1) {
+            // Already primary, just unset others
+            $this->where('user_id', $userId)
+                 ->where('warehouse_id !=', $warehouseId)
+                 ->update(['is_primary' => 0]);
+            return true;
+        }
+        
+        // Temporarily disable updateOnlyChanged to ensure update happens
+        $originalUpdateOnlyChanged = $this->updateOnlyChanged;
+        $this->updateOnlyChanged = false;
+        
         // First, unset all primary warehouses for this user
-        $this->where('user_id', $userId)->update(['is_primary' => false]);
+        $this->where('user_id', $userId)->update(['is_primary' => 0]);  // Use integer 0 instead of boolean false
         
         // Then set the specified warehouse as primary
-        return $this->where('user_id', $userId)
-                   ->where('warehouse_id', $warehouseId)
-                   ->update(['is_primary' => true]);
+        $result = $this->update($assignment['id'], ['is_primary' => 1]);  // Use integer 1 instead of boolean true
+        
+        // Restore original setting
+        $this->updateOnlyChanged = $originalUpdateOnlyChanged;
+        
+        return $result;
     }
 }
 

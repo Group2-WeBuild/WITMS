@@ -277,7 +277,6 @@
                     <p><strong>Location:</strong> ${warehouse.address}</p>
                     ${warehouse.capacity ? `<p><strong>Capacity:</strong> ${warehouse.capacity} m²</p>` : ''}
                     <p><strong>Status:</strong> ${statusBadge}</p>
-                    ${warehouse.warehouseId ? `<a href="/warehouse-manager/warehouse/view/${warehouse.warehouseId}" class="btn btn-sm btn-primary mt-2"><i class="bi bi-eye"></i> View Details</a>` : ''}
                 </div>
             `;
         }        // Focus on warehouse marker

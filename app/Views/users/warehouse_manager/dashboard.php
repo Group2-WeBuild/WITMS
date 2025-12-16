@@ -93,6 +93,60 @@
                     <small class="ms-2"><i class="bi bi-info-circle"></i> Data updates in real-time</small>
                 </p>
             </div>
+
+            <!-- Assigned Warehouses -->
+            <?php if (!empty($assigned_warehouses)): ?>
+            <div class="mb-4">
+                <div class="card border-primary">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0"><i class="bi bi-building"></i> Your Assigned Warehouses</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <?php foreach ($assigned_warehouses as $assignment): ?>
+                            <div class="col-md-6 col-lg-4 mb-3">
+                                <div class="card h-100 border <?= $assignment['is_primary'] ? 'border-warning' : 'border-secondary' ?>">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-start mb-2">
+                                            <h6 class="card-title mb-0">
+                                                <i class="bi bi-building"></i> <?= esc($assignment['warehouse_name']) ?>
+                                            </h6>
+                                            <?php if ($assignment['is_primary']): ?>
+                                                <span class="badge bg-warning text-dark">
+                                                    <i class="bi bi-star-fill"></i> Primary
+                                                </span>
+                                            <?php endif; ?>
+                                        </div>
+                                        <p class="text-muted small mb-2">
+                                            <strong>Code:</strong> <?= esc($assignment['warehouse_code']) ?>
+                                        </p>
+                                        <div class="d-flex gap-2">
+                                            <span class="badge <?= $assignment['warehouse_is_active'] ? 'bg-success' : 'bg-secondary' ?>">
+                                                <?= $assignment['warehouse_is_active'] ? 'Active' : 'Inactive' ?>
+                                            </span>
+                                            <a href="<?= base_url('warehouse-manager/warehouse/view/' . $assignment['warehouse_id']) ?>" 
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i> View Details
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php else: ?>
+            <div class="mb-4">
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i> 
+                    <strong>No Warehouse Assignments</strong> - You are not currently assigned to any warehouses. 
+                    Please contact your administrator.
+                </div>
+            </div>
+            <?php endif; ?>
+
                               <!-- Quick Stats -->
             <div class="row mb-4">
                 <div class="col-xl-3 col-lg-6 col-md-6 mb-3">

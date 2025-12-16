@@ -97,8 +97,8 @@
                                            step="0.01" value="<?= old('capacity') ?>" required>
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <label for="manager_id" class="form-label">Manager (Optional)</label>
-                                    <select class="form-select" id="manager_id" name="manager_id">
+                                    <label for="manager_id" class="form-label required">Manager</label>
+                                    <select class="form-select" id="manager_id" name="manager_id" required>
                                         <option value="">-- Select Manager --</option>
                                         <?php if (!empty($warehouseManagers)): ?>
                                             <?php foreach ($warehouseManagers as $manager): ?>
@@ -113,7 +113,7 @@
                                             <?php endforeach; ?>
                                         <?php endif; ?>
                                     </select>
-                                    <small class="text-muted">Cannot assign yourself as manager</small>
+                                    <small class="text-muted">Manager will be automatically assigned to this warehouse</small>
                                 </div>
                             </div>
                         </div>

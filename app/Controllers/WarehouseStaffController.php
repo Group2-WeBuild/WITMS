@@ -7,6 +7,7 @@ use App\Models\InventoryModel;
 use App\Models\WarehouseModel;
 use App\Models\StockMovementModel;
 use App\Models\UserModel;
+use App\Models\UserWarehouseAssignmentModel;
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
 use chillerlan\QRCode\Common\EccLevel;
@@ -18,6 +19,7 @@ class WarehouseStaffController extends BaseController
     protected $stockMovementModel;
     protected $userModel;
     protected $warehouseModel;
+    protected $userWarehouseAssignmentModel;
 
     public function __construct()
     {
@@ -26,6 +28,7 @@ class WarehouseStaffController extends BaseController
         $this->stockMovementModel = new StockMovementModel();
         $this->userModel = new UserModel();
         $this->warehouseModel = new WarehouseModel();
+        $this->userWarehouseAssignmentModel = new UserWarehouseAssignmentModel();
     }
 
     /**
@@ -100,6 +103,36 @@ class WarehouseStaffController extends BaseController
     }
 
     /**
+     * Get assigned warehouse IDs for the logged-in user
+     * Returns array of warehouse IDs, or empty array if no assignments
+     */
+    private function getAssignedWarehouseIds()
+    {
+        $userId = session()->get('user_id');
+        
+        // Get assigned warehouses for Warehouse Staff
+        $assignments = $this->userWarehouseAssignmentModel->getWarehousesByUser($userId, true);
+        
+        if (empty($assignments)) {
+            return []; // No assignments, return empty array (will show nothing)
+        }
+        
+        // Extract warehouse IDs
+        return array_column($assignments, 'warehouse_id');
+    }
+
+    /**
+     * Check if user has access to a specific warehouse
+     */
+    private function hasWarehouseAccess($warehouseId)
+    {
+        $assignedIds = $this->getAssignedWarehouseIds();
+        
+        // Check if warehouse ID is in assigned list
+        return in_array($warehouseId, $assignedIds);
+    }
+
+    /**
      * Dashboard
      */
     public function dashboard()
@@ -110,75 +143,132 @@ class WarehouseStaffController extends BaseController
         $userId = session()->get('user_id');
         $today = date('Y-m-d');
         $thisMonth = date('Y-m');
+        $assignedWarehouseIds = $this->getAssignedWarehouseIds();
+        
+        // If no assigned warehouses, return empty dashboard
+        if (empty($assignedWarehouseIds)) {
+            $data = [
+                'title' => 'Dashboard - WITMS',
+                'user' => $this->getUserData(),
+                'totalItems' => 0,
+                'totalStock' => 0,
+                'todaysReceipts' => 0,
+                'todaysIssues' => 0,
+                'todaysTransfers' => 0,
+                'monthlyReceipts' => 0,
+                'monthlyIssues' => 0,
+                'monthlyTransfers' => 0,
+                'myTodayActivities' => 0,
+                'lowStockCount' => 0,
+                'lowStockItems' => [],
+                'recentActivities' => [],
+                'warehouses' => []
+            ];
+            return view('users/warehouse_staff/dashboard', $data);
+        }
         
         $db = \Config\Database::connect();
         
-        // Total inventory items count
+        // Total inventory items count (only in assigned warehouses)
         $totalItems = $db->table('inventory')
             ->select('COUNT(DISTINCT material_id) as count')
+            ->whereIn('warehouse_id', $assignedWarehouseIds)
             ->get()->getRow()->count ?? 0;
         
-        // Total stock quantity across all warehouses
+        // Total stock quantity (only in assigned warehouses)
         $totalStock = $db->table('inventory')
             ->selectSum('quantity')
+            ->whereIn('warehouse_id', $assignedWarehouseIds)
             ->get()->getRow()->quantity ?? 0;
         
-        // Today's movements by type
+        // Today's movements by type (only in assigned warehouses)
         $todaysReceipts = $this->stockMovementModel
             ->where('movement_type', 'Receipt')
             ->where('DATE(created_at)', $today)
+            ->whereIn('to_warehouse_id', $assignedWarehouseIds)
             ->countAllResults();
             
         $todaysIssues = $this->stockMovementModel
             ->where('movement_type', 'Issue')
             ->where('DATE(created_at)', $today)
+            ->groupStart()
+                ->whereIn('from_warehouse_id', $assignedWarehouseIds)
+                ->orWhereIn('to_warehouse_id', $assignedWarehouseIds)
+            ->groupEnd()
             ->countAllResults();
             
         $todaysTransfers = $this->stockMovementModel
             ->where('movement_type', 'Transfer')
             ->where('DATE(created_at)', $today)
+            ->groupStart()
+                ->whereIn('from_warehouse_id', $assignedWarehouseIds)
+                ->orWhereIn('to_warehouse_id', $assignedWarehouseIds)
+            ->groupEnd()
             ->countAllResults();
         
-        // This month's movements
+        // This month's movements (only in assigned warehouses)
         $monthlyReceipts = $this->stockMovementModel
             ->where('movement_type', 'Receipt')
             ->like('created_at', $thisMonth, 'after')
+            ->whereIn('to_warehouse_id', $assignedWarehouseIds)
             ->countAllResults();
             
         $monthlyIssues = $this->stockMovementModel
             ->where('movement_type', 'Issue')
             ->like('created_at', $thisMonth, 'after')
+            ->groupStart()
+                ->whereIn('from_warehouse_id', $assignedWarehouseIds)
+                ->orWhereIn('to_warehouse_id', $assignedWarehouseIds)
+            ->groupEnd()
             ->countAllResults();
             
         $monthlyTransfers = $this->stockMovementModel
             ->where('movement_type', 'Transfer')
             ->like('created_at', $thisMonth, 'after')
+            ->groupStart()
+                ->whereIn('from_warehouse_id', $assignedWarehouseIds)
+                ->orWhereIn('to_warehouse_id', $assignedWarehouseIds)
+            ->groupEnd()
             ->countAllResults();
         
-        // My activities today
+        // My activities today (only in assigned warehouses)
         $myTodayActivities = $this->stockMovementModel
             ->where('performed_by', $userId)
             ->where('DATE(created_at)', $today)
+            ->groupStart()
+                ->whereIn('from_warehouse_id', $assignedWarehouseIds)
+                ->orWhereIn('to_warehouse_id', $assignedWarehouseIds)
+            ->groupEnd()
             ->countAllResults();
         
-        // Low stock items count - use fresh model instance to avoid query builder conflicts
+        // Low stock items count (only in assigned warehouses)
         $freshInventoryModel = new \App\Models\InventoryModel();
-        $lowStockItems = $freshInventoryModel->getLowStockItems();
+        $allLowStockItems = $freshInventoryModel->getLowStockItems();
+        $lowStockItems = array_filter($allLowStockItems, function($item) use ($assignedWarehouseIds) {
+            return in_array($item['warehouse_id'], $assignedWarehouseIds);
+        });
         $lowStockCount = count($lowStockItems);
         
-        // Get recent activities (last 10)
+        // Get recent activities (last 10, only in assigned warehouses)
         $recentActivities = $this->stockMovementModel
             ->select('stock_movements.*, materials.name as material_name, materials.code as material_code, 
                       w1.name as from_warehouse_name, w2.name as to_warehouse_name')
             ->join('materials', 'materials.id = stock_movements.material_id')
             ->join('warehouses w1', 'w1.id = stock_movements.from_warehouse_id', 'left')
             ->join('warehouses w2', 'w2.id = stock_movements.to_warehouse_id', 'left')
+            ->groupStart()
+                ->whereIn('stock_movements.from_warehouse_id', $assignedWarehouseIds)
+                ->orWhereIn('stock_movements.to_warehouse_id', $assignedWarehouseIds)
+            ->groupEnd()
             ->orderBy('stock_movements.created_at', 'DESC')
             ->limit(10)
             ->findAll();
         
-        // Get warehouses for quick reference
-        $warehouses = $this->warehouseModel->where('is_active', 1)->findAll();
+        // Get warehouses for quick reference (only assigned warehouses)
+        $warehouses = $this->warehouseModel
+            ->where('is_active', 1)
+            ->whereIn('id', $assignedWarehouseIds)
+            ->findAll();
 
         $data = [
             'title' => 'Dashboard - WITMS',
@@ -590,14 +680,39 @@ class WarehouseStaffController extends BaseController
     /**
      * Stock Movements
      */
+    /**
+     * Stock Movements
+     * Filtered to show only movements in assigned warehouses
+     */
     public function stockMovements()
     {
         $accessCheck = $this->checkAccess();
         if ($accessCheck) return $accessCheck;
 
+        $assignedWarehouseIds = $this->getAssignedWarehouseIds();
+        
+        // Get all movements
+        $allMovements = $this->stockMovementModel->getMovementsWithDetails();
+        
+        // Filter to only movements in assigned warehouses
+        if (!empty($assignedWarehouseIds)) {
+            $movements = array_filter($allMovements, function($movement) use ($assignedWarehouseIds) {
+                $fromWarehouse = $movement['from_warehouse_id'] ?? null;
+                $toWarehouse = $movement['to_warehouse_id'] ?? null;
+                
+                // Include if movement is from or to an assigned warehouse
+                return ($fromWarehouse && in_array($fromWarehouse, $assignedWarehouseIds)) ||
+                       ($toWarehouse && in_array($toWarehouse, $assignedWarehouseIds));
+            });
+            $movements = array_values($movements);
+        } else {
+            $movements = [];
+        }
+
         $data = [
             'title' => 'Stock Movements - WITMS',
-            'user' => $this->getUserData()
+            'user' => $this->getUserData(),
+            'movements' => $movements
         ];
 
         return view('users/warehouse_staff/stock_movements', $data);
@@ -605,17 +720,27 @@ class WarehouseStaffController extends BaseController
 
     /**
      * Receive Stock
+     * Only shows assigned warehouses
      */
     public function receiveStock()
     {
         $accessCheck = $this->checkAccess();
         if ($accessCheck) return $accessCheck;
 
+        $assignedWarehouseIds = $this->getAssignedWarehouseIds();
+        
+        if (empty($assignedWarehouseIds)) {
+            return redirect()->to('warehouse-staff/dashboard')->with('error', 'You are not assigned to any warehouse.');
+        }
+
         $data = [
             'title' => 'Receive Stock - WITMS',
             'user' => $this->getUserData(),
             'materials' => $this->materialModel->findAll(),
-            'warehouses' => $this->warehouseModel->where('is_active', 1)->findAll()
+            'warehouses' => $this->warehouseModel
+                ->where('is_active', 1)
+                ->whereIn('id', $assignedWarehouseIds)
+                ->findAll()
         ];
 
         return view('users/warehouse_staff/receive_stock', $data);
@@ -640,41 +765,149 @@ class WarehouseStaffController extends BaseController
             return redirect()->back()->withInput()->with('errors', $validation->getErrors());
         }
 
+        $warehouseId = $this->request->getPost('warehouse_id');
+        $quantity = floatval($this->request->getPost('quantity'));
+        
+        // Additional validation: quantity must be greater than 0
+        if ($quantity <= 0) {
+            return redirect()->back()->withInput()->with('error', 'Quantity must be greater than 0');
+        }
+        
+        // Check if user has access to this warehouse
+        if (!$this->hasWarehouseAccess($warehouseId)) {
+            return redirect()->back()->withInput()->with('error', 'You do not have access to this warehouse.');
+        }
+
+        $materialId = $this->request->getPost('material_id');
+        
+        // Auto-generate batch number if not provided
+        $batchNumber = trim($this->request->getPost('batch_number') ?? '');
+        if (empty($batchNumber)) {
+            $batchNumber = $this->generateBatchNumberForReceipt($materialId, $warehouseId);
+        }
+        
+        // Auto-generate reference/PO number
+        $referenceNumber = $this->generateReferenceNumberForReceipt();
+
         $data = [
-            'material_id' => $this->request->getPost('material_id'),
-            'to_warehouse_id' => $this->request->getPost('warehouse_id'),
+            'material_id' => $materialId,
+            'to_warehouse_id' => $warehouseId,
             'from_warehouse_id' => null,
-            'quantity' => $this->request->getPost('quantity'),
-            'batch_number' => $this->request->getPost('batch_number'),
+            'quantity' => $quantity,
+            'batch_number' => $batchNumber,
             'notes' => $this->request->getPost('notes'),
             'performed_by' => session()->get('user_id'),
             'movement_date' => date('Y-m-d H:i:s')
         ];
 
-        // Add reference info if provided
-        $reference = $this->request->getPost('reference');
-        if ($reference) {
-            $data['reference_type'] = 'purchase_order';
-            $data['notes'] = ($data['notes'] ? $data['notes'] . "\n" : '') . 'PO/Reference: ' . $reference;
-        }
+        // Add reference info (auto-generated)
+        $data['reference_type'] = 'purchase_order';
+        $data['notes'] = ($data['notes'] ? $data['notes'] . "\n" : '') . 'PO/Reference: ' . $referenceNumber;
 
         // Use model's recordReceipt method (handles movement_type and inventory update via callback)
         $movementId = $this->stockMovementModel->recordReceipt($data);
         
         if ($movementId) {
-            return redirect()->to('warehouse-staff/dashboard')->with('success', 'Stock received successfully! Reference: SM-REC-' . date('Ymd'));
+            return redirect()->to('warehouse-staff/dashboard')->with('success', 'Stock received successfully! Batch: ' . $batchNumber . ' | Reference: ' . $referenceNumber);
         }
 
         return redirect()->back()->withInput()->with('error', 'Failed to receive stock. Please check all fields.');
     }
 
     /**
+     * Generate batch number for receipt
+     */
+    private function generateBatchNumberForReceipt($materialId, $warehouseId)
+    {
+        $date = date('Ymd');
+        
+        // Get material code if available
+        $materialCode = '';
+        if ($materialId) {
+            $material = $this->materialModel->find($materialId);
+            if ($material && !empty($material['code'])) {
+                $materialCode = strtoupper(substr($material['code'], 0, 6));
+            }
+        }
+        
+        // Get warehouse code if available
+        $warehouseCode = '';
+        if ($warehouseId) {
+            $warehouse = $this->warehouseModel->find($warehouseId);
+            if ($warehouse && !empty($warehouse['code'])) {
+                $warehouseCode = strtoupper(substr($warehouse['code'], 0, 3));
+            }
+        }
+        
+        // Build prefix
+        $prefix = 'BATCH';
+        if ($materialCode && $warehouseCode) {
+            $prefix = $warehouseCode . '-' . $materialCode;
+        } elseif ($warehouseCode) {
+            $prefix = $warehouseCode . '-BATCH';
+        } elseif ($materialCode) {
+            $prefix = $materialCode . '-BATCH';
+        }
+        
+        // Find the next available number for today with this prefix
+        $lastBatch = $this->inventoryModel
+            ->where('batch_number LIKE', "{$prefix}-{$date}%")
+            ->orderBy('batch_number', 'DESC')
+            ->first();
+        
+        $nextNumber = 1;
+        if ($lastBatch && !empty($lastBatch['batch_number'])) {
+            $lastNumber = (int) substr($lastBatch['batch_number'], -4);
+            $nextNumber = $lastNumber + 1;
+        }
+        
+        return "{$prefix}-{$date}-" . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * Generate reference/PO number for receipt
+     * Format: PO-YYYYMMDD-XXXX or REC-YYYYMMDD-XXXX
+     */
+    private function generateReferenceNumberForReceipt()
+    {
+        $date = date('Ymd');
+        $prefix = 'PO'; // Purchase Order prefix
+        
+        // Find the last reference number for today
+        $lastMovement = $this->stockMovementModel
+            ->where('movement_type', 'Receipt')
+            ->where('DATE(created_at)', date('Y-m-d'))
+            ->like('notes', 'PO/Reference:')
+            ->orderBy('created_at', 'DESC')
+            ->first();
+        
+        $nextNumber = 1;
+        
+        if ($lastMovement && !empty($lastMovement['notes'])) {
+            // Extract number from notes
+            if (preg_match('/PO\/Reference:\s*PO-' . preg_quote($date, '/') . '-(\d+)/i', $lastMovement['notes'], $matches)) {
+                $lastNumber = (int) $matches[1];
+                $nextNumber = $lastNumber + 1;
+            }
+        }
+        
+        return "{$prefix}-{$date}-" . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+    }
+
+    /**
      * Issue Stock
+     * Only shows assigned warehouses
      */
     public function issueStock()
     {
         $accessCheck = $this->checkAccess();
         if ($accessCheck) return $accessCheck;
+
+        $assignedWarehouseIds = $this->getAssignedWarehouseIds();
+        
+        if (empty($assignedWarehouseIds)) {
+            return redirect()->to('warehouse-staff/dashboard')->with('error', 'You are not assigned to any warehouse.');
+        }
 
         $departmentModel = new \App\Models\DepartmentModel();
 
@@ -682,7 +915,10 @@ class WarehouseStaffController extends BaseController
             'title' => 'Issue Stock - WITMS',
             'user' => $this->getUserData(),
             'materials' => $this->materialModel->findAll(),
-            'warehouses' => $this->warehouseModel->where('is_active', 1)->findAll(),
+            'warehouses' => $this->warehouseModel
+                ->where('is_active', 1)
+                ->whereIn('id', $assignedWarehouseIds)
+                ->findAll(),
             'departments' => $departmentModel->getActiveDepartments()
         ];
 
@@ -709,6 +945,13 @@ class WarehouseStaffController extends BaseController
             return redirect()->back()->withInput()->with('errors', $validation->getErrors());
         }
 
+        $warehouseId = $this->request->getPost('warehouse_id');
+        
+        // Check if user has access to this warehouse
+        if (!$this->hasWarehouseAccess($warehouseId)) {
+            return redirect()->back()->withInput()->with('error', 'You do not have access to this warehouse.');
+        }
+
         $issuedTo = $this->request->getPost('issued_to');
         $reference = $this->request->getPost('reference');
         $notes = $this->request->getPost('notes');
@@ -724,7 +967,7 @@ class WarehouseStaffController extends BaseController
 
         $data = [
             'material_id' => $this->request->getPost('material_id'),
-            'from_warehouse_id' => $this->request->getPost('warehouse_id'),
+            'from_warehouse_id' => $warehouseId,
             'to_warehouse_id' => null,
             'quantity' => $this->request->getPost('quantity'),
             'notes' => $fullNotes,
@@ -744,17 +987,36 @@ class WarehouseStaffController extends BaseController
 
     /**
      * Stock Transfer
+     * Only shows assigned warehouses
      */
     public function stockTransfer()
     {
         $accessCheck = $this->checkAccess();
         if ($accessCheck) return $accessCheck;
 
+        $assignedWarehouseIds = $this->getAssignedWarehouseIds();
+        
+        if (empty($assignedWarehouseIds)) {
+            return redirect()->to('warehouse-staff/dashboard')->with('error', 'You are not assigned to any warehouse.');
+        }
+
+        // Get assigned warehouses for "from warehouse" dropdown
+        $assignedWarehouses = $this->warehouseModel
+            ->where('is_active', 1)
+            ->whereIn('id', $assignedWarehouseIds)
+            ->findAll();
+        
+        // Get all active warehouses for "to warehouse" dropdown (can be any warehouse)
+        $allWarehouses = $this->warehouseModel
+            ->where('is_active', 1)
+            ->findAll();
+
         $data = [
             'title' => 'Stock Transfer - WITMS',
             'user' => $this->getUserData(),
             'materials' => $this->materialModel->findAll(),
-            'warehouses' => $this->warehouseModel->where('is_active', 1)->findAll()
+            'warehouses' => $assignedWarehouses, // For "from warehouse" - only assigned
+            'allWarehouses' => $allWarehouses // For "to warehouse" - all warehouses
         ];
 
         return view('users/warehouse_staff/stock_transfer', $data);
@@ -780,19 +1042,40 @@ class WarehouseStaffController extends BaseController
             return redirect()->back()->withInput()->with('errors', $validation->getErrors());
         }
 
-        $reference = $this->request->getPost('reference');
+        $fromWarehouseId = $this->request->getPost('from_warehouse_id');
+        $toWarehouseId = $this->request->getPost('to_warehouse_id');
+        $quantity = floatval($this->request->getPost('quantity'));
+        
+        // Additional validation: quantity must be greater than 0
+        if ($quantity <= 0) {
+            return redirect()->back()->withInput()->with('error', 'Quantity must be greater than 0');
+        }
+        
+        // Check if user has access to FROM warehouse (must be assigned)
+        if (!$this->hasWarehouseAccess($fromWarehouseId)) {
+            return redirect()->back()->withInput()->with('error', 'You do not have access to the source warehouse. You can only transfer from warehouses assigned to you.');
+        }
+        
+        // TO warehouse can be any warehouse (no access check needed)
+        // Verify that to_warehouse exists and is active
+        $toWarehouse = $this->warehouseModel->find($toWarehouseId);
+        if (!$toWarehouse || empty($toWarehouse['is_active'])) {
+            return redirect()->back()->withInput()->with('error', 'Destination warehouse not found or inactive.');
+        }
+
+        // Auto-generate transfer reference number
+        $referenceNumber = $this->generateTransferReferenceNumber();
+        
         $notes = $this->request->getPost('notes');
         
-        // Build notes with reference if provided
+        // Build notes with auto-generated reference
         $fullNotes = $notes ?? '';
-        if ($reference) {
-            $fullNotes = 'Transfer Ref: ' . $reference . ($fullNotes ? "\n" . $fullNotes : '');
-        }
+        $fullNotes = 'Transfer Ref: ' . $referenceNumber . ($fullNotes ? "\n" . $fullNotes : '');
 
         $data = [
             'material_id' => $this->request->getPost('material_id'),
-            'from_warehouse_id' => $this->request->getPost('from_warehouse_id'),
-            'to_warehouse_id' => $this->request->getPost('to_warehouse_id'),
+            'from_warehouse_id' => $fromWarehouseId,
+            'to_warehouse_id' => $toWarehouseId,
             'quantity' => $this->request->getPost('quantity'),
             'notes' => $fullNotes,
             'performed_by' => session()->get('user_id'),
@@ -803,10 +1086,40 @@ class WarehouseStaffController extends BaseController
         $movementId = $this->stockMovementModel->recordTransfer($data);
         
         if ($movementId) {
-            return redirect()->to('warehouse-staff/dashboard')->with('success', 'Stock transferred successfully!');
+            return redirect()->to('warehouse-staff/dashboard')->with('success', 'Stock transferred successfully! Reference: ' . $referenceNumber);
         }
 
         return redirect()->back()->withInput()->with('error', 'Failed to transfer stock. Please check available quantity.');
+    }
+
+    /**
+     * Generate transfer reference number
+     * Format: TR-YYYYMMDD-XXXX (e.g., TR-20241217-0001)
+     */
+    private function generateTransferReferenceNumber()
+    {
+        $date = date('Ymd');
+        $prefix = 'TR'; // Transfer prefix
+        
+        // Find the last transfer reference number for today
+        $lastMovement = $this->stockMovementModel
+            ->where('movement_type', 'Transfer')
+            ->where('DATE(created_at)', date('Y-m-d'))
+            ->like('notes', 'Transfer Ref:')
+            ->orderBy('created_at', 'DESC')
+            ->first();
+        
+        $nextNumber = 1;
+        
+        if ($lastMovement && !empty($lastMovement['notes'])) {
+            // Extract number from notes
+            if (preg_match('/Transfer\s*Ref:\s*TR-' . preg_quote($date, '/') . '-(\d+)/i', $lastMovement['notes'], $matches)) {
+                $lastNumber = (int) $matches[1];
+                $nextNumber = $lastNumber + 1;
+            }
+        }
+        
+        return "{$prefix}-{$date}-" . str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
     }
 
     /**
@@ -823,6 +1136,8 @@ class WarehouseStaffController extends BaseController
         $type = $this->request->getGet('type');
         $date = $this->request->getGet('date');
 
+        $assignedWarehouseIds = $this->getAssignedWarehouseIds();
+        
         // Build query
         $builder = $this->stockMovementModel->builder();
         $builder->select('stock_movements.*, materials.name as material_name, materials.code as material_code, units_of_measure.abbreviation as unit')
@@ -830,6 +1145,17 @@ class WarehouseStaffController extends BaseController
                 ->join('units_of_measure', 'units_of_measure.id = materials.unit_id', 'left')
                 ->where('stock_movements.performed_by', $userId)
                 ->orderBy('stock_movements.created_at', 'DESC');
+
+        // Filter by assigned warehouses
+        if (!empty($assignedWarehouseIds)) {
+            $builder->groupStart()
+                    ->whereIn('stock_movements.from_warehouse_id', $assignedWarehouseIds)
+                    ->orWhereIn('stock_movements.to_warehouse_id', $assignedWarehouseIds)
+                    ->groupEnd();
+        } else {
+            // No assigned warehouses, return empty
+            $builder->where('1', '0');
+        }
 
         if ($type) {
             $builder->where('stock_movements.movement_type', $type);
@@ -879,8 +1205,24 @@ class WarehouseStaffController extends BaseController
                         ->groupEnd();
             }
 
+            $assignedWarehouseIds = $this->getAssignedWarehouseIds();
+            
+            // Always filter by assigned warehouses
+            if (!empty($assignedWarehouseIds)) {
+                $builder->whereIn('inventory.warehouse_id', $assignedWarehouseIds);
+            } else {
+                // No assigned warehouses, return empty
+                $builder->where('1', '0');
+            }
+
             if ($warehouseId) {
-                $builder->where('inventory.warehouse_id', $warehouseId);
+                // Additional filter if specific warehouse selected (must be in assigned list)
+                if (in_array($warehouseId, $assignedWarehouseIds)) {
+                    $builder->where('inventory.warehouse_id', $warehouseId);
+                } else {
+                    // Invalid warehouse, return empty
+                    $builder->where('1', '0');
+                }
             }
 
             $results = $builder->get()->getResultArray();
@@ -890,11 +1232,18 @@ class WarehouseStaffController extends BaseController
                 'results' => $results
             ]);
         } else {
-            // Load the search page with dropdown data
+            // Load the search page with dropdown data (only assigned warehouses)
+            $assignedWarehouseIds = $this->getAssignedWarehouseIds();
+            
             $data = [
                 'title' => 'Search Inventory - WITMS',
                 'user' => $this->getUserData(),
-                'warehouses' => $this->warehouseModel->where('is_active', 1)->findAll()
+                'warehouses' => !empty($assignedWarehouseIds) 
+                    ? $this->warehouseModel
+                        ->where('is_active', 1)
+                        ->whereIn('id', $assignedWarehouseIds)
+                        ->findAll()
+                    : []
             ];
 
             // Load categories if CategoryModel exists
@@ -926,59 +1275,107 @@ class WarehouseStaffController extends BaseController
             $today = date('Y-m-d');
             $thisMonth = date('Y-m');
             
+            $assignedWarehouseIds = $this->getAssignedWarehouseIds();
+            
+            if (empty($assignedWarehouseIds)) {
+                return $this->response->setJSON([
+                    'success' => true,
+                    'stats' => [
+                        'totalItems' => 0,
+                        'totalStock' => '0',
+                        'lowStockCount' => 0,
+                        'myTodayActivities' => 0,
+                        'todaysReceipts' => 0,
+                        'todaysIssues' => 0,
+                        'todaysTransfers' => 0,
+                        'monthlyReceipts' => 0,
+                        'monthlyIssues' => 0,
+                        'monthlyTransfers' => 0
+                    ],
+                    'timestamp' => date('H:i:s')
+                ]);
+            }
+            
             $db = \Config\Database::connect();
             
-            // Total inventory items count
+            // Total inventory items count (only in assigned warehouses)
             $totalItems = $db->table('inventory')
                 ->select('COUNT(DISTINCT material_id) as count')
+                ->whereIn('warehouse_id', $assignedWarehouseIds)
                 ->get()->getRow()->count ?? 0;
             
-            // Total stock quantity
+            // Total stock quantity (only in assigned warehouses)
             $totalStock = $db->table('inventory')
                 ->selectSum('quantity')
+                ->whereIn('warehouse_id', $assignedWarehouseIds)
                 ->get()->getRow()->quantity ?? 0;
             
-            // Today's movements
+            // Today's movements (only in assigned warehouses)
             $todaysReceipts = $this->stockMovementModel
                 ->where('movement_type', 'Receipt')
                 ->where('DATE(created_at)', $today)
+                ->whereIn('to_warehouse_id', $assignedWarehouseIds)
                 ->countAllResults();
                 
             $todaysIssues = $this->stockMovementModel
                 ->where('movement_type', 'Issue')
                 ->where('DATE(created_at)', $today)
+                ->groupStart()
+                    ->whereIn('from_warehouse_id', $assignedWarehouseIds)
+                    ->orWhereIn('to_warehouse_id', $assignedWarehouseIds)
+                ->groupEnd()
                 ->countAllResults();
                 
             $todaysTransfers = $this->stockMovementModel
                 ->where('movement_type', 'Transfer')
                 ->where('DATE(created_at)', $today)
+                ->groupStart()
+                    ->whereIn('from_warehouse_id', $assignedWarehouseIds)
+                    ->orWhereIn('to_warehouse_id', $assignedWarehouseIds)
+                ->groupEnd()
                 ->countAllResults();
             
-            // Monthly movements
+            // Monthly movements (only in assigned warehouses)
             $monthlyReceipts = $this->stockMovementModel
                 ->where('movement_type', 'Receipt')
                 ->like('created_at', $thisMonth, 'after')
+                ->whereIn('to_warehouse_id', $assignedWarehouseIds)
                 ->countAllResults();
                 
             $monthlyIssues = $this->stockMovementModel
                 ->where('movement_type', 'Issue')
                 ->like('created_at', $thisMonth, 'after')
+                ->groupStart()
+                    ->whereIn('from_warehouse_id', $assignedWarehouseIds)
+                    ->orWhereIn('to_warehouse_id', $assignedWarehouseIds)
+                ->groupEnd()
                 ->countAllResults();
                 
             $monthlyTransfers = $this->stockMovementModel
                 ->where('movement_type', 'Transfer')
                 ->like('created_at', $thisMonth, 'after')
+                ->groupStart()
+                    ->whereIn('from_warehouse_id', $assignedWarehouseIds)
+                    ->orWhereIn('to_warehouse_id', $assignedWarehouseIds)
+                ->groupEnd()
                 ->countAllResults();
             
-            // My activities today
+            // My activities today (only in assigned warehouses)
             $myTodayActivities = $this->stockMovementModel
                 ->where('performed_by', $userId)
                 ->where('DATE(created_at)', $today)
+                ->groupStart()
+                    ->whereIn('from_warehouse_id', $assignedWarehouseIds)
+                    ->orWhereIn('to_warehouse_id', $assignedWarehouseIds)
+                ->groupEnd()
                 ->countAllResults();
             
-            // Low stock count - use fresh model instance to avoid query builder conflicts
+            // Low stock count (only in assigned warehouses)
             $freshInventoryModel = new \App\Models\InventoryModel();
-            $lowStockItems = $freshInventoryModel->getLowStockItems();
+            $allLowStockItems = $freshInventoryModel->getLowStockItems();
+            $lowStockItems = array_filter($allLowStockItems, function($item) use ($assignedWarehouseIds) {
+                return in_array($item['warehouse_id'], $assignedWarehouseIds);
+            });
             $lowStockCount = count($lowStockItems);
 
             return $this->response->setJSON([
@@ -1022,6 +1419,11 @@ class WarehouseStaffController extends BaseController
         
         if (!$warehouseId) {
             return $this->response->setJSON(['success' => false, 'message' => 'Warehouse ID required']);
+        }
+
+        // Check if user has access to this warehouse
+        if (!$this->hasWarehouseAccess($warehouseId)) {
+            return $this->response->setJSON(['success' => false, 'message' => 'You do not have access to this warehouse.']);
         }
 
         try {
@@ -1069,7 +1471,15 @@ class WarehouseStaffController extends BaseController
         }
 
         try {
-            $warehouses = $this->warehouseModel->where('is_active', 1)->findAll();
+            $assignedWarehouseIds = $this->getAssignedWarehouseIds();
+            
+            // Only return assigned warehouses
+            $warehouses = !empty($assignedWarehouseIds)
+                ? $this->warehouseModel
+                    ->where('is_active', 1)
+                    ->whereIn('id', $assignedWarehouseIds)
+                    ->findAll()
+                : [];
             
             return $this->response->setJSON([
                 'success' => true,
@@ -1187,6 +1597,227 @@ class WarehouseStaffController extends BaseController
     }
 
     /**
+     * Process Receive Stock from Scanned Items
+     */
+    public function processReceiveFromScanned()
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Invalid request']);
+        }
+
+        $data = $this->request->getJSON(true);
+        
+        if (!$data || !isset($data['items']) || empty($data['items'])) {
+            return $this->response->setJSON(['success' => false, 'message' => 'No items provided']);
+        }
+
+        $warehouseId = $data['warehouse_id'] ?? null;
+        $reference = $data['reference'] ?? '';
+        $notes = $data['notes'] ?? '';
+
+        if (!$warehouseId) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Warehouse is required']);
+        }
+
+        // Check if user has access to this warehouse
+        if (!$this->hasWarehouseAccess($warehouseId)) {
+            return $this->response->setJSON(['success' => false, 'message' => 'You do not have access to this warehouse.']);
+        }
+
+        $db = \Config\Database::connect();
+        $db->transStart();
+
+        try {
+            $successCount = 0;
+            $failCount = 0;
+            $errors = [];
+
+            // Auto-generate reference if not provided
+            if (empty($reference)) {
+                $reference = $this->generateReferenceNumberForReceipt();
+            }
+
+            foreach ($data['items'] as $item) {
+                $materialId = $item['material_id'] ?? null;
+                $quantity = floatval($item['quantity'] ?? 0);
+
+                if (!$materialId || $quantity <= 0) {
+                    $failCount++;
+                    $errors[] = "Invalid item data for material ID: " . ($materialId ?? 'unknown');
+                    continue;
+                }
+
+                // Auto-generate batch number
+                $batchNumber = $this->generateBatchNumberForReceipt($materialId, $warehouseId);
+
+                // Build notes
+                $fullNotes = $notes ?? '';
+                $fullNotes = 'PO/Reference: ' . $reference . ($fullNotes ? "\n" . $fullNotes : '');
+
+                $movementData = [
+                    'material_id' => $materialId,
+                    'to_warehouse_id' => $warehouseId,
+                    'from_warehouse_id' => null,
+                    'quantity' => $quantity,
+                    'batch_number' => $batchNumber,
+                    'notes' => $fullNotes,
+                    'reference_type' => 'purchase_order',
+                    'performed_by' => session()->get('user_id'),
+                    'movement_date' => date('Y-m-d H:i:s')
+                ];
+
+                $movementId = $this->stockMovementModel->recordReceipt($movementData);
+                
+                if ($movementId) {
+                    $successCount++;
+                } else {
+                    $failCount++;
+                    $errors[] = "Failed to receive material ID: " . $materialId;
+                }
+            }
+
+            $db->transComplete();
+
+            if ($db->transStatus() === false) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Transaction failed. Please try again.'
+                ]);
+            }
+
+            if ($successCount > 0) {
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => "Successfully received {$successCount} item(s)" . ($failCount > 0 ? ". {$failCount} failed." : ''),
+                    'success_count' => $successCount,
+                    'fail_count' => $failCount,
+                    'errors' => $errors,
+                    'reference' => $reference
+                ]);
+            } else {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Failed to receive any items',
+                    'errors' => $errors
+                ]);
+            }
+
+        } catch (\Exception $e) {
+            $db->transRollback();
+            log_message('error', 'processReceiveFromScanned error: ' . $e->getMessage());
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Error processing receive: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * AJAX: Get unassigned warehouses (for transfer "to" warehouse)
+     */
+    public function getUnassignedWarehouses()
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Invalid request']);
+        }
+
+        try {
+            $assignedWarehouseIds = $this->getAssignedWarehouseIds();
+            
+            // Get all active warehouses
+            $allWarehouses = $this->warehouseModel
+                ->where('is_active', 1)
+                ->findAll();
+            
+            // Filter out assigned warehouses
+            $unassignedWarehouses = [];
+            if (!empty($assignedWarehouseIds)) {
+                foreach ($allWarehouses as $warehouse) {
+                    if (!in_array($warehouse['id'], $assignedWarehouseIds)) {
+                        $unassignedWarehouses[] = $warehouse;
+                    }
+                }
+            } else {
+                // If user has no assignments, show all warehouses
+                $unassignedWarehouses = $allWarehouses;
+            }
+            
+            return $this->response->setJSON([
+                'success' => true,
+                'warehouses' => $unassignedWarehouses
+            ]);
+        } catch (\Exception $e) {
+            log_message('error', 'getUnassignedWarehouses error: ' . $e->getMessage());
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Error loading unassigned warehouses'
+            ]);
+        }
+    }
+
+    /**
+     * AJAX: Generate PO number for receive stock
+     */
+    public function generatePONumber()
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Invalid request']);
+        }
+
+        try {
+            $poNumber = $this->generateReferenceNumberForReceipt();
+            
+            return $this->response->setJSON([
+                'success' => true,
+                'po_number' => $poNumber
+            ]);
+        } catch (\Exception $e) {
+            log_message('error', 'generatePONumber error: ' . $e->getMessage());
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Error generating PO number: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
+     * AJAX: Generate transfer reference number
+     */
+    public function generateTransferReference()
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Invalid request']);
+        }
+
+        try {
+            $transferReference = $this->generateTransferReferenceNumber();
+            
+            return $this->response->setJSON([
+                'success' => true,
+                'transfer_reference' => $transferReference
+            ]);
+        } catch (\Exception $e) {
+            log_message('error', 'generateTransferReference error: ' . $e->getMessage());
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Error generating transfer reference: ' . $e->getMessage()
+            ]);
+        }
+    }
+
+    /**
      * Process Issue Stock from Scanned Items
      */
     public function processIssueFromScanned()
@@ -1211,6 +1842,11 @@ class WarehouseStaffController extends BaseController
 
         if (!$warehouseId || !$issuedTo) {
             return $this->response->setJSON(['success' => false, 'message' => 'Warehouse and Issued To are required']);
+        }
+
+        // Check if user has access to this warehouse
+        if (!$this->hasWarehouseAccess($warehouseId)) {
+            return $this->response->setJSON(['success' => false, 'message' => 'You do not have access to this warehouse.']);
         }
 
         $db = \Config\Database::connect();
@@ -1326,6 +1962,22 @@ class WarehouseStaffController extends BaseController
             return $this->response->setJSON(['success' => false, 'message' => 'From and To warehouses must be different']);
         }
 
+        // Check if user has access to FROM warehouse (must be assigned)
+        if (!$this->hasWarehouseAccess($fromWarehouseId)) {
+            return $this->response->setJSON(['success' => false, 'message' => 'You do not have access to the source warehouse. You can only transfer from warehouses assigned to you.']);
+        }
+
+        // Verify that to_warehouse exists and is active
+        $toWarehouse = $this->warehouseModel->find($toWarehouseId);
+        if (!$toWarehouse || empty($toWarehouse['is_active'])) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Destination warehouse not found or inactive.']);
+        }
+
+        // Auto-generate transfer reference if not provided
+        if (empty($reference)) {
+            $reference = $this->generateTransferReferenceNumber();
+        }
+
         $db = \Config\Database::connect();
         $db->transStart();
 
@@ -1344,11 +1996,9 @@ class WarehouseStaffController extends BaseController
                     continue;
                 }
 
-                // Build notes
+                // Build notes with auto-generated reference
                 $fullNotes = $notes ?? '';
-                if ($reference) {
-                    $fullNotes = 'Transfer Ref: ' . $reference . ($fullNotes ? "\n" . $fullNotes : '');
-                }
+                $fullNotes = 'Transfer Ref: ' . $reference . ($fullNotes ? "\n" . $fullNotes : '');
 
                 $movementData = [
                     'material_id' => $materialId,
@@ -1429,6 +2079,11 @@ class WarehouseStaffController extends BaseController
 
         if (!$warehouseId || !$reason) {
             return $this->response->setJSON(['success' => false, 'message' => 'Warehouse and reason are required']);
+        }
+
+        // Check if user has access to this warehouse
+        if (!$this->hasWarehouseAccess($warehouseId)) {
+            return $this->response->setJSON(['success' => false, 'message' => 'You do not have access to this warehouse.']);
         }
 
         $db = \Config\Database::connect();

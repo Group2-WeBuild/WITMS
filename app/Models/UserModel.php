@@ -38,7 +38,11 @@ class UserModel extends Model
     protected $validationRules = [
         'email' => [
             'label' => 'Email Address',
-            'rules' => 'required|valid_email|is_unique[users.email,id,{id}]'
+            'rules' => 'required|valid_email|is_unique[users.email,id,{id}]|regex_match[/^[a-zA-Z0-9.]+@[a-zA-Z0-9.]+\.[a-zA-Z]{2,}$/]',
+            'errors' => [
+                'is_unique' => 'This email address is already registered in WeBuild system.',
+                'regex_match' => 'Email can only contain letters, numbers, and dots. No special characters allowed (e.g., user123@example.com).'
+            ]
         ],        
         'password' => [
             'label' => 'Password',
@@ -50,15 +54,15 @@ class UserModel extends Model
         ],
         'first_name' => [
             'label' => 'First Name',
-            'rules' => 'required|max_length[100]|alpha_space'
+            'rules' => 'required|max_length[100]|regex_match[/^[A-Za-z\s]+$/]'
         ],
         'last_name' => [
             'label' => 'Last Name',
-            'rules' => 'required|max_length[100]|alpha_space'
+            'rules' => 'required|max_length[100]|regex_match[/^[A-Za-z\s]+$/]'
         ],
         'middle_name' => [
             'label' => 'Middle Name',
-            'rules' => 'permit_empty|max_length[100]|alpha_space'
+            'rules' => 'permit_empty|max_length[100]|regex_match[/^[A-Za-z\s]*$/]'
         ],
         'department_id' => [
             'label' => 'Department',
@@ -66,7 +70,10 @@ class UserModel extends Model
         ],
         'phone_number' => [
             'label' => 'Phone Number',
-            'rules' => 'permit_empty|max_length[20]|regex_match[/^[\+]?[0-9\s\-\(\)]+$/]'
+            'rules' => 'permit_empty|regex_match[/^(\+63|0)?9\d{9}$/]',
+            'errors' => [
+                'regex_match' => 'Phone number must be a valid Philippine mobile number (e.g., +639123456789 or 09123456789)'
+            ]
         ],
         'is_active' => [
             'label' => 'Active Status',
@@ -160,8 +167,9 @@ class UserModel extends Model
      */
     public function getAllUsersWithRoles()
     {
-        return $this->select('users.*, roles.name as role_name')
+        return $this->select('users.*, roles.name as role_name, departments.name as department_name')
                     ->join('roles', 'roles.id = users.role_id', 'left')
+                    ->join('departments', 'departments.id = users.department_id', 'left')
                     ->findAll();
     }
     
@@ -263,8 +271,8 @@ class UserModel extends Model
         
         $stats = [
             'total_users' => $builder->countAll(),
-            'active_users' => $this->where('is_active', 1)->countAllResults(),
-            'inactive_users' => $this->where('is_active', 0)->countAllResults(),
+            'active_users' => $this->db->table($this->table)->where('is_active', 1)->countAllResults(),
+            'inactive_users' => $this->db->table($this->table)->where('is_active', 0)->countAllResults(),
         ];
         
         // Get role distribution using JOIN
@@ -273,8 +281,9 @@ class UserModel extends Model
         
         $stats['role_counts'] = [];
         foreach ($roles as $role) {
-            $stats['role_counts'][str_replace(' ', '_', strtolower($role['name']))] = 
-                $this->where('role_id', $role['id'])->where('is_active', 1)->countAllResults();
+            $roleKey = str_replace(' ', '_', strtolower($role['name']));
+            $stats['role_counts'][$roleKey] = 
+                $this->db->table($this->table)->where('role_id', $role['id'])->where('is_active', 1)->countAllResults();
         }
         
         return $stats;

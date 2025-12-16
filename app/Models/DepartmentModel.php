@@ -17,6 +17,7 @@ class DepartmentModel extends Model
         'description',
         'warehouse_id',
         'department_head',
+        'department_head_user_id',
         'contact_email',
         'contact_phone',
         'is_active'
@@ -37,7 +38,7 @@ class DepartmentModel extends Model
     protected $validationRules = [
         'name' => [
             'label' => 'Department Name',
-            'rules' => 'required|max_length[100]|is_unique[departments.name,id,{id}]'
+            'rules' => 'required|max_length[100]|regex_match[/^[A-Za-z\s]+$/]|is_unique[departments.name,id,{id}]'
         ],
         'description' => [
             'label' => 'Description',
@@ -49,15 +50,19 @@ class DepartmentModel extends Model
         ],
         'department_head' => [
             'label' => 'Department Head',
-            'rules' => 'permit_empty|max_length[200]|alpha_space'
+            'rules' => 'permit_empty|max_length[200]'
+        ],
+        'department_head_user_id' => [
+            'label' => 'Department Head User',
+            'rules' => 'permit_empty|is_natural_no_zero|is_not_unique[users.id]'
         ],
         'contact_email' => [
             'label' => 'Contact Email',
-            'rules' => 'permit_empty|valid_email|max_length[255]'
+            'rules' => 'permit_empty|valid_email|max_length[255]|regex_match[/^[a-zA-Z0-9.]+@[a-zA-Z0-9.]+\.[a-zA-Z]{2,}$/]'
         ],
         'contact_phone' => [
             'label' => 'Contact Phone',
-            'rules' => 'permit_empty|max_length[20]|regex_match[/^[\+]?[0-9\s\-\(\)]+$/]'
+            'rules' => 'permit_empty|max_length[20]|regex_match[/^(\+63|0)?9\d{9}$/]'
         ],
         'is_active' => [
             'label' => 'Active Status',
@@ -67,7 +72,17 @@ class DepartmentModel extends Model
     
     protected $validationMessages = [
         'name' => [
-            'is_unique' => 'This department name already exists in WeBuild system.'
+            'is_unique' => 'This department name already exists in WeBuild system.',
+            'regex_match' => 'Department name can only contain letters and spaces. Special characters are not allowed.'
+        ],
+        'department_head_user_id' => [
+            'is_not_unique' => 'The selected department head does not exist.'
+        ],
+        'contact_email' => [
+            'regex_match' => 'Email must be in valid format (e.g., department@example.com). Special characters like _, -, + are not allowed.'
+        ],
+        'contact_phone' => [
+            'regex_match' => 'Phone number must be in Philippine format (e.g., 09123456789, +639123456789, or 09123456789).'
         ]
     ];
     
@@ -235,8 +250,11 @@ class DepartmentModel extends Model
      */
     public function getDepartmentWithWarehouse(int $departmentId)
     {
-        return $this->select('departments.*, warehouses.name as warehouse_name, warehouses.code as warehouse_code, warehouses.location as warehouse_location')
+        return $this->select('departments.*, warehouses.name as warehouse_name, warehouses.code as warehouse_code,
+                             users.first_name as head_first_name, users.middle_name as head_middle_name, 
+                             users.last_name as head_last_name, users.email as head_email')
                     ->join('warehouses', 'warehouses.id = departments.warehouse_id', 'left')
+                    ->join('users', 'users.id = departments.department_head_user_id', 'left')
                     ->where('departments.id', $departmentId)
                     ->first();
     }

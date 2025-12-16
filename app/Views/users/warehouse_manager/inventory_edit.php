@@ -75,10 +75,14 @@
                                 
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label class="form-label">Batch Number</label>
-                                        <input type="text" name="batch_number" class="form-control" 
-                                               value="<?= esc($inventory['batch_number'] ?? '') ?>" 
-                                               placeholder="Optional">
+                                        <label class="form-label">Batch Number <span class="text-muted">(Auto-generated)</span></label>
+                                        <input type="text" class="form-control" 
+                                               value="<?= esc($inventory['batch_number'] ?? 'Will be auto-generated on save') ?>" 
+                                               readonly
+                                               style="background-color: #e9ecef; cursor: not-allowed;">
+                                        <small class="text-muted">
+                                            <i class="bi bi-info-circle"></i> Batch number is automatically generated when saved.
+                                        </small>
                                     </div>
 
                                     <div class="col-md-6 mb-3">

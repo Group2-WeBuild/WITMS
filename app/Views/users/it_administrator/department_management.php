@@ -49,6 +49,11 @@
             transition: all 0.3s ease;
             border-left: 4px solid;
             background: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 120px;
+            position: relative;
         }
         .stat-card:hover {
             transform: translateY(-3px);
@@ -59,6 +64,19 @@
         .stat-card.warning { border-left-color: #ffc107; }
         .stat-card.danger { border-left-color: #dc3545; }
         .stat-card.info { border-left-color: #0dcaf0; }
+        .stat-card p {
+            margin: 0 0 8px 0;
+            font-size: 0.9rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+        .stat-card h3 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #212529;
+            line-height: 1.2;
+        }
         .stat-card .icon {
             width: 50px;
             height: 50px;
@@ -67,7 +85,9 @@
             align-items: center;
             justify-content: center;
             font-size: 24px;
-            float: right;
+            position: absolute;
+            top: 20px;
+            right: 20px;
         }
         .form-section {
             margin-bottom: 30px;
@@ -198,7 +218,19 @@
                                                 </span>
                                             <?php endif; ?>
                                         </td>
-                                        <td><?= esc($dept['department_head'] ?: 'Not assigned') ?></td>
+                                        <td>
+                                            <?php 
+                                                if (!empty($dept['department_head_user_id']) && !empty($dept['head_first_name'])) {
+                                                    $headName = trim(($dept['head_first_name'] ?? '') . ' ' . ($dept['head_middle_name'] ?? '') . ' ' . ($dept['head_last_name'] ?? ''));
+                                                    echo esc($headName);
+                                                    if (!empty($dept['head_email'])) {
+                                                        echo ' <small class="text-muted">(' . esc($dept['head_email']) . ')</small>';
+                                                    }
+                                                } else {
+                                                    echo '<span class="text-muted">Not assigned</span>';
+                                                }
+                                            ?>
+                                        </td>
                                         <td>
                                             <?php if ($dept['contact_email']): ?>
                                                 <small><i class="bi bi-envelope"></i> <?= esc($dept['contact_email']) ?></small><br>
@@ -259,7 +291,11 @@
                             </div>
                             <div class="mb-3">
                                 <label for="createName" class="form-label required">Department Name</label>
-                                <input type="text" class="form-control" id="createName" required>
+                                <input type="text" class="form-control" id="createName" 
+                                       pattern="^[A-Za-z\s]+$" 
+                                       title="Department name can only contain letters and spaces. Special characters are not allowed." 
+                                       required>
+                                <small class="text-muted">Letters and spaces only. No special characters allowed.</small>
                             </div>
                             <div class="mb-3">
                                 <label for="createDescription" class="form-label">Description</label>
@@ -285,16 +321,35 @@
                             </div>
                             <div class="mb-3">
                                 <label for="createDepartmentHead" class="form-label">Department Head</label>
-                                <input type="text" class="form-control" id="createDepartmentHead" placeholder="Name of department head">
+                                <select class="form-select" id="createDepartmentHead">
+                                    <option value="">-- Select Department Head (Optional) --</option>
+                                    <?php if (!empty($users)): ?>
+                                        <?php foreach ($users as $user): ?>
+                                            <option value="<?= $user['id'] ?>">
+                                                <?= esc(trim($user['first_name'] . ' ' . ($user['middle_name'] ?? '') . ' ' . $user['last_name'])) ?> 
+                                                (<?= esc($user['email']) ?>)
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
+                                <small class="text-muted">Select a user to assign as department head</small>
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="createContactEmail" class="form-label">Contact Email</label>
-                                    <input type="email" class="form-control" id="createContactEmail" placeholder="department@example.com">
+                                    <input type="email" class="form-control" id="createContactEmail" 
+                                           pattern="^[a-zA-Z0-9.]+@[a-zA-Z0-9.]+\.[a-zA-Z]{2,}$" 
+                                           title="Email must be in valid format (e.g., department@example.com). Special characters like _, -, + are not allowed." 
+                                           placeholder="department@example.com">
+                                    <small class="text-muted">Format: department@example.com. No special characters like _, -, + allowed.</small>
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <label for="createContactPhone" class="form-label">Contact Phone</label>
-                                    <input type="tel" class="form-control" id="createContactPhone" placeholder="+63 XXX XXX XXXX">
+                                    <input type="tel" class="form-control" id="createContactPhone" 
+                                           pattern="^(\+63|0)?9\d{9}$" 
+                                           title="Phone number must be in Philippine format (e.g., 09123456789, +639123456789, or 09123456789)." 
+                                           placeholder="09123456789">
+                                    <small class="text-muted">Philippine format: 09123456789 or +639123456789</small>
                                 </div>
                             </div>
                         </div>
@@ -363,6 +418,40 @@
 
         function submitCreateDepartment() {
             const form = document.getElementById('createDepartmentForm');
+            
+            // Validate department name
+            const nameInput = document.getElementById('createName');
+            const namePattern = /^[A-Za-z\s]+$/;
+            if (!namePattern.test(nameInput.value.trim())) {
+                alert('Department name can only contain letters and spaces. Special characters are not allowed.');
+                nameInput.focus();
+                return;
+            }
+            
+            // Department head is now a dropdown (user ID), no validation needed
+            
+            // Validate email if provided
+            const emailInput = document.getElementById('createContactEmail');
+            if (emailInput.value.trim()) {
+                const emailPattern = /^[a-zA-Z0-9.]+@[a-zA-Z0-9.]+\.[a-zA-Z]{2,}$/;
+                if (!emailPattern.test(emailInput.value.trim())) {
+                    alert('Email must be in valid format (e.g., department@example.com). Special characters like _, -, + are not allowed.');
+                    emailInput.focus();
+                    return;
+                }
+            }
+            
+            // Validate phone if provided
+            const phoneInput = document.getElementById('createContactPhone');
+            if (phoneInput.value.trim()) {
+                const phonePattern = /^(\+63|0)?9\d{9}$/;
+                if (!phonePattern.test(phoneInput.value.trim())) {
+                    alert('Phone number must be in Philippine format (e.g., 09123456789, +639123456789, or 09123456789).');
+                    phoneInput.focus();
+                    return;
+                }
+            }
+            
             if (!form.checkValidity()) {
                 form.reportValidity();
                 return;
@@ -426,11 +515,21 @@
                     if (response.success) {
                         const dept = response.department;
                         const warehouses = <?= json_encode($warehouses ?? []) ?>;
+                        const users = <?= json_encode($users ?? []) ?>;
 
                         let warehousesOptions = '<option value="">-- Central Office (No Warehouse) --</option>';
                         warehouses.forEach(warehouse => {
                             warehousesOptions += `<option value="${warehouse.id}" ${warehouse.id == dept.warehouse_id ? 'selected' : ''}>${warehouse.name} (${warehouse.code})</option>`;
                         });
+                        
+                        let usersOptions = '<option value="">-- Select Department Head (Optional) --</option>';
+                        if (users && users.length > 0) {
+                            users.forEach(user => {
+                                const fullName = `${user.first_name} ${user.middle_name || ''} ${user.last_name}`.trim();
+                                const selected = user.id == dept.department_head_user_id ? 'selected' : '';
+                                usersOptions += `<option value="${user.id}" ${selected}>${fullName} (${user.email})</option>`;
+                            });
+                        }
 
                         document.getElementById('editDepartmentContent').innerHTML = `
                             <form id="editDepartmentForm">
@@ -442,7 +541,11 @@
                                     </div>
                                     <div class="mb-3">
                                         <label for="editName" class="form-label required">Department Name</label>
-                                        <input type="text" class="form-control" id="editName" value="${dept.name || ''}" required>
+                                        <input type="text" class="form-control" id="editName" 
+                                               pattern="^[A-Za-z\s]+$" 
+                                               title="Department name can only contain letters and spaces. Special characters are not allowed." 
+                                               value="${dept.name || ''}" required>
+                                        <small class="text-muted">Letters and spaces only. No special characters allowed.</small>
                                     </div>
                                     <div class="mb-3">
                                         <label for="editDescription" class="form-label">Description</label>
@@ -463,16 +566,27 @@
                                     </div>
                                     <div class="mb-3">
                                         <label for="editDepartmentHead" class="form-label">Department Head</label>
-                                        <input type="text" class="form-control" id="editDepartmentHead" value="${dept.department_head || ''}">
+                                        <select class="form-select" id="editDepartmentHead">
+                                            ${usersOptions}
+                                        </select>
+                                        <small class="text-muted">Select a user to assign as department head</small>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
                                             <label for="editContactEmail" class="form-label">Contact Email</label>
-                                            <input type="email" class="form-control" id="editContactEmail" value="${dept.contact_email || ''}">
+                                            <input type="email" class="form-control" id="editContactEmail" 
+                                                   pattern="^[a-zA-Z0-9.]+@[a-zA-Z0-9.]+\.[a-zA-Z]{2,}$" 
+                                                   title="Email must be in valid format (e.g., department@example.com). Special characters like _, -, + are not allowed." 
+                                                   value="${dept.contact_email || ''}">
+                                            <small class="text-muted">Format: department@example.com. No special characters like _, -, + allowed.</small>
                                         </div>
                                         <div class="col-md-6 mb-3">
                                             <label for="editContactPhone" class="form-label">Contact Phone</label>
-                                            <input type="tel" class="form-control" id="editContactPhone" value="${dept.contact_phone || ''}">
+                                            <input type="tel" class="form-control" id="editContactPhone" 
+                                                   pattern="^(\+63|0)?9\d{9}$" 
+                                                   title="Phone number must be in Philippine format (e.g., 09123456789, +639123456789, or 09123456789)." 
+                                                   value="${dept.contact_phone || ''}">
+                                            <small class="text-muted">Philippine format: 09123456789 or +639123456789</small>
                                         </div>
                                     </div>
                                 </div>
@@ -508,6 +622,40 @@
 
         function submitEditDepartment() {
             const form = document.getElementById('editDepartmentForm');
+            
+            // Validate department name
+            const nameInput = document.getElementById('editName');
+            const namePattern = /^[A-Za-z\s]+$/;
+            if (!namePattern.test(nameInput.value.trim())) {
+                alert('Department name can only contain letters and spaces. Special characters are not allowed.');
+                nameInput.focus();
+                return;
+            }
+            
+            // Department head is now a dropdown (user ID), no validation needed
+            
+            // Validate email if provided
+            const emailInput = document.getElementById('editContactEmail');
+            if (emailInput.value.trim()) {
+                const emailPattern = /^[a-zA-Z0-9.]+@[a-zA-Z0-9.]+\.[a-zA-Z]{2,}$/;
+                if (!emailPattern.test(emailInput.value.trim())) {
+                    alert('Email must be in valid format (e.g., department@example.com). Special characters like _, -, + are not allowed.');
+                    emailInput.focus();
+                    return;
+                }
+            }
+            
+            // Validate phone if provided
+            const phoneInput = document.getElementById('editContactPhone');
+            if (phoneInput.value.trim()) {
+                const phonePattern = /^(\+63|0)?9\d{9}$/;
+                if (!phonePattern.test(phoneInput.value.trim())) {
+                    alert('Phone number must be in Philippine format (e.g., 09123456789, +639123456789, or 09123456789).');
+                    phoneInput.focus();
+                    return;
+                }
+            }
+            
             if (!form.checkValidity()) {
                 form.reportValidity();
                 return;
@@ -551,7 +699,7 @@
         }
 
         function softDeleteDepartment(departmentId, departmentName) {
-            if (!confirm(`Are you sure you want to deactivate "${departmentName}"?\n\nThis will set the department as inactive.`)) {
+            if (!confirm(`Are you sure you want to deactivate "${departmentName}"?\n\nNote: This action will be blocked if there are users assigned to this department.`)) {
                 return;
             }
 

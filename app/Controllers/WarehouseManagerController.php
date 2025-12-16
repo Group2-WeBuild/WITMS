@@ -10,6 +10,7 @@ use App\Models\WarehouseLocationModel;
 use App\Models\UnitsOfMeasureModel;
 use App\Models\WorkAssignmentModel;
 use App\Models\StockMovementModel;
+use App\Models\UserWarehouseAssignmentModel;
 use App\Libraries\QRCodeLibrary;
 
 class WarehouseManagerController extends BaseController
@@ -22,6 +23,7 @@ class WarehouseManagerController extends BaseController
     protected $unitModel;
     protected $workAssignmentModel;
     protected $stockMovementModel;
+    protected $userWarehouseAssignmentModel;
     protected $qrLibrary;
 
     public function __construct()
@@ -34,6 +36,7 @@ class WarehouseManagerController extends BaseController
         $this->unitModel = new UnitsOfMeasureModel();
         $this->stockMovementModel = new StockMovementModel();
         $this->workAssignmentModel = new WorkAssignmentModel();
+        $this->userWarehouseAssignmentModel = new UserWarehouseAssignmentModel();
         $this->qrLibrary = new QRCodeLibrary();
     }
 
@@ -68,20 +71,66 @@ class WarehouseManagerController extends BaseController
         ];
     }
 
+    /**
+     * Get assigned warehouse IDs for the logged-in user
+     * Returns array of warehouse IDs, or null if user has access to all warehouses (IT Admin)
+     */
+    private function getAssignedWarehouseIds()
+    {
+        $userRole = session()->get('user_role');
+        $userId = session()->get('user_id');
+        
+        // IT Administrators have access to all warehouses
+        if ($userRole === 'IT Administrator') {
+            return null; // null means no filtering (all warehouses)
+        }
+        
+        // Get assigned warehouses for Warehouse Manager
+        $assignments = $this->userWarehouseAssignmentModel->getWarehousesByUser($userId, true);
+        
+        if (empty($assignments)) {
+            return []; // No assignments, return empty array (will show nothing)
+        }
+        
+        // Extract warehouse IDs
+        return array_column($assignments, 'warehouse_id');
+    }
+
+    /**
+     * Check if user has access to a specific warehouse
+     */
+    private function hasWarehouseAccess($warehouseId)
+    {
+        $assignedIds = $this->getAssignedWarehouseIds();
+        
+        // If null, user has access to all warehouses (IT Admin)
+        if ($assignedIds === null) {
+            return true;
+        }
+        
+        // Check if warehouse ID is in assigned list
+        return in_array($warehouseId, $assignedIds);
+    }
+
     // ==========================================
     // INVENTORY MANAGEMENT
     // ==========================================
 
     /**
      * List all inventory
+     * NOTE: Warehouse Managers oversee inventory at each warehouse, so they see ALL inventory
+     * This method intentionally does NOT filter by assigned warehouses
      */
     public function inventory()
     {
         $accessCheck = $this->checkAccess();
         if ($accessCheck) return $accessCheck;
 
+        // Get ALL inventory (no filtering) - Warehouse Managers oversee all warehouses
         $inventory = $this->inventoryModel->getInventoryWithDetails();
         $stats = $this->inventoryModel->getInventoryStats();
+        
+        // Get all warehouses for filter dropdown
         $warehouses = $this->warehouseModel->findAll();
         $categories = $this->categoryModel->findAll();
 
@@ -113,17 +162,34 @@ class WarehouseManagerController extends BaseController
 
     /**
      * Show add inventory form
+     * Warehouse dropdown filtered to show only assigned warehouses
      */
     public function inventoryAdd()
     {
         $accessCheck = $this->checkAccess();
         if ($accessCheck) return $accessCheck;
 
+        $assignedWarehouseIds = $this->getAssignedWarehouseIds();
+        
+        // Get all active warehouses
+        $allWarehouses = $this->warehouseModel->getActiveWarehouses();
+        
+        // Filter to only assigned warehouses for dropdown
+        if ($assignedWarehouseIds !== null && !empty($assignedWarehouseIds)) {
+            $warehouses = array_filter($allWarehouses, function($warehouse) use ($assignedWarehouseIds) {
+                return in_array($warehouse['id'], $assignedWarehouseIds);
+            });
+            $warehouses = array_values($warehouses);
+        } else {
+            // IT Admin or no assignments - show all warehouses
+            $warehouses = $allWarehouses;
+        }
+
         $data = [
             'title' => 'Add Stock - WITMS',
             'user' => $this->getUserData(),
             'materials' => $this->materialModel->getActiveMaterials(),
-            'warehouses' => $this->warehouseModel->getActiveWarehouses()
+            'warehouses' => $warehouses
         ];
 
         return view('users/warehouse_manager/inventory_add', $data);
@@ -137,22 +203,50 @@ class WarehouseManagerController extends BaseController
         $accessCheck = $this->checkAccess();
         if ($accessCheck) return $accessCheck;
 
+        // Validate expiration date if provided
+        $expirationDate = $this->request->getPost('expiration_date');
+        if ($expirationDate) {
+            $expDate = strtotime($expirationDate);
+            $today = strtotime(date('Y-m-d'));
+            
+            if ($expDate <= $today) {
+                return redirect()->back()
+                    ->with('error', 'Expiration date must be in the future. Please select a future date or leave it empty.')
+                    ->withInput();
+            }
+        }
+
+        // Batch number will be auto-generated if empty (handled by InventoryModel callback)
+        $batchNumber = trim($this->request->getPost('batch_number') ?? '');
+        if (empty($batchNumber)) {
+            $batchNumber = ''; // Let the model auto-generate it
+        }
+
         $data = [
             'material_id' => $this->request->getPost('material_id'),
             'warehouse_id' => $this->request->getPost('warehouse_id'),
             'quantity' => $this->request->getPost('quantity'),
-            'batch_number' => $this->request->getPost('batch_number'),
+            'batch_number' => $batchNumber,
             'location_in_warehouse' => $this->request->getPost('location_in_warehouse'),
-            'expiration_date' => $this->request->getPost('expiration_date')
+            'expiration_date' => $expirationDate ?: null
         ];
 
         if ($this->inventoryModel->addStock($data)) {
+            // Get the generated batch number from the inventory record
+            $inventory = $this->inventoryModel
+                ->where('material_id', $data['material_id'])
+                ->where('warehouse_id', $data['warehouse_id'])
+                ->orderBy('id', 'DESC')
+                ->first();
+            
+            $generatedBatchNumber = $inventory['batch_number'] ?? $batchNumber;
+            
             // Record stock movement
             $this->stockMovementModel->recordReceipt([
                 'material_id' => $data['material_id'],
                 'to_warehouse_id' => $data['warehouse_id'],
                 'quantity' => $data['quantity'],
-                'batch_number' => $data['batch_number'],
+                'batch_number' => $generatedBatchNumber,
                 'performed_by' => session()->get('user_id'),
                 'notes' => $this->request->getPost('notes')
             ]);
@@ -165,7 +259,64 @@ class WarehouseManagerController extends BaseController
     }
 
     /**
+     * Get material quantity in warehouse (AJAX)
+     */
+    public function getMaterialQuantity()
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Invalid request']);
+        }
+
+        $materialId = $this->request->getPost('material_id');
+        $warehouseId = $this->request->getPost('warehouse_id');
+
+        if (!$materialId || !$warehouseId) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Material ID and Warehouse ID are required']);
+        }
+
+        try {
+            // Get material details
+            $material = $this->materialModel->find($materialId);
+            if (!$material) {
+                return $this->response->setJSON(['success' => false, 'message' => 'Material not found']);
+            }
+
+            // Get unit of measure
+            $unit = $this->unitModel->find($material['unit_id']);
+            $unitAbbr = $unit ? $unit['abbreviation'] : '';
+
+            // Get inventory for this material in this warehouse
+            $inventory = $this->inventoryModel
+                ->where('material_id', $materialId)
+                ->where('warehouse_id', $warehouseId)
+                ->findAll();
+
+            $totalQuantity = 0;
+            $totalAvailable = 0;
+
+            foreach ($inventory as $item) {
+                $totalQuantity += floatval($item['quantity'] ?? 0);
+                $totalAvailable += floatval($item['available_quantity'] ?? 0);
+            }
+
+            return $this->response->setJSON([
+                'success' => true,
+                'quantity' => $totalQuantity,
+                'available_quantity' => $totalAvailable,
+                'unit' => $unitAbbr
+            ]);
+        } catch (\Exception $e) {
+            log_message('error', 'Error getting material quantity: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
      * Show edit inventory form
+     * Only allows editing inventory from assigned warehouses
      */
     public function inventoryEdit($id)
     {
@@ -178,12 +329,25 @@ class WarehouseManagerController extends BaseController
             return redirect()->to('/warehouse-manager/inventory')->with('error', 'Inventory item not found');
         }
 
+        // Check if user has access to this warehouse
+        $assignedWarehouseIds = $this->getAssignedWarehouseIds();
+        
+        // If user has assigned warehouses, check if this inventory belongs to one
+        if ($assignedWarehouseIds !== null && !empty($assignedWarehouseIds)) {
+            if (!in_array($inventory['warehouse_id'], $assignedWarehouseIds)) {
+                return redirect()->to('/warehouse-manager/inventory')->with('error', 'Access denied. You can only edit inventory from your assigned warehouses.');
+            }
+        } elseif ($assignedWarehouseIds === []) {
+            // User has no warehouse assignments
+            return redirect()->to('/warehouse-manager/inventory')->with('error', 'Access denied. You have no assigned warehouses.');
+        }
+
+        // Batch number will be auto-generated by the model if empty during update
+
         $data = [
             'title' => 'Edit Inventory - WITMS',
             'user' => $this->getUserData(),
-            'inventory' => $inventory,
-            'materials' => $this->materialModel->getActiveMaterials(),
-            'warehouses' => $this->warehouseModel->getActiveWarehouses()
+            'inventory' => $inventory
         ];
 
         return view('users/warehouse_manager/inventory_edit', $data);
@@ -191,17 +355,42 @@ class WarehouseManagerController extends BaseController
 
     /**
      * Update inventory
+     * Only allows updating inventory from assigned warehouses
      */
     public function inventoryUpdate($id)
     {
         $accessCheck = $this->checkAccess();
         if ($accessCheck) return $accessCheck;
 
+        // Check if inventory exists and user has access
+        $inventory = $this->inventoryModel->find($id);
+        if (!$inventory) {
+            return redirect()->to('/warehouse-manager/inventory')->with('error', 'Inventory item not found');
+        }
+
+        // Check if user has access to this warehouse
+        $assignedWarehouseIds = $this->getAssignedWarehouseIds();
+        
+        // If user has assigned warehouses, check if this inventory belongs to one
+        if ($assignedWarehouseIds !== null && !empty($assignedWarehouseIds)) {
+            if (!in_array($inventory['warehouse_id'], $assignedWarehouseIds)) {
+                return redirect()->to('/warehouse-manager/inventory')->with('error', 'Access denied. You can only update inventory from your assigned warehouses.');
+            }
+        } elseif ($assignedWarehouseIds === []) {
+            // User has no warehouse assignments
+            return redirect()->to('/warehouse-manager/inventory')->with('error', 'Access denied. You have no assigned warehouses.');
+        }
+
+        // Prepare update data - include material_id and warehouse_id for batch number generation
         $data = [
+            'material_id' => $inventory['material_id'],
+            'warehouse_id' => $inventory['warehouse_id'],
             'location_in_warehouse' => $this->request->getPost('location_in_warehouse'),
-            'expiration_date' => $this->request->getPost('expiration_date'),
-            'batch_number' => $this->request->getPost('batch_number')
+            'expiration_date' => $this->request->getPost('expiration_date') ?: null
         ];
+
+        // Batch number is auto-generated by model callback if empty
+        // Don't include it in update data - let the model handle it
 
         if ($this->inventoryModel->update($id, $data)) {
             return redirect()->to('/warehouse-manager/inventory')->with('success', 'Inventory updated successfully!');
@@ -238,12 +427,14 @@ class WarehouseManagerController extends BaseController
 
     /**
      * Show low stock items
+     * NOTE: Shows ALL low stock items (no filtering) - Warehouse Managers oversee all warehouses
      */
     public function inventoryLowStock()
     {
         $accessCheck = $this->checkAccess();
         if ($accessCheck) return $accessCheck;
 
+        // Get ALL low stock items (no filtering)
         $lowStock = $this->inventoryModel->getLowStockItems();
 
         $data = [
@@ -258,12 +449,14 @@ class WarehouseManagerController extends BaseController
 
     /**
      * Show expiring items
+     * NOTE: Shows ALL expiring items (no filtering) - Warehouse Managers oversee all warehouses
      */
     public function inventoryExpiring()
     {
         $accessCheck = $this->checkAccess();
         if ($accessCheck) return $accessCheck;
 
+        // Get ALL expiring items (no filtering)
         $expiring = $this->inventoryModel->getExpiringItems(30);
 
         $data = [
@@ -472,16 +665,88 @@ class WarehouseManagerController extends BaseController
     public function materialsStore()
     {
         $accessCheck = $this->checkAccess();
-        if ($accessCheck) return $accessCheck;        $data = [
-            'name' => $this->request->getPost('name'),
-            'code' => $this->request->getPost('code'),
-            'qrcode' => $this->request->getPost('qrcode'),
+        if ($accessCheck) return $accessCheck;
+
+        // Validate input
+        $validation = \Config\Services::validation();
+        $validation->setRules([
+            'name' => [
+                'label' => 'Material Name',
+                'rules' => 'required|regex_match[/^[A-Za-z\s]+$/]',
+                'errors' => [
+                    'required' => 'Material name is required',
+                    'regex_match' => 'Material name can only contain letters and spaces (no special characters)'
+                ]
+            ],
+            'code' => [
+                'label' => 'Material Code',
+                'rules' => 'required|regex_match[/^[A-Z0-9]+(-[A-Z0-9]+)*$/]',
+                'errors' => [
+                    'required' => 'Material code is required',
+                    'regex_match' => 'Material code must be in uppercase format like MAT101 or MAT-101'
+                ]
+            ],
+            'unit_cost' => [
+                'label' => 'Unit Cost',
+                'rules' => 'required|decimal|greater_than[0]',
+                'errors' => [
+                    'required' => 'Unit cost is required',
+                    'decimal' => 'Unit cost must be a valid number',
+                    'greater_than' => 'Unit cost must be greater than 0'
+                ]
+            ],
+            'reorder_level' => [
+                'label' => 'Reorder Level',
+                'rules' => 'required|decimal|greater_than[0]',
+                'errors' => [
+                    'required' => 'Reorder level is required',
+                    'decimal' => 'Reorder level must be a valid number',
+                    'greater_than' => 'Reorder level must be greater than 0'
+                ]
+            ],
+            'reorder_quantity' => [
+                'label' => 'Reorder Quantity',
+                'rules' => 'required|decimal|greater_than[0]',
+                'errors' => [
+                    'required' => 'Reorder quantity is required',
+                    'decimal' => 'Reorder quantity must be a valid number',
+                    'greater_than' => 'Reorder quantity must be greater than 0'
+                ]
+            ],
+            'category_id' => 'required|integer',
+            'unit_id' => 'required|integer'
+        ]);
+
+        if (!$validation->run($this->request->getPost())) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Validation failed: ' . implode(', ', $validation->getErrors()));
+        }
+
+        // Sanitize and format data
+        $name = trim($this->request->getPost('name'));
+        $code = strtoupper(trim($this->request->getPost('code')));
+        $unitCost = floatval($this->request->getPost('unit_cost'));
+        $reorderLevel = floatval($this->request->getPost('reorder_level'));
+        $reorderQuantity = floatval($this->request->getPost('reorder_quantity'));
+
+        // Additional validation
+        if ($unitCost <= 0 || $reorderLevel <= 0 || $reorderQuantity <= 0) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Unit Cost, Reorder Level, and Reorder Quantity must be greater than 0');
+        }
+
+        $data = [
+            'name' => $name,
+            'code' => $code,
+            'qrcode' => '', // QR code is auto-generated, don't accept user input
             'category_id' => $this->request->getPost('category_id'),
             'unit_id' => $this->request->getPost('unit_id'),
             'description' => $this->request->getPost('description'),
-            'reorder_level' => $this->request->getPost('reorder_level'),
-            'reorder_quantity' => $this->request->getPost('reorder_quantity'),
-            'unit_cost' => $this->request->getPost('unit_cost'),
+            'reorder_level' => $reorderLevel,
+            'reorder_quantity' => $reorderQuantity,
+            'unit_cost' => $unitCost,
             'is_perishable' => $this->request->getPost('is_perishable') ? 1 : 0,
             'shelf_life_days' => $this->request->getPost('shelf_life_days')
         ];
@@ -525,16 +790,94 @@ class WarehouseManagerController extends BaseController
     public function materialsUpdate($id)
     {
         $accessCheck = $this->checkAccess();
-        if ($accessCheck) return $accessCheck;        $data = [
-            'name' => $this->request->getPost('name'),
-            'code' => $this->request->getPost('code'),
-            'qrcode' => $this->request->getPost('qrcode'),
+        if ($accessCheck) return $accessCheck;
+
+        // Validate input
+        $validation = \Config\Services::validation();
+        $validation->setRules([
+            'name' => [
+                'label' => 'Material Name',
+                'rules' => 'required|regex_match[/^[A-Za-z\s]+$/]',
+                'errors' => [
+                    'required' => 'Material name is required',
+                    'regex_match' => 'Material name can only contain letters and spaces (no special characters)'
+                ]
+            ],
+            'code' => [
+                'label' => 'Material Code',
+                'rules' => 'required|regex_match[/^[A-Z0-9]+(-[A-Z0-9]+)*$/]',
+                'errors' => [
+                    'required' => 'Material code is required',
+                    'regex_match' => 'Material code must be in uppercase format like MAT101 or MAT-101'
+                ]
+            ],
+            'unit_cost' => [
+                'label' => 'Unit Cost',
+                'rules' => 'required|decimal|greater_than[0]',
+                'errors' => [
+                    'required' => 'Unit cost is required',
+                    'decimal' => 'Unit cost must be a valid number',
+                    'greater_than' => 'Unit cost must be greater than 0'
+                ]
+            ],
+            'reorder_level' => [
+                'label' => 'Reorder Level',
+                'rules' => 'required|decimal|greater_than[0]',
+                'errors' => [
+                    'required' => 'Reorder level is required',
+                    'decimal' => 'Reorder level must be a valid number',
+                    'greater_than' => 'Reorder level must be greater than 0'
+                ]
+            ],
+            'reorder_quantity' => [
+                'label' => 'Reorder Quantity',
+                'rules' => 'required|decimal|greater_than[0]',
+                'errors' => [
+                    'required' => 'Reorder quantity is required',
+                    'decimal' => 'Reorder quantity must be a valid number',
+                    'greater_than' => 'Reorder quantity must be greater than 0'
+                ]
+            ],
+            'category_id' => 'required|integer',
+            'unit_id' => 'required|integer'
+        ]);
+
+        if (!$validation->run($this->request->getPost())) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Validation failed: ' . implode(', ', $validation->getErrors()));
+        }
+
+        // Sanitize and format data
+        $name = trim($this->request->getPost('name'));
+        $code = strtoupper(trim($this->request->getPost('code')));
+        $unitCost = floatval($this->request->getPost('unit_cost'));
+        $reorderLevel = floatval($this->request->getPost('reorder_level'));
+        $reorderQuantity = floatval($this->request->getPost('reorder_quantity'));
+
+        // Additional validation
+        if ($unitCost <= 0 || $reorderLevel <= 0 || $reorderQuantity <= 0) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Unit Cost, Reorder Level, and Reorder Quantity must be greater than 0');
+        }
+
+        // Get existing material to preserve QR code
+        $existingMaterial = $this->materialModel->find($id);
+        if (!$existingMaterial) {
+            return redirect()->to('/warehouse-manager/materials')->with('error', 'Material not found');
+        }
+
+        $data = [
+            'name' => $name,
+            'code' => $code,
+            'qrcode' => $existingMaterial['qrcode'] ?? '', // Preserve existing QR code (readonly)
             'category_id' => $this->request->getPost('category_id'),
             'unit_id' => $this->request->getPost('unit_id'),
             'description' => $this->request->getPost('description'),
-            'reorder_level' => $this->request->getPost('reorder_level'),
-            'reorder_quantity' => $this->request->getPost('reorder_quantity'),
-            'unit_cost' => $this->request->getPost('unit_cost'),
+            'reorder_level' => $reorderLevel,
+            'reorder_quantity' => $reorderQuantity,
+            'unit_cost' => $unitCost,
             'is_perishable' => $this->request->getPost('is_perishable') ? 1 : 0,
             'shelf_life_days' => $this->request->getPost('shelf_life_days')
         ];
@@ -838,17 +1181,44 @@ class WarehouseManagerController extends BaseController
 
     /**
      * List all warehouses
+     * Filtered to show only assigned warehouses
      */
     public function warehouseManagement()
     {
         $accessCheck = $this->checkAccess();
         if ($accessCheck) return $accessCheck;
 
-        $warehouses = $this->warehouseModel->getWarehousesWithLocations();
-        $stats = $this->warehouseModel->getWarehouseStats();
+        $assignedWarehouseIds = $this->getAssignedWarehouseIds();
+        
+        // Get all warehouses
+        $allWarehouses = $this->warehouseModel->getWarehousesWithLocations();
+        
+        // Filter to only assigned warehouses
+        if ($assignedWarehouseIds !== null && !empty($assignedWarehouseIds)) {
+            $warehouses = array_filter($allWarehouses, function($warehouse) use ($assignedWarehouseIds) {
+                return in_array($warehouse['id'], $assignedWarehouseIds);
+            });
+            $warehouses = array_values($warehouses);
+        } else {
+            // IT Admin or no assignments - show all warehouses
+            $warehouses = $allWarehouses;
+        }
+        
+        // Calculate stats for filtered warehouses
+        $totalCapacity = array_sum(array_column($warehouses, 'capacity'));
+        $stats = [
+            'total' => count($warehouses),
+            'total_warehouses' => count($warehouses),
+            'active' => count(array_filter($warehouses, fn($w) => $w['is_active'])),
+            'active_warehouses' => count(array_filter($warehouses, fn($w) => $w['is_active'])),
+            'inactive' => count(array_filter($warehouses, fn($w) => !$w['is_active'])),
+            'with_managers' => count(array_filter($warehouses, fn($w) => !empty($w['manager_id']))),
+            'managed_warehouses' => count(array_filter($warehouses, fn($w) => !empty($w['manager_id']))),
+            'total_capacity' => number_format($totalCapacity, 0)
+        ];
 
         $data = [
-            'title' => 'Warehouse Management - WITMS',
+            'title' => 'Warehouse Overview - WITMS',
             'user' => $this->getUserData(),
             'warehouses' => $warehouses,
             'stats' => $stats
@@ -912,18 +1282,31 @@ class WarehouseManagerController extends BaseController
             return redirect()->back()->with('error', 'Failed to create warehouse location: ' . json_encode($errors))->withInput();
         }
 
+        // Validate manager_id is required
+        $managerId = $this->request->getPost('manager_id');
+        if (empty($managerId)) {
+            // Rollback: delete the location
+            $this->warehouseLocationModel->delete($locationId);
+            return redirect()->back()->with('error', 'Manager is required. Please select a warehouse manager.')->withInput();
+        }
+
         // Then, create the warehouse
         $warehouseData = [
             'name' => $this->request->getPost('name'),
             'code' => $this->request->getPost('code'),
             'warehouse_location_id' => $locationId,
             'capacity' => $this->request->getPost('capacity'),
-            'manager_id' => $this->request->getPost('manager_id') ?: null,
+            'manager_id' => $managerId,
             'is_active' => 1
         ];
 
         if ($this->warehouseModel->insert($warehouseData)) {
-            return redirect()->to('/warehouse-manager/warehouse-management')->with('success', 'Warehouse created successfully!');
+            $warehouseId = $this->warehouseModel->getInsertID();
+            
+            // Automatically assign the selected manager to this warehouse
+            $this->assignManagerToWarehouse($managerId, $warehouseId);
+            
+            return redirect()->to('/warehouse-manager/warehouse-management')->with('success', 'Warehouse created successfully! Manager has been automatically assigned to this warehouse.');
         } else {
             // Rollback: delete the location
             $this->warehouseLocationModel->delete($locationId);
@@ -997,19 +1380,119 @@ class WarehouseManagerController extends BaseController
             return redirect()->back()->with('error', 'Failed to update location: ' . json_encode($errors))->withInput();
         }
 
+        // Validate manager_id is required
+        $managerId = $this->request->getPost('manager_id');
+        if (empty($managerId)) {
+            return redirect()->back()->with('error', 'Manager is required. Please select a warehouse manager.')->withInput();
+        }
+
+        // Get old manager_id before update
+        $oldManagerId = $warehouse['manager_id'] ?? null;
+
         // Update warehouse info
         $warehouseData = [
             'name' => $this->request->getPost('name'),
             'code' => $this->request->getPost('code'),
             'capacity' => $this->request->getPost('capacity'),
-            'manager_id' => $this->request->getPost('manager_id') ?: null
+            'manager_id' => $managerId
         ];
 
         if ($this->warehouseModel->update($id, $warehouseData)) {
-            return redirect()->to('/warehouse-manager/warehouse-management')->with('success', 'Warehouse updated successfully!');
+            // If manager changed, update assignments
+            if ($oldManagerId != $managerId) {
+                // Deactivate old manager's assignment if they were assigned
+                if ($oldManagerId) {
+                    $this->userWarehouseAssignmentModel
+                        ->where('user_id', $oldManagerId)
+                        ->where('warehouse_id', $id)
+                        ->update(['is_active' => 0]);
+                }
+                
+                // Assign new manager to warehouse
+                $this->assignManagerToWarehouse($managerId, $id);
+            } else {
+                // Manager didn't change, but ensure assignment exists and is active
+                $this->assignManagerToWarehouse($managerId, $id);
+            }
+            
+            return redirect()->to('/warehouse-manager/warehouse-management')->with('success', 'Warehouse updated successfully! Manager assignment has been updated.');
         } else {
             $errors = $this->warehouseModel->errors();
             return redirect()->back()->with('error', 'Failed to update warehouse: ' . json_encode($errors))->withInput();
+        }
+    }
+
+    /**
+     * Assign manager to warehouse automatically
+     * This is called when creating/updating a warehouse with a manager
+     */
+    private function assignManagerToWarehouse($managerId, $warehouseId)
+    {
+        try {
+            // Get manager's role_id
+            $userModel = new \App\Models\UserModel();
+            $manager = $userModel->find($managerId);
+            
+            if (!$manager) {
+                log_message('error', "Manager not found: {$managerId}");
+                return false;
+            }
+            
+            // Check if assignment already exists
+            $existingAssignment = $this->userWarehouseAssignmentModel
+                ->where('user_id', $managerId)
+                ->where('warehouse_id', $warehouseId)
+                ->first();
+            
+            // Get user's role_id
+            $roleId = $manager['role_id'] ?? null;
+            if (!$roleId) {
+                log_message('error', "Manager does not have a role_id: {$managerId}");
+                return false;
+            }
+            
+            // Check if this is the manager's first warehouse assignment (set as primary)
+            $existingAssignments = $this->userWarehouseAssignmentModel
+                ->where('user_id', $managerId)
+                ->where('is_active', 1)
+                ->where('is_primary', 1)
+                ->first();
+            
+            $isPrimary = empty($existingAssignments) ? 1 : 0;
+            
+            $assignmentData = [
+                'role_id' => $roleId,
+                'is_active' => 1,
+                'is_primary' => $isPrimary,
+                'assigned_by' => session()->get('user_id'),
+                'assigned_at' => date('Y-m-d H:i:s'),
+                'notes' => 'Auto-assigned when set as warehouse manager'
+            ];
+            
+            if ($existingAssignment) {
+                // Update existing assignment
+                $this->userWarehouseAssignmentModel->update($existingAssignment['id'], $assignmentData);
+                log_message('info', "Updated warehouse assignment for manager {$managerId} to warehouse {$warehouseId}");
+            } else {
+                // Create new assignment
+                $assignmentData['user_id'] = $managerId;
+                $assignmentData['warehouse_id'] = $warehouseId;
+                $this->userWarehouseAssignmentModel->insert($assignmentData);
+                log_message('info', "Created warehouse assignment for manager {$managerId} to warehouse {$warehouseId}");
+            }
+            
+            // If set as primary, unset other primary warehouses for this manager
+            if ($isPrimary) {
+                $this->userWarehouseAssignmentModel
+                    ->where('user_id', $managerId)
+                    ->where('warehouse_id !=', $warehouseId)
+                    ->update(['is_primary' => 0]);
+            }
+            
+            return true;
+        } catch (\Exception $e) {
+            log_message('error', 'Error assigning manager to warehouse: ' . $e->getMessage());
+            return false;
         }
     }
 
@@ -1021,6 +1504,11 @@ class WarehouseManagerController extends BaseController
         $accessCheck = $this->checkAccess();
         if ($accessCheck) return $accessCheck;
 
+        // Check if user has access to this warehouse
+        if (!$this->hasWarehouseAccess($id)) {
+            return redirect()->to('/warehouse-manager/warehouse-management')->with('error', 'Access denied to this warehouse');
+        }
+
         $warehouse = $this->warehouseModel->getWarehouseWithLocation($id);
         
         if (!$warehouse) {
@@ -1030,17 +1518,33 @@ class WarehouseManagerController extends BaseController
         // Get inventory count for this warehouse
         $inventoryCount = $this->inventoryModel->where('warehouse_id', $id)->countAllResults();
         
-        // Get formatted address
+        // Get formatted address and map data
         $locationModel = $this->warehouseLocationModel;
-        $location = $locationModel->find($warehouse['warehouse_location_id']);
-        $formattedAddress = $location ? $locationModel->formatAddress($location) : 'N/A';
+        $location = null;
+        $formattedAddress = 'N/A';
+        $mapData = null;
+        
+        // Check if warehouse has a location ID
+        if (!empty($warehouse['warehouse_location_id'])) {
+            $location = $locationModel->find($warehouse['warehouse_location_id']);
+            if ($location) {
+                $formattedAddress = $locationModel->formatAddress($location);
+                $mapData = $locationModel->getMapData($location, $id);
+            }
+        }
+        
+        // Get map config
+        $mapConfig = $locationModel->getMapConfig();
 
         $data = [
             'title' => 'Warehouse Details - WITMS',
             'user' => $this->getUserData(),
             'warehouse' => $warehouse,
             'inventoryCount' => $inventoryCount,
-            'formattedAddress' => $formattedAddress
+            'formattedAddress' => $formattedAddress,
+            'mapData' => $mapData,
+            'mapConfig' => $mapConfig,
+            'apiKey' => $mapConfig['api_key'] ?? ''
         ];
 
         return view('users/warehouse_manager/warehouse_view', $data);
@@ -1048,12 +1552,41 @@ class WarehouseManagerController extends BaseController
 
     /**
      * Show warehouse map view
+     * Filtered to show only assigned warehouses
      */
     public function warehouseMap()
     {
         $accessCheck = $this->checkAccess();
-        if ($accessCheck) return $accessCheck;        // Get all warehouses with map data
-        $mapData = $this->warehouseLocationModel->getAllWithMapData(true);
+        if ($accessCheck) return $accessCheck;
+        
+        $assignedWarehouseIds = $this->getAssignedWarehouseIds();
+        
+        // Get all warehouses with map data
+        $allMapData = $this->warehouseLocationModel->getAllWithMapData(true);
+        
+        // Filter to only active locations with assigned warehouses
+        $mapData = array_filter($allMapData, function($warehouse) use ($assignedWarehouseIds) {
+            // Only show active locations
+            if (!isset($warehouse['is_active']) || !$warehouse['is_active']) {
+                return false;
+            }
+            
+            // Check if warehouse has an ID (some locations might not have warehouses)
+            if (!isset($warehouse['warehouseId']) || $warehouse['warehouseId'] === null) {
+                return false;
+            }
+            
+            // Filter to only assigned warehouses if user has assignments
+            if ($assignedWarehouseIds !== null && !empty($assignedWarehouseIds)) {
+                return in_array($warehouse['warehouseId'], $assignedWarehouseIds);
+            }
+            
+            // IT Admin or no assignments - show all active warehouses
+            return true;
+        });
+        
+        $mapData = array_values($mapData);
+        
         $mapConfig = $this->warehouseLocationModel->getMapConfig();
 
         $data = [
@@ -1069,14 +1602,42 @@ class WarehouseManagerController extends BaseController
 
     /**
      * Show stock movements
+     * Filtered to show only movements in assigned warehouses
      */
     public function stockMovements()
     {
         $accessCheck = $this->checkAccess();
         if ($accessCheck) return $accessCheck;
 
-        $movements = $this->stockMovementModel->getMovementsWithDetails();
-        $stats = $this->stockMovementModel->getMovementStats();
+        $assignedWarehouseIds = $this->getAssignedWarehouseIds();
+        
+        // Get all movements
+        $allMovements = $this->stockMovementModel->getMovementsWithDetails();
+        
+        // Filter to only movements in assigned warehouses
+        if ($assignedWarehouseIds !== null && !empty($assignedWarehouseIds)) {
+            $movements = array_filter($allMovements, function($movement) use ($assignedWarehouseIds) {
+                $fromWarehouse = $movement['from_warehouse_id'] ?? null;
+                $toWarehouse = $movement['to_warehouse_id'] ?? null;
+                
+                // Include if movement is from or to an assigned warehouse
+                return ($fromWarehouse && in_array($fromWarehouse, $assignedWarehouseIds)) ||
+                       ($toWarehouse && in_array($toWarehouse, $assignedWarehouseIds));
+            });
+            $movements = array_values($movements);
+        } else {
+            // IT Admin or no assignments - show all movements
+            $movements = $allMovements;
+        }
+        
+        // Calculate stats for filtered movements
+        $stats = [
+            'total' => count($movements),
+            'receipts' => count(array_filter($movements, fn($m) => $m['movement_type'] === 'Receipt')),
+            'issues' => count(array_filter($movements, fn($m) => $m['movement_type'] === 'Issue')),
+            'transfers' => count(array_filter($movements, fn($m) => $m['movement_type'] === 'Transfer')),
+            'adjustments' => count(array_filter($movements, fn($m) => $m['movement_type'] === 'Adjustment'))
+        ];
 
         $data = [
             'title' => 'Stock Movements - WITMS',
@@ -1090,6 +1651,7 @@ class WarehouseManagerController extends BaseController
 
     /**
      * Get stock movement statistics (AJAX endpoint)
+     * Filtered to show only movements in assigned warehouses
      */
     public function getStockMovementStats()
     {
@@ -1100,7 +1662,33 @@ class WarehouseManagerController extends BaseController
             return $this->response->setJSON(['success' => false, 'message' => 'Invalid request']);
         }
 
-        $stats = $this->stockMovementModel->getMovementStats();
+        $assignedWarehouseIds = $this->getAssignedWarehouseIds();
+        
+        // Get all movements
+        $allMovements = $this->stockMovementModel->getMovementsWithDetails();
+        
+        // Filter to only movements in assigned warehouses
+        if ($assignedWarehouseIds !== null && !empty($assignedWarehouseIds)) {
+            $movements = array_filter($allMovements, function($movement) use ($assignedWarehouseIds) {
+                $fromWarehouse = $movement['from_warehouse_id'] ?? null;
+                $toWarehouse = $movement['to_warehouse_id'] ?? null;
+                
+                return ($fromWarehouse && in_array($fromWarehouse, $assignedWarehouseIds)) ||
+                       ($toWarehouse && in_array($toWarehouse, $assignedWarehouseIds));
+            });
+            $movements = array_values($movements);
+        } else {
+            $movements = $allMovements;
+        }
+        
+        // Calculate stats for filtered movements
+        $stats = [
+            'total' => count($movements),
+            'receipts' => count(array_filter($movements, fn($m) => $m['movement_type'] === 'Receipt')),
+            'issues' => count(array_filter($movements, fn($m) => $m['movement_type'] === 'Issue')),
+            'transfers' => count(array_filter($movements, fn($m) => $m['movement_type'] === 'Transfer')),
+            'adjustments' => count(array_filter($movements, fn($m) => $m['movement_type'] === 'Adjustment'))
+        ];
 
         return $this->response->setJSON([
             'success' => true,
@@ -1126,18 +1714,45 @@ class WarehouseManagerController extends BaseController
 
     /**
      * Show reports page
+     * Stats filtered to show only data from assigned warehouses
      */
     public function reports()
     {
         $accessCheck = $this->checkAccess();
         if ($accessCheck) return $accessCheck;
 
+        $assignedWarehouseIds = $this->getAssignedWarehouseIds();
+        
+        // Get filtered inventory stats based on assigned warehouses (same as dashboard)
+        $inventoryStats = $this->getInventoryStatsForWarehouses($assignedWarehouseIds);
+        $materialStats = $this->materialModel->getMaterialStats();
+        
+        // Filter movement stats
+        $allMovements = $this->stockMovementModel->getMovementsWithDetails();
+        if ($assignedWarehouseIds !== null && !empty($assignedWarehouseIds)) {
+            $movements = array_filter($allMovements, function($movement) use ($assignedWarehouseIds) {
+                $fromWarehouse = $movement['from_warehouse_id'] ?? null;
+                $toWarehouse = $movement['to_warehouse_id'] ?? null;
+                return ($fromWarehouse && in_array($fromWarehouse, $assignedWarehouseIds)) ||
+                       ($toWarehouse && in_array($toWarehouse, $assignedWarehouseIds));
+            });
+            $movementStats = [
+                'total' => count($movements),
+                'receipts' => count(array_filter($movements, fn($m) => $m['movement_type'] === 'Receipt')),
+                'issues' => count(array_filter($movements, fn($m) => $m['movement_type'] === 'Issue')),
+                'transfers' => count(array_filter($movements, fn($m) => $m['movement_type'] === 'Transfer')),
+                'adjustments' => count(array_filter($movements, fn($m) => $m['movement_type'] === 'Adjustment'))
+            ];
+        } else {
+            $movementStats = $this->stockMovementModel->getMovementStats();
+        }
+
         $data = [
             'title' => 'Reports - WITMS',
             'user' => $this->getUserData(),
-            'inventoryStats' => $this->inventoryModel->getInventoryStats(),
-            'materialStats' => $this->materialModel->getMaterialStats(),
-            'movementStats' => $this->stockMovementModel->getMovementStats(),
+            'inventoryStats' => $inventoryStats,
+            'materialStats' => $materialStats,
+            'movementStats' => $movementStats,
             'recentReports' => session()->get('recent_reports') ?? []
         ];
 
@@ -1145,12 +1760,115 @@ class WarehouseManagerController extends BaseController
     }
 
     /**
+     * Get inventory statistics filtered by warehouse IDs
+     * Same logic as Dashboard controller
+     * @param array|null $warehouseIds Array of warehouse IDs to filter by, or null for all
+     */
+    private function getInventoryStatsForWarehouses(?array $warehouseIds): array
+    {
+        $builder = $this->inventoryModel->db->table('inventory');
+
+        // Filter by warehouse IDs if provided
+        if ($warehouseIds !== null && !empty($warehouseIds)) {
+            $builder->whereIn('warehouse_id', $warehouseIds);
+        }
+
+        // Count total items
+        $totalItems = $builder->countAllResults(false);
+        
+        // Get total quantity
+        $builderQty = $this->inventoryModel->db->table('inventory');
+        if ($warehouseIds !== null && !empty($warehouseIds)) {
+            $builderQty->whereIn('warehouse_id', $warehouseIds);
+        }
+        $totalQty = $builderQty->selectSum('quantity')->get()->getRow()->quantity ?? 0;
+
+        // Get total value
+        $totalValue = $this->getTotalInventoryValueForWarehouses($warehouseIds);
+
+        // Get low stock items
+        $lowStockItems = $this->getLowStockItemsForWarehouses($warehouseIds);
+        
+        // Get expiring items
+        $expiringItems = $this->getExpiringItemsForWarehouses($warehouseIds);
+
+        return [
+            'total_items' => $totalItems,
+            'total_quantity' => $totalQty,
+            'total_value' => $totalValue,
+            'low_stock' => count($lowStockItems),
+            'low_stock_items' => count($lowStockItems),
+            'expiring' => count($expiringItems),
+            'expiring_soon' => count($expiringItems),
+            'expiring_items' => count($expiringItems)
+        ];
+    }
+
+    /**
+     * Get total inventory value for specific warehouses
+     */
+    private function getTotalInventoryValueForWarehouses(?array $warehouseIds): float
+    {
+        $builder = $this->inventoryModel->db->table('inventory')
+            ->select('SUM(inventory.available_quantity * materials.unit_cost) as total_value')
+            ->join('materials', 'materials.id = inventory.material_id')
+            ->where('inventory.available_quantity >', 0);
+
+        if ($warehouseIds !== null && !empty($warehouseIds)) {
+            $builder->whereIn('inventory.warehouse_id', $warehouseIds);
+        }
+
+        $result = $builder->get()->getRow();
+        return (float)($result->total_value ?? 0);
+    }
+
+    /**
+     * Get low stock items for specific warehouses
+     */
+    private function getLowStockItemsForWarehouses(?array $warehouseIds): array
+    {
+        $builder = $this->inventoryModel->db->table('inventory')
+            ->select('inventory.*, materials.reorder_level')
+            ->join('materials', 'materials.id = inventory.material_id')
+            ->where('inventory.available_quantity <=', 'materials.reorder_level', false)
+            ->where('materials.reorder_level >', 0);
+
+        if ($warehouseIds !== null && !empty($warehouseIds)) {
+            $builder->whereIn('inventory.warehouse_id', $warehouseIds);
+        }
+
+        return $builder->get()->getResultArray();
+    }
+
+    /**
+     * Get expiring items for specific warehouses
+     */
+    private function getExpiringItemsForWarehouses(?array $warehouseIds, int $days = 30): array
+    {
+        $expiryDate = date('Y-m-d', strtotime("+{$days} days"));
+        
+        $builder = $this->inventoryModel->db->table('inventory')
+            ->where('expiration_date IS NOT NULL')
+            ->where('expiration_date <=', $expiryDate)
+            ->where('expiration_date >=', date('Y-m-d'));
+
+        if ($warehouseIds !== null && !empty($warehouseIds)) {
+            $builder->whereIn('warehouse_id', $warehouseIds);
+        }
+
+        return $builder->get()->getResultArray();
+    }
+
+    /**
      * Generate specific report
+     * Filtered to show only data from assigned warehouses
      */
     public function generateReport($type)
     {
         $accessCheck = $this->checkAccess();
         if ($accessCheck) return $accessCheck;
+
+        $assignedWarehouseIds = $this->getAssignedWarehouseIds();
 
         // Track recent reports in session
         $recentReports = session()->get('recent_reports') ?? [];
@@ -1175,37 +1893,104 @@ class WarehouseManagerController extends BaseController
         switch ($type) {
             case 'inventory':
                 $data['title'] = 'Inventory Summary Report';
-                $data['inventory'] = $this->inventoryModel->getInventoryWithDetails();
+                // Filter inventory by assigned warehouses
+                $allInventory = $this->inventoryModel->getInventoryWithDetails();
+                if ($assignedWarehouseIds !== null && !empty($assignedWarehouseIds)) {
+                    $data['inventory'] = array_filter($allInventory, function($item) use ($assignedWarehouseIds) {
+                        return in_array($item['warehouse_id'], $assignedWarehouseIds);
+                    });
+                    $data['inventory'] = array_values($data['inventory']);
+                } else {
+                    $data['inventory'] = $allInventory;
+                }
                 return view('reports/inventory_summary', $data);
 
             case 'lowstock':
                 $data['title'] = 'Low Stock Report';
-                $data['lowStock'] = $this->inventoryModel->getLowStockItems();
+                // Use filtered low stock items method
+                $lowStockItems = $this->getLowStockItemsForWarehouses($assignedWarehouseIds);
+                $data['lowStock'] = $lowStockItems;
                 return view('reports/low_stock', $data);
 
             case 'expiring':
                 $data['title'] = 'Expiring Items Report';
-                $data['expiring'] = $this->inventoryModel->getExpiringItems(30);
+                // Use filtered expiring items method
+                $expiringItems = $this->getExpiringItemsForWarehouses($assignedWarehouseIds, 30);
+                $data['expiring'] = $expiringItems;
                 return view('reports/expiring_items', $data);
 
             case 'movements':
                 $data['title'] = 'Stock Movements Report';
-                $data['movements'] = $this->stockMovementModel->getMovementsWithDetails();
+                $allMovements = $this->stockMovementModel->getMovementsWithDetails();
+                if ($assignedWarehouseIds !== null && !empty($assignedWarehouseIds)) {
+                    $data['movements'] = array_filter($allMovements, function($movement) use ($assignedWarehouseIds) {
+                        $fromWarehouse = $movement['from_warehouse_id'] ?? null;
+                        $toWarehouse = $movement['to_warehouse_id'] ?? null;
+                        return ($fromWarehouse && in_array($fromWarehouse, $assignedWarehouseIds)) ||
+                               ($toWarehouse && in_array($toWarehouse, $assignedWarehouseIds));
+                    });
+                    $data['movements'] = array_values($data['movements']);
+                } else {
+                    $data['movements'] = $allMovements;
+                }
                 return view('reports/stock_movements', $data);
 
             case 'valuation':
                 $data['title'] = 'Inventory Valuation Report';
-                $data['valuation'] = $this->inventoryModel->getInventoryValuation();
+                // Filter valuation by assigned warehouses
+                if ($assignedWarehouseIds !== null && !empty($assignedWarehouseIds)) {
+                    // Get valuation for each assigned warehouse and combine
+                    $allValuation = [];
+                    foreach ($assignedWarehouseIds as $warehouseId) {
+                        $warehouseValuation = $this->inventoryModel->getInventoryValuation($warehouseId);
+                        $allValuation = array_merge($allValuation, $warehouseValuation);
+                    }
+                    // Group by material and sum values
+                    $grouped = [];
+                    foreach ($allValuation as $item) {
+                        $key = $item['material_id'];
+                        if (!isset($grouped[$key])) {
+                            $grouped[$key] = $item;
+                        } else {
+                            $grouped[$key]['total_quantity'] += $item['total_quantity'];
+                            $grouped[$key]['total_value'] += $item['total_value'];
+                        }
+                    }
+                    $data['valuation'] = array_values($grouped);
+                } else {
+                    $data['valuation'] = $this->inventoryModel->getInventoryValuation();
+                }
                 return view('reports/inventory_valuation', $data);
 
             case 'performance':
                 $data['title'] = 'Warehouse Performance Report';
+                $allMovements = $this->stockMovementModel->getMovementsWithDetails();
+                if ($assignedWarehouseIds !== null && !empty($assignedWarehouseIds)) {
+                    $movements = array_filter($allMovements, function($movement) use ($assignedWarehouseIds) {
+                        $fromWarehouse = $movement['from_warehouse_id'] ?? null;
+                        $toWarehouse = $movement['to_warehouse_id'] ?? null;
+                        return ($fromWarehouse && in_array($fromWarehouse, $assignedWarehouseIds)) ||
+                               ($toWarehouse && in_array($toWarehouse, $assignedWarehouseIds));
+                    });
+                    $movements = array_values($movements);
+                    $totalMovements = count($movements);
+                    $todayMovements = count(array_filter($movements, fn($m) => date('Y-m-d', strtotime($m['movement_date'])) === date('Y-m-d')));
+                    $weekMovements = count(array_filter($movements, fn($m) => strtotime($m['movement_date']) >= strtotime('-7 days')));
+                    $monthMovements = count(array_filter($movements, fn($m) => strtotime($m['movement_date']) >= strtotime('-30 days')));
+                } else {
+                    $totalMovements = $this->stockMovementModel->countAll();
+                    $todayMovements = $this->stockMovementModel->where('DATE(movement_date)', date('Y-m-d'))->countAllResults();
+                    $weekMovements = $this->stockMovementModel->where('movement_date >=', date('Y-m-d', strtotime('-7 days')))->countAllResults();
+                    $monthMovements = $this->stockMovementModel->where('movement_date >=', date('Y-m-d', strtotime('-30 days')))->countAllResults();
+                }
+                // Use filtered inventory stats
+                $inventoryStats = $this->getInventoryStatsForWarehouses($assignedWarehouseIds);
                 $data['stats'] = [
-                    'total_movements' => $this->stockMovementModel->countAll(),
-                    'today_movements' => $this->stockMovementModel->where('DATE(movement_date)', date('Y-m-d'))->countAllResults(),
-                    'week_movements' => $this->stockMovementModel->where('movement_date >=', date('Y-m-d', strtotime('-7 days')))->countAllResults(),
-                    'month_movements' => $this->stockMovementModel->where('movement_date >=', date('Y-m-d', strtotime('-30 days')))->countAllResults(),
-                    'inventory_stats' => $this->inventoryModel->getInventoryStats(),
+                    'total_movements' => $totalMovements,
+                    'today_movements' => $todayMovements,
+                    'week_movements' => $weekMovements,
+                    'month_movements' => $monthMovements,
+                    'inventory_stats' => $inventoryStats,
                     'material_stats' => $this->materialModel->getMaterialStats()
                 ];
                 return view('reports/warehouse_performance', $data);
@@ -1217,18 +2002,44 @@ class WarehouseManagerController extends BaseController
 
     /**
      * Show analytics page
+     * Filtered to show only data from assigned warehouses (except inventory stats - shows all)
      */
     public function analytics()
     {
         $accessCheck = $this->checkAccess();
         if ($accessCheck) return $accessCheck;
 
+        $assignedWarehouseIds = $this->getAssignedWarehouseIds();
+        
+        // Inventory stats show ALL inventory (as per requirement)
+        $inventoryStats = $this->inventoryModel->getInventoryStats();
+        
+        // Material stats - filter by materials used in assigned warehouses
+        $materialStats = $this->materialModel->getMaterialStats();
+        
+        // Warehouse stats - filter to only assigned warehouses
+        $allWarehouses = $this->warehouseModel->getWarehousesWithLocations();
+        if ($assignedWarehouseIds !== null && !empty($assignedWarehouseIds)) {
+            $warehouses = array_filter($allWarehouses, function($warehouse) use ($assignedWarehouseIds) {
+                return in_array($warehouse['id'], $assignedWarehouseIds);
+            });
+            $warehouses = array_values($warehouses);
+            $warehouseStats = [
+                'total' => count($warehouses),
+                'active' => count(array_filter($warehouses, fn($w) => $w['is_active'])),
+                'inactive' => count(array_filter($warehouses, fn($w) => !$w['is_active'])),
+                'with_managers' => count(array_filter($warehouses, fn($w) => !empty($w['manager_id'])))
+            ];
+        } else {
+            $warehouseStats = $this->warehouseModel->getWarehouseStats();
+        }
+
         $data = [
             'title' => 'Analytics - WITMS',
             'user' => $this->getUserData(),
-            'inventoryStats' => $this->inventoryModel->getInventoryStats(),
-            'materialStats' => $this->materialModel->getMaterialStats(),
-            'warehouseStats' => $this->warehouseModel->getWarehouseStats()
+            'inventoryStats' => $inventoryStats, // All inventory
+            'materialStats' => $materialStats,
+            'warehouseStats' => $warehouseStats
         ];
 
         return view('users/warehouse_manager/analytics', $data);
@@ -1321,11 +2132,17 @@ class WarehouseManagerController extends BaseController
     /**
      * Show staff management
      */
+    /**
+     * Staff Management
+     * Filtered to show only staff assigned to assigned warehouses
+     */
     public function staffManagement()
     {
         $accessCheck = $this->checkAccess();
         if ($accessCheck) return $accessCheck;
 
+        $assignedWarehouseIds = $this->getAssignedWarehouseIds();
+        
         $userModel = new \App\Models\UserModel();
         $roleModel = new \App\Models\RoleModel();
         
@@ -1334,20 +2151,38 @@ class WarehouseManagerController extends BaseController
             'Warehouse Staff', 'Inventory Auditor', 'Procurement Officer'
         ];
         
-        $staff = [];
+        $allStaff = [];
         foreach ($warehouseRoles as $roleName) {
             $role = $roleModel->getRoleByName($roleName);
             if ($role) {
                 $users = $userModel->getUsersByRole($role['id']);
                 foreach ($users as $user) {
                     $user['role_name'] = $roleName;
-                    $staff[] = $user;
+                    $allStaff[] = $user;
                 }
             }
         }
+        
+        // Filter staff to only those assigned to assigned warehouses
+        if ($assignedWarehouseIds !== null && !empty($assignedWarehouseIds)) {
+            $staff = [];
+            foreach ($allStaff as $user) {
+                // Get user's warehouse assignments
+                $userAssignments = $this->userWarehouseAssignmentModel->getWarehousesByUser($user['id'], true);
+                $userWarehouseIds = array_column($userAssignments, 'warehouse_id');
+                
+                // Include if user is assigned to any of the manager's assigned warehouses
+                if (!empty(array_intersect($userWarehouseIds, $assignedWarehouseIds))) {
+                    $staff[] = $user;
+                }
+            }
+        } else {
+            // IT Admin or no assignments - show all staff
+            $staff = $allStaff;
+        }
 
         $data = [
-            'title' => 'Staff Management - WITMS',
+            'title' => 'Assign Staff to Work - WITMS',
             'user' => $this->getUserData(),
             'staff' => $staff
         ];
@@ -1440,45 +2275,65 @@ class WarehouseManagerController extends BaseController
         $accessCheck = $this->checkAccess();
         if ($accessCheck) return $accessCheck;
 
-        if ($this->request->getMethod() === 'POST') {
-            $data = [
-                'user_id' => $userId,
-                'task_type' => $this->request->getPost('taskType'),
-                'task_description' => $this->request->getPost('taskDescription'),
-                'location' => $this->request->getPost('taskLocation'),
-                'priority' => $this->request->getPost('taskPriority'),
-                'deadline' => $this->request->getPost('taskDeadline'),
-                'assigned_by' => session()->get('user_id')
-            ];
-
-            // Validate required fields
-            if (empty($data['task_type'])) {
-                return $this->response->setJSON(['success' => false, 'message' => 'Task type is required']);
-            }
-
-            // Insert work assignment
-            $assignmentId = $this->workAssignmentModel->insert($data);
-
-            if ($assignmentId) {
-                // Get staff details for email
-                $userModel = new \App\Models\UserModel();
-                $staff = $userModel->find($userId);
-                $manager = $userModel->find(session()->get('user_id'));
-
-                // Send email notification
-                $emailSent = $this->sendWorkAssignmentEmail($staff, $data, $manager);
-
-                return $this->response->setJSON([
-                    'success' => true, 
-                    'message' => 'Work assignment created successfully' . ($emailSent ? ' and email sent' : ''),
-                    'assignment_id' => $assignmentId
-                ]);
-            } else {
-                return $this->response->setJSON(['success' => false, 'message' => 'Failed to create work assignment']);
-            }
+        if (!$this->request->isAJAX() && !$this->request->getMethod() === 'POST') {
+            return $this->response->setJSON(['success' => false, 'message' => 'Invalid request']);
         }
 
-        return $this->response->setJSON(['success' => false, 'message' => 'Invalid request method']);
+        // Get data from JSON or POST
+        $taskType = $this->request->getJSON(true)['taskType'] ?? $this->request->getPost('taskType');
+        $taskDescription = $this->request->getJSON(true)['taskDescription'] ?? $this->request->getPost('taskDescription');
+        $taskLocation = $this->request->getJSON(true)['taskLocation'] ?? $this->request->getPost('taskLocation');
+        $taskPriority = $this->request->getJSON(true)['taskPriority'] ?? $this->request->getPost('taskPriority');
+        $taskDeadline = $this->request->getJSON(true)['taskDeadline'] ?? $this->request->getPost('taskDeadline');
+
+        $data = [
+            'user_id' => $userId,
+            'task_type' => $taskType,
+            'task_description' => $taskDescription,
+            'location' => $taskLocation,
+            'priority' => $taskPriority,
+            'deadline' => $taskDeadline ? date('Y-m-d H:i:s', strtotime($taskDeadline)) : null,
+            'assigned_by' => session()->get('user_id'),
+            'status' => 'pending',
+            'created_at' => date('Y-m-d H:i:s')
+        ];
+
+        // Validate required fields
+        if (empty($data['task_type'])) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Task type is required']);
+        }
+
+        // Insert work assignment
+        $assignmentId = $this->workAssignmentModel->insert($data);
+
+        if ($assignmentId) {
+            // Get staff details for email
+            $userModel = new \App\Models\UserModel();
+            $staff = $userModel->find($userId);
+            $manager = $userModel->find(session()->get('user_id'));
+
+            if (!$staff) {
+                return $this->response->setJSON(['success' => false, 'message' => 'Staff member not found']);
+            }
+
+            // Send email notification
+            $emailSent = $this->sendWorkAssignmentEmail($staff, $data, $manager);
+
+            log_message('info', "Work assignment created for user {$userId} by manager " . session()->get('user_id') . ". Email sent: " . ($emailSent ? 'Yes' : 'No'));
+
+            return $this->response->setJSON([
+                'success' => true, 
+                'message' => 'Work assignment created successfully' . ($emailSent ? ' and email notification sent to staff member' : ' (email notification failed)'),
+                'assignment_id' => $assignmentId,
+                'email_sent' => $emailSent
+            ]);
+        } else {
+            $errors = $this->workAssignmentModel->errors();
+            return $this->response->setJSON([
+                'success' => false, 
+                'message' => 'Failed to create work assignment: ' . implode(', ', $errors)
+            ]);
+        }
     }
 
     /**
@@ -1489,37 +2344,91 @@ class WarehouseManagerController extends BaseController
         try {
             $email = \Config\Services::email();
             
-            $email->setFrom('noreply@witms.com', 'WITMS System');
+            // Use email config from config file
+            $emailConfig = config('Email');
+            $email->setFrom($emailConfig->fromEmail, $emailConfig->fromName);
             $email->setTo($staff['email']);
             
-            $email->setSubject('New Work Assignment - ' . $assignment['task_type']);
+            // Format task type for display
+            $taskTypeDisplay = ucwords(str_replace('_', ' ', $assignment['task_type']));
             
-            $message = "Dear {$staff['first_name']} {$staff['last_name']},\n\n";
-            $message .= "You have been assigned a new task:\n\n";
-            $message .= "Task Type: " . ucfirst(str_replace('_', ' ', $assignment['task_type'])) . "\n";
-            $message .= "Description: " . ($assignment['task_description'] ?? 'No description provided') . "\n";
+            $email->setSubject('New Work Assignment - ' . $taskTypeDisplay);
+            
+            // Create HTML email message
+            $message = "<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background-color: #0d6efd; color: white; padding: 20px; text-align: center; border-radius: 5px 5px 0 0; }
+        .content { background-color: #f8f9fa; padding: 20px; border-radius: 0 0 5px 5px; }
+        .task-details { background-color: white; padding: 15px; margin: 15px 0; border-left: 4px solid #0d6efd; }
+        .task-details p { margin: 5px 0; }
+        .priority-high { color: #dc3545; font-weight: bold; }
+        .priority-medium { color: #ffc107; font-weight: bold; }
+        .priority-low { color: #28a745; font-weight: bold; }
+        .priority-urgent { color: #dc3545; font-weight: bold; background-color: #fff3cd; padding: 5px; border-radius: 3px; }
+        .footer { text-align: center; margin-top: 20px; color: #6c757d; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class='container'>
+        <div class='header'>
+            <h2>New Work Assignment</h2>
+        </div>
+        <div class='content'>
+            <p>Dear <strong>{$staff['first_name']} {$staff['last_name']}</strong>,</p>
+            <p>You have been assigned a new work task. Please review the details below:</p>
+            
+            <div class='task-details'>
+                <p><strong>Task Type:</strong> {$taskTypeDisplay}</p>
+                <p><strong>Description:</strong> " . ($assignment['task_description'] ?? 'No description provided') . "</p>";
+            
             if (!empty($assignment['location'])) {
-                $message .= "Location: " . $assignment['location'] . "\n";
+                $message .= "<p><strong>Location:</strong> " . htmlspecialchars($assignment['location']) . "</p>";
             }
-            $message .= "Priority: " . ucfirst($assignment['priority']) . "\n";
+            
+            $priorityClass = 'priority-' . strtolower($assignment['priority'] ?? 'medium');
+            $priorityDisplay = ucfirst($assignment['priority'] ?? 'Medium');
+            $message .= "<p><strong>Priority:</strong> <span class='{$priorityClass}'>{$priorityDisplay}</span></p>";
+            
             if (!empty($assignment['deadline'])) {
-                $message .= "Deadline: " . date('M j, Y H:i', strtotime($assignment['deadline'])) . "\n";
+                $deadlineFormatted = date('F j, Y \a\t g:i A', strtotime($assignment['deadline']));
+                $message .= "<p><strong>Deadline:</strong> {$deadlineFormatted}</p>";
             }
-            $message .= "\nAssigned by: {$manager['first_name']} {$manager['last_name']}\n\n";
-            $message .= "Please login to the system for more details.\n";
-            $message .= "WITMS Team";
+            
+            $managerName = ($manager['first_name'] ?? '') . ' ' . ($manager['last_name'] ?? '');
+            $message .= "</div>
+            
+            <p><strong>Assigned by:</strong> {$managerName}</p>
+            
+            <p>Please log in to the WITMS system to view full details and update the status of this assignment.</p>
+            
+            <p>Thank you for your attention to this matter.</p>
+        </div>
+        <div class='footer'>
+            <p>This is an automated message from the WITMS (Warehouse Inventory and Tracking Management System)</p>
+            <p>Please do not reply to this email.</p>
+        </div>
+    </div>
+</body>
+</html>";
             
             $email->setMessage($message);
             
-            // Check if email config is properly set
+            // Send email
             if ($email->send()) {
+                log_message('info', "Work assignment email sent successfully to {$staff['email']}");
                 return true;
             } else {
-                log_message('error', 'Email failed to send: ' . $email->printDebugger(['headers']));
+                $error = $email->printDebugger(['headers']);
+                log_message('error', "Email failed to send to {$staff['email']}: {$error}");
                 return false;
             }
         } catch (\Exception $e) {
-            log_message('error', 'Email exception: ' . $e->getMessage());
+            log_message('error', 'Email exception for work assignment: ' . $e->getMessage());
+            log_message('error', 'Stack trace: ' . $e->getTraceAsString());
             return false;
         }
     }

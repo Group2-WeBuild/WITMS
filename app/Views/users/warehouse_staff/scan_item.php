@@ -148,6 +148,9 @@
                         <!-- Action Buttons -->
                         <div class="mt-4" id="action-buttons" style="display:none;">
                             <div class="d-grid gap-2">
+                                <button id="receive-stock-btn" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#receiveStockModal">
+                                    <i class="bi bi-box-arrow-in-down"></i> Receive Stock
+                                </button>
                                 <button id="issue-stock-btn" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#issueStockModal">
                                     <i class="bi bi-box-arrow-up"></i> Issue Stock
                                 </button>
@@ -359,19 +362,22 @@
         }
 
         function addItemToList(itemData) {
+            // Convert IDs to strings for consistent comparison (handles both number and string types)
+            const newMaterialId = String(itemData.material.id);
+            
             const existingIndex = scannedItems.findIndex(item => 
-                item.material.id === itemData.material.id
+                String(item.material.id) === newMaterialId
             );
             
             if (existingIndex >= 0) {
                 scannedItems[existingIndex].quantity++;
-                showNotification('Item quantity updated', 'success');
+                showNotification('Item quantity updated: ' + scannedItems[existingIndex].material.name, 'success');
             } else {
                 scannedItems.push({
                     ...itemData,
                     quantity: 1
                 });
-                showNotification('Item added to list', 'success');
+                showNotification('Item added: ' + itemData.material.name, 'success');
             }
             
             updateScannedItemsList();
@@ -432,8 +438,6 @@
             showNotification('Quantity updated', 'success');
         }
 
-        // processScannedItems function removed - now using modals
-
         function showNotification(message, type) {
             const toast = document.createElement('div');
             toast.className = `alert alert-${type} position-fixed top-0 end-0 m-3`;
@@ -445,12 +449,56 @@
                 toast.remove();
             }, 3000);
         }
-
-        // Remove old event listeners and add new ones for modals
-        document.getElementById('issue-stock-btn')?.removeEventListener('click', processScannedItems);
-        document.getElementById('transfer-stock-btn')?.removeEventListener('click', processScannedItems);
-        document.getElementById('adjust-stock-btn')?.removeEventListener('click', processScannedItems);
     </script>
+
+    <!-- Receive Stock Modal -->
+    <div class="modal fade" id="receiveStockModal" tabindex="-1" aria-labelledby="receiveStockModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="receiveStockModalLabel">
+                        <i class="bi bi-box-arrow-in-down"></i> Receive Stock
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="receive-items-list" class="mb-3">
+                        <h6>Items to Receive:</h6>
+                        <div id="receive-items-container"></div>
+                    </div>
+                    <form id="receive-stock-form">
+                        <div class="mb-3">
+                            <label for="receive-warehouse" class="form-label">To Warehouse <span class="text-danger">*</span></label>
+                            <select class="form-select" id="receive-warehouse" required>
+                                <option value="">Select Warehouse</option>
+                            </select>
+                            <small class="form-text text-muted">Only your assigned warehouses are shown</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="receive-reference" class="form-label">PO/Reference Number</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="receive-reference" placeholder="Auto-generated" readonly>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" id="generate-po-modal-btn" title="Generate new PO number">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                </button>
+                            </div>
+                            <small class="form-text text-muted">Auto-generated PO/Reference number</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="receive-notes" class="form-label">Notes</label>
+                            <textarea class="form-control" id="receive-notes" rows="3" placeholder="Additional notes..."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" id="confirm-receive-stock">
+                        <i class="bi bi-check-circle"></i> Receive Stock
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Issue Stock Modal -->
     <div class="modal fade" id="issueStockModal" tabindex="-1" aria-labelledby="issueStockModalLabel" aria-hidden="true">
@@ -473,6 +521,7 @@
                             <select class="form-select" id="issue-warehouse" required>
                                 <option value="">Select Warehouse</option>
                             </select>
+                            <small class="form-text text-muted">Only your assigned warehouses are shown</small>
                         </div>
                         <div class="mb-3">
                             <label for="issue-to" class="form-label">Issue To Department <span class="text-danger">*</span></label>
@@ -527,16 +576,24 @@
                             <select class="form-select" id="transfer-from-warehouse" required>
                                 <option value="">Select Warehouse</option>
                             </select>
+                            <small class="form-text text-muted">Only your assigned warehouses are shown</small>
                         </div>
                         <div class="mb-3">
                             <label for="transfer-to-warehouse" class="form-label">To Warehouse <span class="text-danger">*</span></label>
                             <select class="form-select" id="transfer-to-warehouse" required>
                                 <option value="">Select Warehouse</option>
                             </select>
+                            <small class="form-text text-muted">Only warehouses you are NOT assigned to are shown</small>
                         </div>
                         <div class="mb-3">
                             <label for="transfer-reference" class="form-label">Transfer Reference</label>
-                            <input type="text" class="form-control" id="transfer-reference" placeholder="Optional">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="transfer-reference" placeholder="Auto-generated" readonly>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" id="generate-transfer-ref-modal-btn" title="Generate new transfer reference">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                </button>
+                            </div>
+                            <small class="form-text text-muted">Auto-generated transfer reference number</small>
                         </div>
                         <div class="mb-3">
                             <label for="transfer-notes" class="form-label">Notes</label>
@@ -575,6 +632,7 @@
                             <select class="form-select" id="adjust-warehouse" required>
                                 <option value="">Select Warehouse</option>
                             </select>
+                            <small class="form-text text-muted">Only your assigned warehouses are shown</small>
                         </div>
                         <div class="mb-3">
                             <label for="adjust-reason" class="form-label">Adjustment Reason <span class="text-danger">*</span></label>
@@ -623,6 +681,14 @@
             // We'll load warehouses when modals open
         }
 
+        // Receive Stock Modal
+        const receiveStockModal = document.getElementById('receiveStockModal');
+        if (receiveStockModal) {
+            receiveStockModal.addEventListener('show.bs.modal', function() {
+                populateReceiveModal();
+            });
+        }
+
         // Issue Stock Modal - Use Bootstrap modal event only
         const issueStockModal = document.getElementById('issueStockModal');
         if (issueStockModal) {
@@ -631,7 +697,48 @@
             });
         }
 
+        // Transfer Stock Modal
+        const transferStockModal = document.getElementById('transferStockModal');
+        if (transferStockModal) {
+            transferStockModal.addEventListener('show.bs.modal', function() {
+                populateTransferModal();
+            });
+        }
+
+        // Adjust Stock Modal
+        const adjustStockModal = document.getElementById('adjustStockModal');
+        if (adjustStockModal) {
+            adjustStockModal.addEventListener('show.bs.modal', function() {
+                populateAdjustModal();
+            });
+        }
+
         // Remove duplicate button click handler - Bootstrap modal event is sufficient
+
+        function populateReceiveModal() {
+            const container = document.getElementById('receive-items-container');
+            if (!container) return;
+            
+            let html = '<div class="table-responsive"><table class="table table-sm">';
+            html += '<thead><tr><th>Material</th><th>Code</th><th>Quantity</th></tr></thead><tbody>';
+            
+            scannedItems.forEach(item => {
+                html += `<tr>
+                    <td>${item.material.name}</td>
+                    <td>${item.material.code}</td>
+                    <td>${item.quantity} ${item.material.unit_abbreviation || item.material.unit_name || 'units'}</td>
+                </tr>`;
+            });
+            
+            html += '</tbody></table></div>';
+            container.innerHTML = html;
+            
+            // Load assigned warehouses only
+            loadAssignedWarehousesIntoSelect('receive-warehouse');
+            
+            // Generate PO/Reference number
+            generatePONumberForModal();
+        }
 
         function populateIssueModal() {
             const container = document.getElementById('issue-items-container');
@@ -651,8 +758,8 @@
             html += '</tbody></table></div>';
             container.innerHTML = html;
             
-            // Load warehouses and departments
-            loadWarehousesIntoSelect('issue-warehouse');
+            // Load assigned warehouses only
+            loadAssignedWarehousesIntoSelect('issue-warehouse');
             loadDepartmentsIntoSelect('issue-to');
             
             // Generate requisition number
@@ -702,13 +809,98 @@
             generateRequisitionNumberForModal();
         });
 
-        // Transfer Stock Modal
-        document.getElementById('transfer-stock-btn')?.addEventListener('click', function() {
-            populateTransferModal();
+        // Generate PO number for Receive Stock modal
+        function generatePONumberForModal() {
+            const poInput = document.getElementById('receive-reference');
+            const generateBtn = document.getElementById('generate-po-modal-btn');
+            
+            if (!poInput) return;
+            
+            if (generateBtn) {
+                generateBtn.disabled = true;
+                generateBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+            }
+            
+            fetch('<?= base_url('warehouse-staff/ajax/generate-po') ?>', {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (generateBtn) {
+                    generateBtn.disabled = false;
+                    generateBtn.innerHTML = '<i class="bi bi-arrow-clockwise"></i>';
+                }
+                
+                if (data.success && data.po_number) {
+                    poInput.value = data.po_number;
+                } else {
+                    console.error('Error generating PO number:', data.message);
+                }
+            })
+            .catch(error => {
+                if (generateBtn) {
+                    generateBtn.disabled = false;
+                    generateBtn.innerHTML = '<i class="bi bi-arrow-clockwise"></i>';
+                }
+                console.error('Error generating PO number:', error);
+            });
+        }
+
+        // Generate PO number button click handler
+        document.getElementById('generate-po-modal-btn')?.addEventListener('click', function() {
+            generatePONumberForModal();
+        });
+
+        // Generate transfer reference for Transfer Stock modal
+        function generateTransferReferenceForModal() {
+            const transferRefInput = document.getElementById('transfer-reference');
+            const generateBtn = document.getElementById('generate-transfer-ref-modal-btn');
+            
+            if (!transferRefInput) return;
+            
+            if (generateBtn) {
+                generateBtn.disabled = true;
+                generateBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+            }
+            
+            fetch('<?= base_url('warehouse-staff/ajax/generate-transfer-reference') ?>', {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (generateBtn) {
+                    generateBtn.disabled = false;
+                    generateBtn.innerHTML = '<i class="bi bi-arrow-clockwise"></i>';
+                }
+                
+                if (data.success && data.transfer_reference) {
+                    transferRefInput.value = data.transfer_reference;
+                } else {
+                    console.error('Error generating transfer reference:', data.message);
+                }
+            })
+            .catch(error => {
+                if (generateBtn) {
+                    generateBtn.disabled = false;
+                    generateBtn.innerHTML = '<i class="bi bi-arrow-clockwise"></i>';
+                }
+                console.error('Error generating transfer reference:', error);
+            });
+        }
+
+        // Generate transfer reference button click handler
+        document.getElementById('generate-transfer-ref-modal-btn')?.addEventListener('click', function() {
+            generateTransferReferenceForModal();
         });
 
         function populateTransferModal() {
             const container = document.getElementById('transfer-items-container');
+            if (!container) return;
+            
             let html = '<div class="table-responsive"><table class="table table-sm">';
             html += '<thead><tr><th>Material</th><th>Code</th><th>Quantity</th></tr></thead><tbody>';
             
@@ -723,18 +915,19 @@
             html += '</tbody></table></div>';
             container.innerHTML = html;
             
-            // Load warehouses
-            loadWarehousesIntoSelect('transfer-from-warehouse');
-            loadWarehousesIntoSelect('transfer-to-warehouse');
+            // Load assigned warehouses for "from"
+            loadAssignedWarehousesIntoSelect('transfer-from-warehouse');
+            // Load unassigned warehouses for "to"
+            loadUnassignedWarehousesIntoSelect('transfer-to-warehouse');
+            
+            // Auto-generate transfer reference
+            generateTransferReferenceForModal();
         }
-
-        // Adjust Stock Modal
-        document.getElementById('adjust-stock-btn')?.addEventListener('click', function() {
-            populateAdjustModal();
-        });
 
         function populateAdjustModal() {
             const container = document.getElementById('adjust-items-container');
+            if (!container) return;
+            
             let html = '<div class="table-responsive"><table class="table table-sm">';
             html += '<thead><tr><th>Material</th><th>Code</th><th>Current Qty</th><th>Scanned Qty</th></tr></thead><tbody>';
             
@@ -753,11 +946,12 @@
             html += '</tbody></table></div>';
             container.innerHTML = html;
             
-            // Load warehouses
-            loadWarehousesIntoSelect('adjust-warehouse');
+            // Load assigned warehouses only
+            loadAssignedWarehousesIntoSelect('adjust-warehouse');
         }
 
-        function loadWarehousesIntoSelect(selectId) {
+        // Load assigned warehouses only
+        function loadAssignedWarehousesIntoSelect(selectId) {
             const select = document.getElementById(selectId);
             if (!select) return;
             
@@ -766,45 +960,85 @@
                 select.remove(1);
             }
             
-            // First try to get warehouses from scanned items' inventory
-            const warehousesSet = new Set();
-            scannedItems.forEach(item => {
-                if (item.inventory && item.inventory.length > 0) {
-                    item.inventory.forEach(inv => {
-                        if (inv.warehouse_id && inv.warehouse_name) {
-                            warehousesSet.add(JSON.stringify({
-                                id: inv.warehouse_id,
-                                name: inv.warehouse_name
-                            }));
-                        }
-                    });
+            // Load assigned warehouses via AJAX
+            fetch('<?= base_url('warehouse-staff/ajax/warehouses') ?>', {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
-            });
-            
-            if (warehousesSet.size > 0) {
-                warehousesSet.forEach(warehouseStr => {
-                    const warehouse = JSON.parse(warehouseStr);
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.warehouses && data.warehouses.length > 0) {
+                        data.warehouses.forEach(warehouse => {
+                            const option = document.createElement('option');
+                            option.value = warehouse.id;
+                            option.textContent = warehouse.name;
+                            select.appendChild(option);
+                        });
+                    } else {
+                        console.warn('No assigned warehouses found:', data);
+                        const option = document.createElement('option');
+                        option.value = '';
+                        option.textContent = 'No assigned warehouses available';
+                        option.disabled = true;
+                        select.appendChild(option);
+                    }
+                })
+                .catch(err => {
+                    console.error('Error loading assigned warehouses:', err);
                     const option = document.createElement('option');
-                    option.value = warehouse.id;
-                    option.textContent = warehouse.name;
+                    option.value = '';
+                    option.textContent = 'Error loading warehouses';
+                    option.disabled = true;
                     select.appendChild(option);
                 });
-            } else {
-                // Fallback: load all warehouses via AJAX
-                fetch('<?= base_url('warehouse-staff/ajax/warehouses') ?>')
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success && data.warehouses) {
-                            data.warehouses.forEach(warehouse => {
-                                const option = document.createElement('option');
-                                option.value = warehouse.id;
-                                option.textContent = warehouse.name;
-                                select.appendChild(option);
-                            });
-                        }
-                    })
-                    .catch(err => console.error('Error loading warehouses:', err));
+        }
+
+        // Load unassigned warehouses only (for transfer "to" warehouse)
+        function loadUnassignedWarehousesIntoSelect(selectId) {
+            const select = document.getElementById(selectId);
+            if (!select) return;
+            
+            // Clear existing options except the first one
+            while (select.options.length > 1) {
+                select.remove(1);
             }
+            
+            // Load unassigned warehouses via AJAX
+            fetch('<?= base_url('warehouse-staff/ajax/unassigned-warehouses') ?>', {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.warehouses && data.warehouses.length > 0) {
+                        data.warehouses.forEach(warehouse => {
+                            const option = document.createElement('option');
+                            option.value = warehouse.id;
+                            option.textContent = warehouse.name;
+                            select.appendChild(option);
+                        });
+                    } else {
+                        // If no unassigned warehouses, show message
+                        console.warn('No unassigned warehouses found:', data);
+                        const option = document.createElement('option');
+                        option.value = '';
+                        option.textContent = 'No unassigned warehouses available';
+                        option.disabled = true;
+                        select.appendChild(option);
+                    }
+                })
+                .catch(err => {
+                    console.error('Error loading unassigned warehouses:', err);
+                    const option = document.createElement('option');
+                    option.value = '';
+                    option.textContent = 'Error loading warehouses';
+                    option.disabled = true;
+                    select.appendChild(option);
+                });
         }
 
         // Track loading state to prevent duplicates
@@ -893,6 +1127,11 @@
                 });
         }
 
+        // Confirm Receive Stock
+        document.getElementById('confirm-receive-stock')?.addEventListener('click', function() {
+            processReceiveStockFromScanned();
+        });
+
         // Confirm Issue Stock
         document.getElementById('confirm-issue-stock')?.addEventListener('click', function() {
             processIssueStockFromScanned();
@@ -907,6 +1146,53 @@
         document.getElementById('confirm-adjust-stock')?.addEventListener('click', function() {
             processAdjustStockFromScanned();
         });
+
+        function processReceiveStockFromScanned() {
+            const warehouseId = document.getElementById('receive-warehouse').value;
+            const reference = document.getElementById('receive-reference').value;
+            const notes = document.getElementById('receive-notes').value;
+
+            if (!warehouseId) {
+                alert('Please select a warehouse');
+                return;
+            }
+
+            const items = scannedItems.map(item => ({
+                material_id: item.material.id,
+                quantity: item.quantity
+            }));
+
+            fetch('<?= base_url('warehouse-staff/scan/process-receive') ?>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    items: items,
+                    warehouse_id: warehouseId,
+                    reference: reference,
+                    notes: notes
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('Stock received successfully!', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('receiveStockModal')).hide();
+                    scannedItems = [];
+                    updateScannedItemsList();
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1500);
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Error: ' + error.message);
+            });
+        }
 
         function processIssueStockFromScanned() {
             const warehouseId = document.getElementById('issue-warehouse').value;
@@ -975,9 +1261,7 @@
             
             const items = scannedItems.map(item => ({
                 material_id: item.material.id,
-                quantity: item.quantity,
-                from_warehouse_id: fromWarehouseId,
-                to_warehouse_id: toWarehouseId
+                quantity: item.quantity
             }));
 
             fetch('<?= base_url('warehouse-staff/scan/process-transfer') ?>', {
@@ -988,6 +1272,8 @@
                 },
                 body: JSON.stringify({
                     items: items,
+                    from_warehouse_id: fromWarehouseId,
+                    to_warehouse_id: toWarehouseId,
                     reference: reference,
                     notes: notes
                 })
@@ -1023,9 +1309,9 @@
 
             const adjustments = [];
             document.querySelectorAll('.adjust-qty').forEach(input => {
-                const materialId = input.dataset.materialId;
+                const materialId = parseInt(input.dataset.materialId);
                 const newQuantity = parseFloat(input.value) || 0;
-                const item = scannedItems.find(i => i.material.id == materialId);
+                const item = scannedItems.find(i => parseInt(i.material.id) === materialId);
                 if (item) {
                     const currentQty = item.inventory && item.inventory.length > 0 
                         ? parseFloat(item.inventory[0].quantity || 0) 

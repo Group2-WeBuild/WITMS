@@ -8,6 +8,7 @@ use App\Models\RoleModel;
 use App\Models\InventoryModel;
 use App\Models\MaterialModel;
 use App\Models\MaterialCategoryModel;
+use App\Models\UserWarehouseAssignmentModel;
 
 class Dashboard extends BaseController
 {
@@ -17,6 +18,7 @@ class Dashboard extends BaseController
     protected $inventoryModel;
     protected $materialModel;
     protected $categoryModel;
+    protected $userWarehouseAssignmentModel;
 
     public function __construct()
     {
@@ -26,6 +28,7 @@ class Dashboard extends BaseController
         $this->inventoryModel = new InventoryModel();
         $this->materialModel = new MaterialModel();
         $this->categoryModel = new MaterialCategoryModel();
+        $this->userWarehouseAssignmentModel = new UserWarehouseAssignmentModel();
     }
 
     /**
@@ -64,12 +67,25 @@ class Dashboard extends BaseController
     {
         $this->checkRoleAccess(['Warehouse Manager']);
         
+        // Get assigned warehouses for the current user
+        $userId = session()->get('user_id');
+        $assignedWarehouses = [];
+        $assignedWarehouseIds = null;
+        
+        if ($userId) {
+            $assignedWarehouses = $this->userWarehouseAssignmentModel->getWarehousesByUser($userId, true);
+            if (!empty($assignedWarehouses)) {
+                $assignedWarehouseIds = array_column($assignedWarehouses, 'warehouse_id');
+            }
+        }
+        
         $data = [
             'title' => 'Warehouse Manager Dashboard - WeBuild WITMS',
             'user' => $this->getUserData(),
-            'stats' => $this->getWarehouseStats(),
+            'stats' => $this->getWarehouseStats($assignedWarehouseIds),
             'department_stats' => $this->getDepartmentStats(),
-            'team_members' => $this->getUsersByCurrentRole()
+            'team_members' => $this->getUsersByCurrentRole(),
+            'assigned_warehouses' => $assignedWarehouses
         ];
         
         return view('users/warehouse_manager/dashboard', $data);
@@ -227,8 +243,9 @@ class Dashboard extends BaseController
     }
       /**
      * Get warehouse statistics with proper role-based queries
+     * @param array|null $warehouseIds Optional array of warehouse IDs to filter by
      */
-    private function getWarehouseStats(): array
+    private function getWarehouseStats(?array $warehouseIds = null): array
     {
         // Get different role counts using RoleModel
         $warehouseManagerRole = $this->roleModel->getRoleByName('Warehouse Manager');
@@ -236,30 +253,58 @@ class Dashboard extends BaseController
         $inventoryAuditorRole = $this->roleModel->getRoleByName('Inventory Auditor');
         $procurementOfficerRole = $this->roleModel->getRoleByName('Procurement Officer');
         
-        // Count active staff by role using UserModel
+        // Count active staff by role - filter by assigned warehouses if provided
         $managerCount = 0;
         $staffCount = 0;
         $auditorCount = 0;
         $procurementCount = 0;
         
-        if ($warehouseManagerRole) {
-            $managers = $this->userModel->getUsersByRole($warehouseManagerRole['id']);
-            $managerCount = is_array($managers) ? count($managers) : 0;
-        }
-        
-        if ($warehouseStaffRole) {
-            $staff = $this->userModel->getUsersByRole($warehouseStaffRole['id']);
-            $staffCount = is_array($staff) ? count($staff) : 0;
-        }
-        
-        if ($inventoryAuditorRole) {
-            $auditors = $this->userModel->getUsersByRole($inventoryAuditorRole['id']);
-            $auditorCount = is_array($auditors) ? count($auditors) : 0;
-        }
-        
-        if ($procurementOfficerRole) {
-            $procurement = $this->userModel->getUsersByRole($procurementOfficerRole['id']);
-            $procurementCount = is_array($procurement) ? count($procurement) : 0;
+        if ($warehouseIds !== null && !empty($warehouseIds)) {
+            // Filter staff by assigned warehouses
+            if ($warehouseManagerRole) {
+                $allManagers = $this->userModel->getUsersByRole($warehouseManagerRole['id']);
+                $managers = $this->filterUsersByWarehouses($allManagers, $warehouseIds);
+                $managerCount = is_array($managers) ? count($managers) : 0;
+            }
+            
+            if ($warehouseStaffRole) {
+                $allStaff = $this->userModel->getUsersByRole($warehouseStaffRole['id']);
+                $staff = $this->filterUsersByWarehouses($allStaff, $warehouseIds);
+                $staffCount = is_array($staff) ? count($staff) : 0;
+            }
+            
+            if ($inventoryAuditorRole) {
+                $allAuditors = $this->userModel->getUsersByRole($inventoryAuditorRole['id']);
+                $auditors = $this->filterUsersByWarehouses($allAuditors, $warehouseIds);
+                $auditorCount = is_array($auditors) ? count($auditors) : 0;
+            }
+            
+            if ($procurementOfficerRole) {
+                $allProcurement = $this->userModel->getUsersByRole($procurementOfficerRole['id']);
+                $procurement = $this->filterUsersByWarehouses($allProcurement, $warehouseIds);
+                $procurementCount = is_array($procurement) ? count($procurement) : 0;
+            }
+        } else {
+            // No filtering - count all staff (for IT Admin or when no warehouse IDs provided)
+            if ($warehouseManagerRole) {
+                $managers = $this->userModel->getUsersByRole($warehouseManagerRole['id']);
+                $managerCount = is_array($managers) ? count($managers) : 0;
+            }
+            
+            if ($warehouseStaffRole) {
+                $staff = $this->userModel->getUsersByRole($warehouseStaffRole['id']);
+                $staffCount = is_array($staff) ? count($staff) : 0;
+            }
+            
+            if ($inventoryAuditorRole) {
+                $auditors = $this->userModel->getUsersByRole($inventoryAuditorRole['id']);
+                $auditorCount = is_array($auditors) ? count($auditors) : 0;
+            }
+            
+            if ($procurementOfficerRole) {
+                $procurement = $this->userModel->getUsersByRole($procurementOfficerRole['id']);
+                $procurementCount = is_array($procurement) ? count($procurement) : 0;
+            }
         }
         
         // Get warehouse departments using DepartmentModel
@@ -269,8 +314,8 @@ class Dashboard extends BaseController
         // Calculate total warehouse personnel
         $totalWarehouseStaff = $managerCount + $staffCount + $auditorCount + $procurementCount;
         
-        // Get real-time inventory and materials statistics
-        $inventoryStats = $this->inventoryModel->getInventoryStats();
+        // Get real-time inventory and materials statistics filtered by assigned warehouses
+        $inventoryStats = $this->getInventoryStatsForWarehouses($warehouseIds);
         $materialStats = $this->materialModel->getMaterialStats();
         
         return [
@@ -292,6 +337,127 @@ class Dashboard extends BaseController
             'warehouse_departments' => $departmentCount,
             'departments_list' => $warehouseDepartments
         ];
+    }
+
+    /**
+     * Get inventory statistics filtered by warehouse IDs
+     * @param array|null $warehouseIds Array of warehouse IDs to filter by, or null for all
+     */
+    private function getInventoryStatsForWarehouses(?array $warehouseIds): array
+    {
+        $builder = $this->inventoryModel->db->table('inventory');
+
+        // Filter by warehouse IDs if provided
+        if ($warehouseIds !== null && !empty($warehouseIds)) {
+            $builder->whereIn('warehouse_id', $warehouseIds);
+        }
+
+        // Count total items
+        $totalItems = $builder->countAllResults(false);
+        
+        // Get total quantity
+        $builderQty = $this->inventoryModel->db->table('inventory');
+        if ($warehouseIds !== null && !empty($warehouseIds)) {
+            $builderQty->whereIn('warehouse_id', $warehouseIds);
+        }
+        $totalQty = $builderQty->selectSum('quantity')->get()->getRow()->quantity ?? 0;
+
+        // Get total value
+        $totalValue = $this->getTotalInventoryValueForWarehouses($warehouseIds);
+
+        // Get low stock items
+        $lowStockItems = $this->getLowStockItemsForWarehouses($warehouseIds);
+        
+        // Get expiring items
+        $expiringItems = $this->getExpiringItemsForWarehouses($warehouseIds);
+
+        return [
+            'total_items' => $totalItems,
+            'total_quantity' => $totalQty,
+            'total_value' => $totalValue,
+            'low_stock' => count($lowStockItems),
+            'low_stock_items' => count($lowStockItems),
+            'expiring' => count($expiringItems),
+            'expiring_soon' => count($expiringItems),
+            'expiring_items' => count($expiringItems)
+        ];
+    }
+
+    /**
+     * Get total inventory value for specific warehouses
+     */
+    private function getTotalInventoryValueForWarehouses(?array $warehouseIds): float
+    {
+        $builder = $this->inventoryModel->db->table('inventory')
+            ->select('SUM(inventory.available_quantity * materials.unit_cost) as total_value')
+            ->join('materials', 'materials.id = inventory.material_id')
+            ->where('inventory.available_quantity >', 0);
+
+        if ($warehouseIds !== null && !empty($warehouseIds)) {
+            $builder->whereIn('inventory.warehouse_id', $warehouseIds);
+        }
+
+        $result = $builder->get()->getRow();
+        return (float)($result->total_value ?? 0);
+    }
+
+    /**
+     * Get low stock items for specific warehouses
+     */
+    private function getLowStockItemsForWarehouses(?array $warehouseIds): array
+    {
+        $builder = $this->inventoryModel->db->table('inventory')
+            ->select('inventory.*, materials.reorder_level')
+            ->join('materials', 'materials.id = inventory.material_id')
+            ->where('inventory.available_quantity <=', 'materials.reorder_level', false)
+            ->where('materials.reorder_level >', 0);
+
+        if ($warehouseIds !== null && !empty($warehouseIds)) {
+            $builder->whereIn('inventory.warehouse_id', $warehouseIds);
+        }
+
+        return $builder->get()->getResultArray();
+    }
+
+    /**
+     * Get expiring items for specific warehouses
+     */
+    private function getExpiringItemsForWarehouses(?array $warehouseIds, int $days = 30): array
+    {
+        $expiryDate = date('Y-m-d', strtotime("+{$days} days"));
+        
+        $builder = $this->inventoryModel->db->table('inventory')
+            ->where('expiration_date IS NOT NULL')
+            ->where('expiration_date <=', $expiryDate)
+            ->where('expiration_date >=', date('Y-m-d'));
+
+        if ($warehouseIds !== null && !empty($warehouseIds)) {
+            $builder->whereIn('warehouse_id', $warehouseIds);
+        }
+
+        return $builder->get()->getResultArray();
+    }
+
+    /**
+     * Filter users by warehouse assignments
+     * Returns only users who are assigned to at least one of the specified warehouses
+     */
+    private function filterUsersByWarehouses(array $users, array $warehouseIds): array
+    {
+        $filteredUsers = [];
+        
+        foreach ($users as $user) {
+            // Get user's warehouse assignments
+            $userAssignments = $this->userWarehouseAssignmentModel->getWarehousesByUser($user['id'], true);
+            $userWarehouseIds = array_column($userAssignments, 'warehouse_id');
+            
+            // Include if user is assigned to any of the specified warehouses
+            if (!empty(array_intersect($userWarehouseIds, $warehouseIds))) {
+                $filteredUsers[] = $user;
+            }
+        }
+        
+        return $filteredUsers;
     }
 
     /**

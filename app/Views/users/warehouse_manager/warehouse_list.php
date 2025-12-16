@@ -89,18 +89,13 @@
         <div class="page-header">
             <div class="row align-items-center">
                 <div class="col-md-8">
-                    <h2 class="mb-1"><i class="bi bi-building"></i> Warehouse Management</h2>
-                    <p class="text-muted mb-0">Manage warehouse locations and configurations</p>
+                    <h2 class="mb-1"><i class="bi bi-building"></i> Warehouse Overview</h2>
+                    <p class="text-muted mb-0">View your assigned warehouse locations and details</p>
                 </div>
                 <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                    <div class="btn-group d-flex flex-column flex-md-row" role="group">
-                        <a href=<?= base_url('warehouse-manager/warehouse/map') ?> class="btn btn-info mb-2 mb-md-0 me-md-2">
-                            <i class="bi bi-map"></i> Map View
-                        </a>
-                        <a href=<?= base_url('warehouse-manager/warehouse/add') ?> class="btn btn-primary">
-                            <i class="bi bi-plus-circle"></i> Add Warehouse
-                        </a>
-                    </div>
+                    <a href=<?= base_url('warehouse-manager/warehouse/map') ?> class="btn btn-info">
+                        <i class="bi bi-map"></i> Map View
+                    </a>
                 </div>
             </div>
         </div>
@@ -225,7 +220,7 @@
                             <tr>
                                 <td colspan="7" class="text-center text-muted py-5">
                                     <i class="bi bi-inbox" style="font-size: 3rem;"></i>
-                                    <p class="mt-3">No warehouses found. Click "Add Warehouse" to create one.</p>
+                                    <p class="mt-3">No warehouses assigned to you.</p>
                                 </td>
                             </tr>
                         <?php endif; ?>

@@ -8,6 +8,11 @@ use App\Models\DepartmentModel;
 use App\Models\WarehouseModel;
 use App\Models\WarehouseLocationModel;
 use App\Models\UserWarehouseAssignmentModel;
+use App\Models\StockMovementModel;
+use App\Models\InventoryModel;
+use App\Models\MaterialModel;
+use App\Models\MaterialCategoryModel;
+use App\Models\UnitsOfMeasureModel;
 
 class ITAdministratorController extends BaseController
 {
@@ -17,6 +22,11 @@ class ITAdministratorController extends BaseController
     protected $warehouseModel;
     protected $warehouseLocationModel;
     protected $userWarehouseAssignmentModel;
+    protected $stockMovementModel;
+    protected $inventoryModel;
+    protected $materialModel;
+    protected $categoryModel;
+    protected $unitModel;
 
     public function __construct()
     {
@@ -26,6 +36,11 @@ class ITAdministratorController extends BaseController
         $this->warehouseModel = new WarehouseModel();
         $this->warehouseLocationModel = new WarehouseLocationModel();
         $this->userWarehouseAssignmentModel = new UserWarehouseAssignmentModel();
+        $this->stockMovementModel = new StockMovementModel();
+        $this->inventoryModel = new InventoryModel();
+        $this->materialModel = new MaterialModel();
+        $this->categoryModel = new MaterialCategoryModel();
+        $this->unitModel = new UnitsOfMeasureModel();
     }
 
     /**
@@ -112,6 +127,15 @@ class ITAdministratorController extends BaseController
             return $this->response->setJSON(['success' => false, 'message' => 'User not found']);
         }
 
+        // Check if user has active warehouse assignments
+        $activeAssignments = $this->userWarehouseAssignmentModel
+            ->where('user_id', $userId)
+            ->where('is_active', 1)
+            ->countAllResults();
+        
+        $user['has_warehouse_assignments'] = $activeAssignments > 0;
+        $user['warehouse_assignments_count'] = $activeAssignments;
+
         return $this->response->setJSON(['success' => true, 'user' => $user]);
     }
 
@@ -145,13 +169,25 @@ class ITAdministratorController extends BaseController
         }
 
         try {
+            // Remove empty values to avoid validation issues
+            $data = array_filter($data, function($value) {
+                return $value !== null && $value !== '';
+            });
+            
+            // Ensure required fields are present
+            if (empty($data['first_name']) || empty($data['last_name']) || empty($data['email']) || empty($data['role_id']) || empty($data['password'])) {
+                return $this->response->setJSON(['success' => false, 'message' => 'Please fill in all required fields']);
+            }
+            
             // Use insert directly to get the insert ID
             if ($this->userModel->insert($data)) {
                 $userId = $this->userModel->getInsertID();
                 return $this->response->setJSON(['success' => true, 'message' => 'User created successfully', 'user_id' => $userId]);
             } else {
                 $errors = $this->userModel->errors();
-                return $this->response->setJSON(['success' => false, 'message' => 'Failed to create user', 'errors' => $errors]);
+                $errorMessage = !empty($errors) ? implode(', ', $errors) : 'Failed to create user';
+                log_message('error', 'Failed to create user: ' . json_encode($errors));
+                return $this->response->setJSON(['success' => false, 'message' => $errorMessage, 'errors' => $errors]);
             }
         } catch (\Exception $e) {
             log_message('error', 'Error creating user: ' . $e->getMessage());
@@ -195,13 +231,17 @@ class ITAdministratorController extends BaseController
             log_message('info', 'IT Administrator ' . $currentUserId . ' is editing IT Administrator ' . $userId);
         }
 
+        $oldRoleId = $user['role_id'];
+        $newRoleId = $this->request->getPost('role_id');
+        $roleChanged = $oldRoleId != $newRoleId;
+
         $data = [
             'first_name' => $this->request->getPost('first_name'),
             'middle_name' => $this->request->getPost('middle_name'),
             'last_name' => $this->request->getPost('last_name'),
             'email' => $this->request->getPost('email'),
             'phone_number' => $this->request->getPost('phone_number'),
-            'role_id' => $this->request->getPost('role_id'),
+            'role_id' => $newRoleId,
             'department_id' => $this->request->getPost('department_id') ?: null,
             'is_active' => $this->request->getPost('is_active') == '1' ? 1 : 0
         ];
@@ -224,7 +264,28 @@ class ITAdministratorController extends BaseController
 
             if ($this->userModel->update($userId, $data)) {
                 $this->userModel->skipValidation(false); // Reset validation
-                return $this->response->setJSON(['success' => true, 'message' => 'User updated successfully']);
+                
+                // If role changed and user has warehouse assignments, update assignments
+                $updateMessage = 'User updated successfully';
+                if ($roleChanged && $newRoleId) {
+                    $activeAssignments = $this->userWarehouseAssignmentModel
+                        ->where('user_id', $userId)
+                        ->where('is_active', 1)
+                        ->findAll();
+                    
+                    if (!empty($activeAssignments)) {
+                        // Update role_id in all active warehouse assignments
+                        foreach ($activeAssignments as $assignment) {
+                            $this->userWarehouseAssignmentModel->update($assignment['id'], [
+                                'role_id' => (int)$newRoleId
+                            ]);
+                        }
+                        log_message('info', 'Updated role_id in ' . count($activeAssignments) . ' warehouse assignments for user ' . $userId);
+                        $updateMessage .= '. Warehouse assignments have been updated with the new role.';
+                    }
+                }
+                
+                return $this->response->setJSON(['success' => true, 'message' => $updateMessage]);
             } else {
                 $errors = $this->userModel->errors();
                 $this->userModel->skipValidation(false); // Reset validation
@@ -272,15 +333,52 @@ class ITAdministratorController extends BaseController
             return $this->response->setJSON(['success' => false, 'message' => 'IT Administrator accounts cannot be deleted']);
         }
 
+        // Check if user has active warehouse assignments
+        $activeAssignments = $this->userWarehouseAssignmentModel
+            ->where('user_id', $userId)
+            ->where('is_active', 1)
+            ->findAll();
+        
+        if (!empty($activeAssignments)) {
+            // Get warehouse names for the error message
+            $warehouseNames = [];
+            foreach ($activeAssignments as $assignment) {
+                $warehouse = $this->warehouseModel->find($assignment['warehouse_id']);
+                if ($warehouse) {
+                    $warehouseNames[] = $warehouse['name'];
+                }
+            }
+            
+            $warehouseList = implode(', ', array_unique($warehouseNames));
+            $assignmentCount = count($activeAssignments);
+            
+            return $this->response->setJSON([
+                'success' => false, 
+                'message' => "Cannot deactivate user. This user is currently assigned to {$assignmentCount} warehouse(s): {$warehouseList}. Please unassign the user from all warehouses before deactivating."
+            ]);
+        }
+
+        // Check if user has performed any stock movements (work in warehouses)
+        $hasWork = $this->stockMovementModel
+            ->where('performed_by', $userId)
+            ->countAllResults() > 0;
+        
+        if ($hasWork) {
+            return $this->response->setJSON([
+                'success' => false, 
+                'message' => 'Cannot deactivate user. This user has performed stock movements in the system. Users with activity history cannot be deactivated to maintain data integrity and audit trail.'
+            ]);
+        }
+
         try {
             if ($this->userModel->update($userId, ['is_active' => 0])) {
-                log_message('info', 'User ' . $userId . ' soft deleted by IT Administrator ' . $currentUserId);
+                log_message('info', 'User ' . $userId . ' deactivated by IT Administrator ' . $currentUserId);
                 return $this->response->setJSON(['success' => true, 'message' => 'User deactivated successfully']);
             } else {
                 return $this->response->setJSON(['success' => false, 'message' => 'Failed to deactivate user']);
             }
         } catch (\Exception $e) {
-            log_message('error', 'Error soft deleting user: ' . $e->getMessage());
+            log_message('error', 'Error deactivating user: ' . $e->getMessage());
             return $this->response->setJSON(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
         }
     }
@@ -322,18 +420,63 @@ class ITAdministratorController extends BaseController
         $accessCheck = $this->checkAccess();
         if ($accessCheck) return $accessCheck;
 
-        $users = $this->userModel->getAllUsersWithRoles();
+        $allUsers = $this->userModel->getAllUsersWithRoles();
         $warehouses = $this->warehouseModel->getActiveWarehouses();
         $roles = $this->roleModel->getActiveRoles();
 
-        // Get all assignments with details
+        // Filter out IT Administrators and Top Management - they already have access to all warehouses
+        $restrictedRoles = ['IT Administrator', 'Top Management'];
+        $users = array_values(array_filter($allUsers, function($user) use ($restrictedRoles) {
+            return !in_array($user['role_name'] ?? '', $restrictedRoles);
+        }));
+
+        // Get all assignments with details (including inactive for history)
+        // Also check if users have performed work in each warehouse
         $assignments = [];
+        $warehouseActivities = []; // Track which users have work in which warehouses
+        $assignedUsersCount = 0;
         foreach ($users as $user) {
             $userAssignments = $this->userWarehouseAssignmentModel->getWarehousesByUser($user['id'], false);
             if (!empty($userAssignments)) {
                 $assignments[$user['id']] = $userAssignments;
+                
+                // Check if user has performed work in any of their assigned warehouses
+                foreach ($userAssignments as $assignment) {
+                    if (!empty($assignment['is_active'])) {
+                        $warehouseId = $assignment['warehouse_id'];
+                        // Check if user has stock movements in this warehouse
+                        $hasWork = $this->stockMovementModel
+                            ->where('performed_by', $user['id'])
+                            ->groupStart()
+                                ->where('from_warehouse_id', $warehouseId)
+                                ->orWhere('to_warehouse_id', $warehouseId)
+                            ->groupEnd()
+                            ->countAllResults() > 0;
+                        
+                        if ($hasWork) {
+                            if (!isset($warehouseActivities[$user['id']])) {
+                                $warehouseActivities[$user['id']] = [];
+                            }
+                            $warehouseActivities[$user['id']][$warehouseId] = true;
+                        }
+                    }
+                }
+                
+                // Count users with at least one active assignment
+                $hasActiveAssignment = false;
+                foreach ($userAssignments as $assignment) {
+                    if (!empty($assignment['is_active'])) {
+                        $hasActiveAssignment = true;
+                        break;
+                    }
+                }
+                if ($hasActiveAssignment) {
+                    $assignedUsersCount++;
+                }
             }
         }
+        
+        $unassignedUsersCount = count($users) - $assignedUsersCount;
 
         $data = [
             'title' => 'Warehouse Assignments - WITMS',
@@ -341,7 +484,10 @@ class ITAdministratorController extends BaseController
             'users' => $users,
             'warehouses' => $warehouses,
             'roles' => $roles,
-            'assignments' => $assignments
+            'assignments' => $assignments,
+            'warehouseActivities' => $warehouseActivities, // Track which users have work in which warehouses
+            'assignedUsersCount' => $assignedUsersCount,
+            'unassignedUsersCount' => $unassignedUsersCount
         ];
 
         return view('users/it_administrator/warehouse_assignments', $data);
@@ -369,27 +515,63 @@ class ITAdministratorController extends BaseController
             return $this->response->setJSON(['success' => false, 'message' => 'User ID and Warehouse ID are required']);
         }
 
+        // Check if user is IT Administrator or Top Management - they already have access to all warehouses
+        $user = $this->userModel->getUserWithRole($userId);
+        if (!$user) {
+            return $this->response->setJSON(['success' => false, 'message' => 'User not found']);
+        }
+
+        $restrictedRoles = ['IT Administrator', 'Top Management'];
+        if (in_array($user['role_name'] ?? '', $restrictedRoles)) {
+            return $this->response->setJSON([
+                'success' => false, 
+                'message' => 'IT Administrators and Top Management already have access to all warehouses and cannot be assigned to specific warehouses.'
+            ]);
+        }
+
         try {
-            $data = [];
-            if ($isPrimary) {
-                $data['is_primary'] = true;
+            // Use user's default role_id if not provided
+            if (empty($roleId) || $roleId === '') {
+                $roleId = $user['role_id'] ?? null;
             }
+            
+            $data = [
+                'is_active' => 1  // Always set is_active to 1 (active) for new assignments
+            ];
+            if ($isPrimary) {
+                $data['is_primary'] = 1;  // Use integer 1 instead of boolean true
+            } else {
+                $data['is_primary'] = 0;  // Explicitly set to 0 if not primary
+            }
+            // Always set role_id (use user's default if not provided)
             if ($roleId) {
-                $data['role_id'] = $roleId;
+                $data['role_id'] = (int)$roleId;
+            } else {
+                // If user has no role_id, this is an error
+                return $this->response->setJSON(['success' => false, 'message' => 'User does not have a role assigned']);
             }
             if ($notes) {
                 $data['notes'] = $notes;
             }
 
+            // If setting as primary, first unset all other primary warehouses for this user
+            // This must be done BEFORE creating/updating the assignment
+            if ($isPrimary) {
+                $this->userWarehouseAssignmentModel
+                    ->where('user_id', $userId)
+                    ->where('warehouse_id !=', $warehouseId)
+                    ->update(['is_primary' => 0]);
+            }
+
             $result = $this->userWarehouseAssignmentModel->assignUserToWarehouse($userId, $warehouseId, $data);
 
             if ($result) {
-                if ($isPrimary) {
-                    $this->userWarehouseAssignmentModel->setPrimaryWarehouse($userId, $warehouseId);
-                }
                 return $this->response->setJSON(['success' => true, 'message' => 'User assigned to warehouse successfully']);
             } else {
-                return $this->response->setJSON(['success' => false, 'message' => 'Failed to assign user to warehouse']);
+                $errors = $this->userWarehouseAssignmentModel->errors();
+                $errorMessage = !empty($errors) ? implode(', ', $errors) : 'Failed to assign user to warehouse';
+                log_message('error', 'Failed to assign user to warehouse: ' . json_encode($errors));
+                return $this->response->setJSON(['success' => false, 'message' => $errorMessage]);
             }
         } catch (\Exception $e) {
             log_message('error', 'Error assigning user to warehouse: ' . $e->getMessage());
@@ -399,6 +581,7 @@ class ITAdministratorController extends BaseController
 
     /**
      * Remove user from warehouse (AJAX)
+     * Validates that user has not performed any work in the warehouse before allowing unassignment
      */
     public function removeUserFromWarehouse()
     {
@@ -417,12 +600,64 @@ class ITAdministratorController extends BaseController
         }
 
         try {
+            // Convert to integers to ensure proper type
+            $userId = (int)$userId;
+            $warehouseId = (int)$warehouseId;
+            
+            // Get user and warehouse details for error messages
+            $user = $this->userModel->find($userId);
+            $warehouse = $this->warehouseModel->find($warehouseId);
+            $warehouseName = $warehouse ? $warehouse['name'] : 'this warehouse';
+            $userName = $user ? trim(($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? '')) : 'User';
+            
+            // Get the assignment to check when user was assigned
+            $assignment = $this->userWarehouseAssignmentModel
+                ->where('user_id', $userId)
+                ->where('warehouse_id', $warehouseId)
+                ->orderBy('assigned_at', 'ASC')
+                ->first();
+            
+            $assignedAt = $assignment ? $assignment['assigned_at'] : null;
+            
+            // Check 1: Stock movements (receipts, issues, transfers, adjustments)
+            $hasStockMovements = $this->stockMovementModel
+                ->where('performed_by', $userId)
+                ->groupStart()
+                    ->where('from_warehouse_id', $warehouseId)
+                    ->orWhere('to_warehouse_id', $warehouseId)
+                ->groupEnd()
+                ->countAllResults() > 0;
+            
+            if ($hasStockMovements) {
+                return $this->response->setJSON([
+                    'success' => false, 
+                    'message' => 'Cannot unassign ' . $userName . ' from ' . $warehouseName . '. This user has performed stock movements (receipts, issues, transfers, adjustments) in this warehouse. Users with activity history in a warehouse cannot be unassigned to maintain data integrity and audit trail.'
+                ]);
+            }
+            
+            // Check 2: Inventory records created/updated after assignment (if assignment date is available)
+            // Note: Inventory doesn't track created_by, but we can check if inventory exists in warehouse
+            // that might have been added by the user. However, since we can't track who created inventory,
+            // we'll rely on stock movements which are created when inventory is added.
+            
+            // Check 3: Check if user has logged in (session activity)
+            // This is tracked through stock movements, so if there are no stock movements,
+            // it's likely the user hasn't performed work in this warehouse.
+            
+            // Additional check: If assignment exists and was created recently, be more cautious
+            // But since we can't definitively track all activities without created_by fields,
+            // we rely primarily on stock movements which cover most warehouse activities.
+            
             $result = $this->userWarehouseAssignmentModel->removeUserFromWarehouse($userId, $warehouseId);
 
             if ($result) {
+                log_message('info', "User {$userId} ({$userName}) unassigned from warehouse {$warehouseId} ({$warehouseName}) by IT Administrator " . session()->get('user_id'));
                 return $this->response->setJSON(['success' => true, 'message' => 'User removed from warehouse successfully']);
             } else {
-                return $this->response->setJSON(['success' => false, 'message' => 'Failed to remove user from warehouse']);
+                $errors = $this->userWarehouseAssignmentModel->errors();
+                $errorMessage = !empty($errors) ? implode(', ', $errors) : 'Failed to remove user from warehouse';
+                log_message('error', 'Failed to remove user from warehouse: ' . json_encode($errors));
+                return $this->response->setJSON(['success' => false, 'message' => $errorMessage]);
             }
         } catch (\Exception $e) {
             log_message('error', 'Error removing user from warehouse: ' . $e->getMessage());
@@ -464,6 +699,54 @@ class ITAdministratorController extends BaseController
     }
 
     /**
+     * Reactivate user warehouse assignment (AJAX)
+     */
+    public function reactivateAssignment()
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Invalid request']);
+        }
+
+        $userId = $this->request->getPost('user_id');
+        $warehouseId = $this->request->getPost('warehouse_id');
+
+        if (!$userId || !$warehouseId) {
+            return $this->response->setJSON(['success' => false, 'message' => 'User ID and Warehouse ID are required']);
+        }
+
+        try {
+            // Find the assignment
+            $assignment = $this->userWarehouseAssignmentModel
+                ->where('user_id', $userId)
+                ->where('warehouse_id', $warehouseId)
+                ->first();
+
+            if (!$assignment) {
+                return $this->response->setJSON(['success' => false, 'message' => 'Assignment not found']);
+            }
+
+            // Reactivate the assignment
+            $result = $this->userWarehouseAssignmentModel->update($assignment['id'], [
+                'is_active' => 1,  // Use integer 1 instead of boolean true
+                'assigned_at' => date('Y-m-d H:i:s'),
+                'assigned_by' => session()->get('user_id')
+            ]);
+
+            if ($result) {
+                return $this->response->setJSON(['success' => true, 'message' => 'Assignment reactivated successfully']);
+            } else {
+                return $this->response->setJSON(['success' => false, 'message' => 'Failed to reactivate assignment']);
+            }
+        } catch (\Exception $e) {
+            log_message('error', 'Error reactivating assignment: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
      * Get user's warehouse assignments (AJAX)
      */
     public function getUserWarehouses()
@@ -499,21 +782,32 @@ class ITAdministratorController extends BaseController
         $accessCheck = $this->checkAccess();
         if ($accessCheck) return $accessCheck;
 
-        // Get all departments (including inactive for management)
-        $departments = $this->departmentModel->select('departments.*, warehouses.name as warehouse_name, warehouses.code as warehouse_code')
+        // Get all departments (including inactive for management) with department head user info
+        $departments = $this->departmentModel->select('departments.*, warehouses.name as warehouse_name, warehouses.code as warehouse_code, 
+                                                       users.first_name as head_first_name, users.middle_name as head_middle_name, 
+                                                       users.last_name as head_last_name, users.email as head_email')
                                             ->join('warehouses', 'warehouses.id = departments.warehouse_id', 'left')
+                                            ->join('users', 'users.id = departments.department_head_user_id', 'left')
                                             ->orderBy('departments.is_active', 'DESC')
                                             ->orderBy('departments.name', 'ASC')
                                             ->findAll();
         
         $warehouses = $this->warehouseModel->getActiveWarehouses();
         $stats = $this->departmentModel->getDepartmentStats();
+        
+        // Get all active users for department head dropdown
+        $users = $this->userModel->select('users.id, users.first_name, users.middle_name, users.last_name, users.email, users.is_active')
+                                 ->where('users.is_active', 1)
+                                 ->orderBy('users.last_name', 'ASC')
+                                 ->orderBy('users.first_name', 'ASC')
+                                 ->findAll();
 
         $data = [
             'title' => 'Department Management - WITMS',
             'user' => $this->getUserData(),
             'departments' => $departments,
             'warehouses' => $warehouses,
+            'users' => $users, // For department head dropdown
             'stats' => $stats
         ];
 
@@ -561,7 +855,7 @@ class ITAdministratorController extends BaseController
             'name' => $this->request->getPost('name'),
             'description' => $this->request->getPost('description') ?: null,
             'warehouse_id' => $this->request->getPost('warehouse_id') ?: null,
-            'department_head' => $this->request->getPost('department_head') ?: null,
+            'department_head_user_id' => $this->request->getPost('department_head') ?: null,
             'contact_email' => $this->request->getPost('contact_email') ?: null,
             'contact_phone' => $this->request->getPost('contact_phone') ?: null,
             'is_active' => $this->request->getPost('is_active') == '1' ? 1 : 0
@@ -612,7 +906,7 @@ class ITAdministratorController extends BaseController
             'name' => $this->request->getPost('name'),
             'description' => $this->request->getPost('description') ?: null,
             'warehouse_id' => $this->request->getPost('warehouse_id') ?: null,
-            'department_head' => $this->request->getPost('department_head') ?: null,
+            'department_head_user_id' => $this->request->getPost('department_head') ?: null,
             'contact_email' => $this->request->getPost('contact_email') ?: null,
             'contact_phone' => $this->request->getPost('contact_phone') ?: null,
             'is_active' => $this->request->getPost('is_active') == '1' ? 1 : 0
@@ -650,27 +944,41 @@ class ITAdministratorController extends BaseController
         }
 
         try {
-            // Check if department has users
+            // Check if department has users assigned
             $userModel = new \App\Models\UserModel();
-            $hasUsers = $userModel->where('department_id', $departmentId)->countAllResults() > 0;
+            $users = $userModel->where('department_id', $departmentId)->findAll();
 
-            if ($hasUsers) {
-                // Soft delete (deactivate) if has users
-                if ($this->departmentModel->update($departmentId, ['is_active' => 0])) {
-                    log_message('info', 'Department deactivated by IT Administrator: ' . $departmentId);
-                    return $this->response->setJSON(['success' => true, 'message' => 'Department deactivated successfully (has users assigned)']);
+            if (!empty($users)) {
+                // Get user names for error message
+                $userNames = [];
+                foreach ($users as $user) {
+                    $fullName = trim(($user['first_name'] ?? '') . ' ' . ($user['middle_name'] ?? '') . ' ' . ($user['last_name'] ?? ''));
+                    if ($fullName) {
+                        $userNames[] = $fullName;
+                    }
                 }
-            } else {
-                // Can be fully deactivated if no users
+                
+                $userList = implode(', ', array_slice($userNames, 0, 5)); // Show first 5 users
+                if (count($userNames) > 5) {
+                    $userList .= ' and ' . (count($userNames) - 5) . ' more';
+                }
+                
+                return $this->response->setJSON([
+                    'success' => false, 
+                    'message' => 'Cannot deactivate department. This department has ' . count($users) . ' user(s) assigned: ' . $userList . '. Please reassign or remove users from this department before deactivating.'
+                ]);
+            }
+
+            // No users assigned, can deactivate
                 if ($this->departmentModel->update($departmentId, ['is_active' => 0])) {
                     log_message('info', 'Department deactivated by IT Administrator: ' . $departmentId);
                     return $this->response->setJSON(['success' => true, 'message' => 'Department deactivated successfully']);
+            } else {
+                $errors = $this->departmentModel->errors();
+                return $this->response->setJSON(['success' => false, 'message' => 'Failed to deactivate department', 'errors' => $errors]);
                 }
-            }
-
-            return $this->response->setJSON(['success' => false, 'message' => 'Failed to deactivate department']);
         } catch (\Exception $e) {
-            log_message('error', 'Error soft deleting department: ' . $e->getMessage());
+            log_message('error', 'Error deactivating department: ' . $e->getMessage());
             return $this->response->setJSON(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
         }
     }
@@ -1038,7 +1346,17 @@ class ITAdministratorController extends BaseController
         }
 
         foreach ($filesToCheck as $filepath) {
-            $stats = [];
+            $stats = [
+                'total' => 0,
+                'emergency' => 0,
+                'alert' => 0,
+                'critical' => 0,
+                'error' => 0,
+                'warning' => 0,
+                'notice' => 0,
+                'info' => 0,
+                'debug' => 0
+            ];
             $entries = $this->parseLogFile($filepath, $stats, null, null);
             
             // Filter for critical, error, and warning entries only
@@ -1408,7 +1726,14 @@ class ITAdministratorController extends BaseController
                     // Apply filters
                     if ($this->shouldIncludeEntry($currentEntry, $filterLevel, $searchTerm)) {
                         $entries[] = $currentEntry;
-                        $stats[$currentEntry['level']]++;
+                        $level = $currentEntry['level'];
+                        if (!isset($stats[$level])) {
+                            $stats[$level] = 0;
+                        }
+                        $stats[$level]++;
+                        if (!isset($stats['total'])) {
+                            $stats['total'] = 0;
+                        }
                         $stats['total']++;
                     }
                 }
@@ -1436,7 +1761,14 @@ class ITAdministratorController extends BaseController
             
             if ($this->shouldIncludeEntry($currentEntry, $filterLevel, $searchTerm)) {
                 $entries[] = $currentEntry;
-                $stats[$currentEntry['level']]++;
+                $level = $currentEntry['level'];
+                if (!isset($stats[$level])) {
+                    $stats[$level] = 0;
+                }
+                $stats[$level]++;
+                if (!isset($stats['total'])) {
+                    $stats['total'] = 0;
+                }
                 $stats['total']++;
             }
         }
@@ -1512,12 +1844,22 @@ class ITAdministratorController extends BaseController
             $managers = $this->userModel->getUsersByRole($warehouseManagerRole['id']);
         }
 
+        // Get location data for dropdowns
+        $regions = $this->warehouseLocationModel->getAllRegions();
+        $provinces = $this->warehouseLocationModel->getAllProvinces();
+        $cities = $this->warehouseLocationModel->getAllCities();
+        $locationDropdownData = $this->warehouseLocationModel->getDropdownData();
+
         $data = [
             'title' => 'Warehouse Management - WITMS',
             'user' => $this->getUserData(),
             'warehouses' => $warehouses,
             'stats' => $stats,
-            'managers' => $managers
+            'managers' => $managers,
+            'regions' => $regions,
+            'provinces' => $provinces,
+            'cities' => $cities,
+            'locationDropdownData' => json_encode($locationDropdownData) // For JavaScript cascading dropdowns
         ];
 
         return view('users/it_administrator/warehouse_management', $data);
@@ -1549,6 +1891,12 @@ class ITAdministratorController extends BaseController
                 'longitude' => $this->request->getPost('longitude') ?: null
             ];
 
+            // Validate manager_id is required
+            $managerId = $this->request->getPost('manager_id');
+            if (empty($managerId)) {
+                return $this->response->setJSON(['success' => false, 'message' => 'Manager is required. Please select a warehouse manager.']);
+            }
+
             $locationId = $this->warehouseLocationModel->insert($locationData);
 
             if (!$locationId) {
@@ -1562,13 +1910,23 @@ class ITAdministratorController extends BaseController
                 'code' => $this->request->getPost('code'),
                 'warehouse_location_id' => $locationId,
                 'capacity' => $this->request->getPost('capacity') ?: null,
-                'manager_id' => $this->request->getPost('manager_id') ?: null,
+                'manager_id' => $managerId,
                 'is_active' => $this->request->getPost('is_active') == '1' ? 1 : 0
             ];
 
             if ($this->warehouseModel->insert($warehouseData)) {
-                log_message('info', 'Warehouse created by IT Administrator: ' . $warehouseData['name']);
-                return $this->response->setJSON(['success' => true, 'message' => 'Warehouse created successfully']);
+                $warehouseId = $this->warehouseModel->getInsertID();
+                
+                // Automatically assign the selected manager to this warehouse
+                $assignmentSuccess = $this->assignManagerToWarehouse($managerId, $warehouseId);
+                
+                log_message('info', 'Warehouse created by IT Administrator: ' . $warehouseData['name'] . ' with manager ID: ' . $managerId);
+                
+                if ($assignmentSuccess) {
+                    return $this->response->setJSON(['success' => true, 'message' => 'Warehouse created successfully! Manager has been automatically assigned to this warehouse.']);
+                } else {
+                    return $this->response->setJSON(['success' => true, 'message' => 'Warehouse created successfully! However, there was an issue auto-assigning the manager. Please assign manually via Warehouse Assignments.']);
+                }
             } else {
                 // Rollback: delete the location
                 $this->warehouseLocationModel->delete($locationId);
@@ -1667,18 +2025,44 @@ class ITAdministratorController extends BaseController
                 $this->warehouseLocationModel->update($warehouse['warehouse_location_id'], $locationData);
             }
 
+            // Validate manager_id is required
+            $managerId = $this->request->getPost('manager_id');
+            if (empty($managerId)) {
+                return $this->response->setJSON(['success' => false, 'message' => 'Manager is required. Please select a warehouse manager.']);
+            }
+
+            // Get the old manager_id to check if it changed
+            $oldManagerId = $warehouse['manager_id'];
+
             // Update warehouse
             $warehouseData = [
                 'name' => $this->request->getPost('name'),
                 'code' => $this->request->getPost('code'),
                 'capacity' => $this->request->getPost('capacity') ?: null,
-                'manager_id' => $this->request->getPost('manager_id') ?: null,
+                'manager_id' => $managerId,
                 'is_active' => $this->request->getPost('is_active') == '1' ? 1 : 0
             ];
 
             if ($this->warehouseModel->update($warehouseId, $warehouseData)) {
-                log_message('info', 'Warehouse updated by IT Administrator: ' . $warehouseId);
-                return $this->response->setJSON(['success' => true, 'message' => 'Warehouse updated successfully']);
+                $message = 'Warehouse updated successfully!';
+                
+                // If manager changed, handle the warehouse assignment
+                if ($managerId != $oldManagerId) {
+                    // Assign the new manager to this warehouse
+                    $assignmentSuccess = $this->assignManagerToWarehouse($managerId, $warehouseId);
+                    
+                    log_message('info', 'Warehouse updated by IT Administrator: ' . $warehouseId . ' - Manager changed from ' . $oldManagerId . ' to ' . $managerId);
+                    
+                    if ($assignmentSuccess) {
+                        $message .= ' New manager has been automatically assigned to this warehouse.';
+                    } else {
+                        $message .= ' However, there was an issue auto-assigning the new manager. Please assign manually via Warehouse Assignments.';
+                    }
+                } else {
+                    log_message('info', 'Warehouse updated by IT Administrator: ' . $warehouseId);
+                }
+                
+                return $this->response->setJSON(['success' => true, 'message' => $message]);
             } else {
                 $errors = $this->warehouseModel->errors();
                 return $this->response->setJSON(['success' => false, 'message' => 'Failed to update warehouse', 'errors' => $errors]);
@@ -1690,7 +2074,7 @@ class ITAdministratorController extends BaseController
     }
 
     /**
-     * Delete warehouse (soft delete by setting is_active = 0) (AJAX)
+     * Delete warehouse (soft delete) (AJAX)
      */
     public function deleteWarehouse()
     {
@@ -1707,27 +2091,509 @@ class ITAdministratorController extends BaseController
         }
 
         try {
-            // Check if warehouse has inventory
-            $inventoryModel = new \App\Models\InventoryModel();
-            $hasInventory = $inventoryModel->where('warehouse_id', $warehouseId)->countAllResults() > 0;
-
-            if ($hasInventory) {
-                // Soft delete (deactivate) instead of hard delete
-                if ($this->warehouseModel->update($warehouseId, ['is_active' => 0])) {
-                    log_message('info', 'Warehouse deactivated by IT Administrator: ' . $warehouseId);
-                    return $this->response->setJSON(['success' => true, 'message' => 'Warehouse deactivated successfully (has inventory)']);
-                }
-            } else {
-                // Can be fully deleted if no inventory
-                if ($this->warehouseModel->delete($warehouseId)) {
-                    log_message('info', 'Warehouse deleted by IT Administrator: ' . $warehouseId);
-                    return $this->response->setJSON(['success' => true, 'message' => 'Warehouse deleted successfully']);
-                }
+            // Check if warehouse exists and is not already deleted
+            $warehouse = $this->warehouseModel->withDeleted()->find($warehouseId);
+            if (!$warehouse) {
+                return $this->response->setJSON(['success' => false, 'message' => 'Warehouse not found']);
             }
 
-            return $this->response->setJSON(['success' => false, 'message' => 'Failed to delete warehouse']);
+            // Check if already soft deleted
+            if (!empty($warehouse['deleted_at'])) {
+                return $this->response->setJSON(['success' => false, 'message' => 'Warehouse is already deleted']);
+                }
+
+            // Perform soft delete
+                if ($this->warehouseModel->delete($warehouseId)) {
+                $currentUserId = session()->get('user_id');
+                log_message('info', 'Warehouse soft deleted by IT Administrator ' . $currentUserId . ': Warehouse ID ' . $warehouseId);
+                return $this->response->setJSON(['success' => true, 'message' => 'Warehouse deleted successfully. It can be restored if needed.']);
+            } else {
+                $errors = $this->warehouseModel->errors();
+                return $this->response->setJSON(['success' => false, 'message' => 'Failed to delete warehouse', 'errors' => $errors]);
+            }
         } catch (\Exception $e) {
-            log_message('error', 'Error deleting warehouse: ' . $e->getMessage());
+            log_message('error', 'Error soft deleting warehouse: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Helper: Automatically assign manager to warehouse
+     * This ensures the warehouse manager is added to user_warehouse_assignments
+     */
+    private function assignManagerToWarehouse($managerId, $warehouseId)
+    {
+        try {
+            // Get the manager's role ID
+            $user = $this->userModel->find($managerId);
+            if (!$user) {
+                log_message('error', 'Cannot assign manager to warehouse: Manager not found. Manager ID: ' . $managerId);
+                return false;
+            }
+
+            $roleId = $user['role_id'];
+
+            // Check if assignment already exists
+            $existingAssignment = $this->userWarehouseAssignmentModel
+                ->where('user_id', $managerId)
+                ->where('warehouse_id', $warehouseId)
+                ->first();
+
+            if ($existingAssignment) {
+                // Update the existing assignment to be active and primary
+                $this->userWarehouseAssignmentModel->update($existingAssignment['id'], [
+                    'is_active' => 1,
+                    'is_primary' => 1,
+                    'role_id' => $roleId,
+                    'assigned_at' => date('Y-m-d H:i:s'),
+                    'notes' => 'Auto-assigned as warehouse manager'
+                ]);
+                
+                // Unset other primary warehouses for this user (except the current one)
+                $otherPrimaryAssignments = $this->userWarehouseAssignmentModel
+                    ->where('user_id', $managerId)
+                    ->where('warehouse_id !=', $warehouseId)
+                    ->where('is_primary', 1)
+                    ->findAll();
+                
+                foreach ($otherPrimaryAssignments as $assignment) {
+                    $this->userWarehouseAssignmentModel->update($assignment['id'], ['is_primary' => 0]);
+                }
+                
+                log_message('info', 'Updated existing warehouse assignment for manager ID: ' . $managerId . ' to warehouse ID: ' . $warehouseId);
+            } else {
+                // First, unset any existing primary warehouses for this user
+                $existingPrimaryAssignments = $this->userWarehouseAssignmentModel
+                    ->where('user_id', $managerId)
+                    ->where('is_primary', 1)
+                    ->findAll();
+                
+                foreach ($existingPrimaryAssignments as $assignment) {
+                    $this->userWarehouseAssignmentModel->update($assignment['id'], ['is_primary' => 0]);
+                }
+
+                // Create new assignment as primary
+                $assignmentData = [
+                    'user_id' => $managerId,
+                    'warehouse_id' => $warehouseId,
+                    'role_id' => $roleId,
+                    'is_primary' => 1,
+                    'is_active' => 1,
+                    'assigned_at' => date('Y-m-d H:i:s'),
+                    'notes' => 'Auto-assigned as warehouse manager'
+                ];
+
+                // Insert the new assignment
+                $this->userWarehouseAssignmentModel->insert($assignmentData);
+                log_message('info', 'Created new warehouse assignment for manager ID: ' . $managerId . ' to warehouse ID: ' . $warehouseId);
+            }
+
+            return true;
+        } catch (\Exception $e) {
+            log_message('error', 'Error assigning manager to warehouse: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    // ==========================================
+    // INVENTORY MANAGEMENT (FULL CRUD)
+    // ==========================================
+
+    /**
+     * List all inventory
+     */
+    public function inventory()
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        $inventory = $this->inventoryModel->getInventoryWithDetails();
+        $stats = $this->inventoryModel->getInventoryStats();
+        $warehouses = $this->warehouseModel->getActiveWarehouses();
+        $materials = $this->materialModel->getActiveMaterials();
+        $categories = $this->categoryModel->findAll();
+
+        $data = [
+            'title' => 'Inventory Management - WITMS',
+            'user' => $this->getUserData(),
+            'inventory' => $inventory,
+            'stats' => $stats,
+            'warehouses' => $warehouses,
+            'materials' => $materials,
+            'categories' => $categories
+        ];
+
+        return view('users/it_administrator/inventory', $data);
+    }
+
+    /**
+     * Create new inventory item (AJAX)
+     */
+    public function createInventory()
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Invalid request']);
+        }
+
+        $data = [
+            'material_id' => $this->request->getPost('material_id'),
+            'warehouse_id' => $this->request->getPost('warehouse_id'),
+            'quantity' => $this->request->getPost('quantity'),
+            'reserved_quantity' => $this->request->getPost('reserved_quantity') ?: 0,
+            'batch_number' => $this->request->getPost('batch_number') ?: null,
+            'location_in_warehouse' => $this->request->getPost('location_in_warehouse') ?: null,
+            'expiration_date' => $this->request->getPost('expiration_date') ?: null
+        ];
+
+        try {
+            if ($this->inventoryModel->insert($data)) {
+                $inventoryId = $this->inventoryModel->getInsertID();
+                
+                // Record stock movement
+                $this->stockMovementModel->recordReceipt([
+                    'material_id' => $data['material_id'],
+                    'to_warehouse_id' => $data['warehouse_id'],
+                    'quantity' => $data['quantity'],
+                    'batch_number' => $data['batch_number'],
+                    'performed_by' => session()->get('user_id'),
+                    'notes' => 'Created by IT Administrator'
+                ]);
+
+                log_message('info', 'Inventory item created by IT Administrator: ' . $inventoryId);
+                return $this->response->setJSON(['success' => true, 'message' => 'Inventory item created successfully']);
+            } else {
+                $errors = $this->inventoryModel->errors();
+                $errorMessage = 'Failed to create inventory item';
+                if (!empty($errors)) {
+                    $errorMessage .= ': ' . implode(', ', array_values($errors));
+                }
+                return $this->response->setJSON(['success' => false, 'message' => $errorMessage, 'errors' => $errors]);
+            }
+        } catch (\Exception $e) {
+            log_message('error', 'Error creating inventory: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Get inventory item details (AJAX)
+     */
+    public function getInventory()
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Invalid request']);
+        }
+
+        $inventoryId = $this->request->getPost('inventory_id');
+        if (!$inventoryId) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Inventory ID is required']);
+        }
+
+        $inventory = $this->inventoryModel->getInventoryWithDetails($inventoryId);
+        if (!$inventory) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Inventory item not found']);
+        }
+
+        return $this->response->setJSON(['success' => true, 'inventory' => $inventory]);
+    }
+
+    /**
+     * Update inventory item (AJAX)
+     */
+    public function updateInventory()
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Invalid request']);
+        }
+
+        $inventoryId = $this->request->getPost('inventory_id');
+        if (!$inventoryId) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Inventory ID is required']);
+        }
+
+        $inventory = $this->inventoryModel->find($inventoryId);
+        if (!$inventory) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Inventory item not found']);
+        }
+
+        $data = [
+            'material_id' => $this->request->getPost('material_id'),
+            'warehouse_id' => $this->request->getPost('warehouse_id'),
+            'quantity' => $this->request->getPost('quantity'),
+            'reserved_quantity' => $this->request->getPost('reserved_quantity') ?: 0,
+            'batch_number' => $this->request->getPost('batch_number') ?: null,
+            'location_in_warehouse' => $this->request->getPost('location_in_warehouse') ?: null,
+            'expiration_date' => $this->request->getPost('expiration_date') ?: null
+        ];
+
+        try {
+            if ($this->inventoryModel->update($inventoryId, $data)) {
+                log_message('info', 'Inventory item updated by IT Administrator: ' . $inventoryId);
+                return $this->response->setJSON(['success' => true, 'message' => 'Inventory item updated successfully']);
+            } else {
+                $errors = $this->inventoryModel->errors();
+                $errorMessage = 'Failed to update inventory item';
+                if (!empty($errors)) {
+                    $errorMessage .= ': ' . implode(', ', array_values($errors));
+                }
+                return $this->response->setJSON(['success' => false, 'message' => $errorMessage, 'errors' => $errors]);
+            }
+        } catch (\Exception $e) {
+            log_message('error', 'Error updating inventory: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Delete inventory item (AJAX)
+     */
+    public function deleteInventory()
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Invalid request']);
+        }
+
+        $inventoryId = $this->request->getPost('inventory_id');
+        if (!$inventoryId) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Inventory ID is required']);
+        }
+
+        $inventory = $this->inventoryModel->find($inventoryId);
+        if (!$inventory) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Inventory item not found']);
+        }
+
+        try {
+            // Use soft delete
+            if ($this->inventoryModel->delete($inventoryId)) {
+                $currentUserId = session()->get('user_id');
+                log_message('info', 'Inventory item soft deleted by IT Administrator ' . $currentUserId . ': Inventory ID ' . $inventoryId);
+                return $this->response->setJSON(['success' => true, 'message' => 'Inventory item deleted successfully. It can be restored if needed.']);
+            } else {
+                $errors = $this->inventoryModel->errors();
+                $errorMessage = 'Failed to delete inventory item';
+                if (!empty($errors)) {
+                    $errorMessage .= ': ' . implode(', ', array_values($errors));
+                }
+                return $this->response->setJSON(['success' => false, 'message' => $errorMessage, 'errors' => $errors]);
+            }
+        } catch (\Exception $e) {
+            log_message('error', 'Error deleting inventory: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+        }
+    }
+
+    // ==========================================
+    // MATERIALS MANAGEMENT (FULL CRUD)
+    // ==========================================
+
+    /**
+     * List all materials
+     */
+    public function materials()
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        $materials = $this->materialModel->getMaterialsWithDetails();
+        $materialStats = $this->materialModel->getMaterialStats();
+        $categoryStats = $this->categoryModel->getCategoryStats();
+        $stats = array_merge($materialStats, $categoryStats);
+        $categories = $this->categoryModel->getActiveCategories();
+        $units = $this->unitModel->getActiveUnits();
+
+        $data = [
+            'title' => 'Materials Management - WITMS',
+            'user' => $this->getUserData(),
+            'materials' => $materials,
+            'stats' => $stats,
+            'categories' => $categories,
+            'units' => $units
+        ];
+
+        return view('users/it_administrator/materials', $data);
+    }
+
+    /**
+     * Create new material (AJAX)
+     */
+    public function createMaterial()
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Invalid request']);
+        }
+
+        $data = [
+            'name' => $this->request->getPost('name'),
+            'code' => $this->request->getPost('code'),
+            'category_id' => $this->request->getPost('category_id'),
+            'unit_id' => $this->request->getPost('unit_id'),
+            'description' => $this->request->getPost('description') ?: null,
+            'reorder_level' => $this->request->getPost('reorder_level'),
+            'reorder_quantity' => $this->request->getPost('reorder_quantity'),
+            'unit_cost' => $this->request->getPost('unit_cost'),
+            'is_perishable' => $this->request->getPost('is_perishable') ? 1 : 0,
+            'shelf_life_days' => $this->request->getPost('shelf_life_days') ?: null,
+            'is_active' => 1
+        ];
+
+        try {
+            if ($this->materialModel->insert($data)) {
+                $materialId = $this->materialModel->getInsertID();
+                log_message('info', 'Material created by IT Administrator: ' . $materialId);
+                return $this->response->setJSON(['success' => true, 'message' => 'Material created successfully']);
+            } else {
+                $errors = $this->materialModel->errors();
+                $errorMessage = 'Failed to create material';
+                if (!empty($errors)) {
+                    $errorMessage .= ': ' . implode(', ', array_values($errors));
+                }
+                return $this->response->setJSON(['success' => false, 'message' => $errorMessage, 'errors' => $errors]);
+            }
+        } catch (\Exception $e) {
+            log_message('error', 'Error creating material: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Get material details (AJAX)
+     */
+    public function getMaterial()
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Invalid request']);
+        }
+
+        $materialId = $this->request->getPost('material_id');
+        if (!$materialId) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Material ID is required']);
+        }
+
+        $material = $this->materialModel->getMaterialsWithDetails($materialId);
+        if (!$material) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Material not found']);
+        }
+
+        return $this->response->setJSON(['success' => true, 'material' => $material]);
+    }
+
+    /**
+     * Update material (AJAX)
+     */
+    public function updateMaterial()
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Invalid request']);
+        }
+
+        $materialId = $this->request->getPost('material_id');
+        if (!$materialId) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Material ID is required']);
+        }
+
+        $material = $this->materialModel->find($materialId);
+        if (!$material) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Material not found']);
+        }
+
+        $data = [
+            'name' => $this->request->getPost('name'),
+            'code' => $this->request->getPost('code'),
+            'category_id' => $this->request->getPost('category_id'),
+            'unit_id' => $this->request->getPost('unit_id'),
+            'description' => $this->request->getPost('description') ?: null,
+            'reorder_level' => $this->request->getPost('reorder_level'),
+            'reorder_quantity' => $this->request->getPost('reorder_quantity'),
+            'unit_cost' => $this->request->getPost('unit_cost'),
+            'is_perishable' => $this->request->getPost('is_perishable') ? 1 : 0,
+            'shelf_life_days' => $this->request->getPost('shelf_life_days') ?: null,
+            'is_active' => $this->request->getPost('is_active') ? 1 : 0
+        ];
+
+        try {
+            if ($this->materialModel->update($materialId, $data)) {
+                log_message('info', 'Material updated by IT Administrator: ' . $materialId);
+                return $this->response->setJSON(['success' => true, 'message' => 'Material updated successfully']);
+            } else {
+                $errors = $this->materialModel->errors();
+                $errorMessage = 'Failed to update material';
+                if (!empty($errors)) {
+                    $errorMessage .= ': ' . implode(', ', array_values($errors));
+                }
+                return $this->response->setJSON(['success' => false, 'message' => $errorMessage, 'errors' => $errors]);
+            }
+        } catch (\Exception $e) {
+            log_message('error', 'Error updating material: ' . $e->getMessage());
+            return $this->response->setJSON(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Delete material (AJAX)
+     */
+    public function deleteMaterial()
+    {
+        $accessCheck = $this->checkAccess();
+        if ($accessCheck) return $accessCheck;
+
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Invalid request']);
+        }
+
+        $materialId = $this->request->getPost('material_id');
+        if (!$materialId) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Material ID is required']);
+        }
+
+        $material = $this->materialModel->find($materialId);
+        if (!$material) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Material not found']);
+        }
+
+        // Check if material is used in active inventory (excluding soft-deleted inventory)
+        $inventoryCount = $this->inventoryModel->where('material_id', $materialId)->countAllResults();
+        if ($inventoryCount > 0) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Cannot delete material. It is currently used in ' . $inventoryCount . ' inventory item(s).']);
+        }
+
+        try {
+            // Use soft delete
+            if ($this->materialModel->delete($materialId)) {
+                $currentUserId = session()->get('user_id');
+                log_message('info', 'Material soft deleted by IT Administrator ' . $currentUserId . ': Material ID ' . $materialId);
+                return $this->response->setJSON(['success' => true, 'message' => 'Material deleted successfully. It can be restored if needed.']);
+            } else {
+                $errors = $this->materialModel->errors();
+                $errorMessage = 'Failed to delete material';
+                if (!empty($errors)) {
+                    $errorMessage .= ': ' . implode(', ', array_values($errors));
+                }
+                return $this->response->setJSON(['success' => false, 'message' => $errorMessage, 'errors' => $errors]);
+            }
+        } catch (\Exception $e) {
+            log_message('error', 'Error deleting material: ' . $e->getMessage());
             return $this->response->setJSON(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
         }
     }

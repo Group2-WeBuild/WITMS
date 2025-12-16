@@ -19,9 +19,9 @@ $navigationItems = [
         ['icon' => 'bi-boxes', 'label' => 'Materials', 'url' => '/warehouse-manager/materials'],
         ['icon' => 'bi-arrow-left-right', 'label' => 'Stock Movements', 'url' => '/warehouse-manager/stock-movements'],
         ['icon' => 'bi-exclamation-triangle', 'label' => 'Stock Alerts', 'url' => '/warehouse-manager/stock-alerts'],
-        ['icon' => 'bi-building', 'label' => 'Warehouse Management', 'url' => '/warehouse-manager/warehouse-management'],
+        ['icon' => 'bi-building', 'label' => 'Warehouse Overview', 'url' => '/warehouse-manager/warehouse-management'],
         ['icon' => 'bi-map', 'label' => 'Warehouse Map', 'url' => '/warehouse-manager/warehouse/map'],
-        ['icon' => 'bi-people', 'label' => 'Staff Management', 'url' => '/warehouse-manager/staff-management'],
+        ['icon' => 'bi-clipboard-check', 'label' => 'Assign Staff to Work', 'url' => '/warehouse-manager/staff-management'],
         ['icon' => 'bi-file-earmark-text', 'label' => 'Reports', 'url' => '/warehouse-manager/reports'],
     ],
     
@@ -79,13 +79,13 @@ $navigationItems = [
     'IT Administrator' => [
         ['icon' => 'bi-speedometer2', 'label' => 'Dashboard', 'url' => '/it-administrator/dashboard'],
         ['icon' => 'bi-people', 'label' => 'User Management', 'url' => '/it-administrator/users'],
+        ['icon' => 'bi-box-seam', 'label' => 'Inventory', 'url' => '/it-administrator/inventory'],
+        ['icon' => 'bi-boxes', 'label' => 'Materials', 'url' => '/it-administrator/materials'],
         ['icon' => 'bi-building', 'label' => 'Warehouse Management', 'url' => '/it-administrator/warehouse-management'],
         ['icon' => 'bi-building', 'label' => 'Warehouse Assignments', 'url' => '/it-administrator/warehouse-assignments'],
         ['icon' => 'bi-building', 'label' => 'Departments', 'url' => '/it-administrator/departments'],
-        ['icon' => 'bi-hdd-network', 'label' => 'System Settings', 'url' => '/it-administrator/settings'],
         ['icon' => 'bi-database', 'label' => 'Database Backup', 'url' => '/it-administrator/backup'],
         ['icon' => 'bi-activity', 'label' => 'System Logs', 'url' => '/it-administrator/logs'],
-        ['icon' => 'bi-gear', 'label' => 'Configuration', 'url' => '/it-administrator/config'],
     ],
     
     'Top Management' => [

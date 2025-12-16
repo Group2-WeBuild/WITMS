@@ -46,6 +46,11 @@
             transition: all 0.3s ease;
             border-left: 4px solid;
             background: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 120px;
+            position: relative;
         }
         .stat-card:hover {
             transform: translateY(-3px);
@@ -56,6 +61,19 @@
         .stat-card.warning { border-left-color: #ffc107; }
         .stat-card.danger { border-left-color: #dc3545; }
         .stat-card.info { border-left-color: #0dcaf0; }
+        .stat-card p {
+            margin: 0 0 8px 0;
+            font-size: 0.9rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+        .stat-card h3 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #212529;
+            line-height: 1.2;
+        }
         .stat-card .icon {
             width: 50px;
             height: 50px;
@@ -64,7 +82,9 @@
             align-items: center;
             justify-content: center;
             font-size: 24px;
-            float: right;
+            position: absolute;
+            top: 20px;
+            right: 20px;
         }
         .backup-item {
             border-left: 4px solid #0d6efd;

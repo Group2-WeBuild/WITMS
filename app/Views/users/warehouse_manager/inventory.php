@@ -87,9 +87,9 @@
             <div class="page-header">
                 <div class="row align-items-center">
                     <div class="col-md-8">
-                        <h2 class="mb-1"><i class="bi bi-box-seam"></i> Inventory Management</h2>
-                        <p class="text-muted mb-0">Track and manage all warehouse inventory</p>
-                    </div>
+                        <h2 class="mb-1"><i class="bi bi-box-seam"></i> Inventory Overview</h2>
+                        <p class="text-muted mb-0">Track and view all warehouse inventory</p>
+                    </div>  
                     <div class="col-md-4 text-md-end mt-3 mt-md-0">
                         <div class="btn-group d-flex flex-column flex-md-row" role="group">
                             <a href="<?= base_url('warehouse-manager/inventory/add') ?>" class="btn btn-primary mb-2 mb-md-0 me-md-2">
@@ -98,12 +98,6 @@
                             <button type="button" class="btn btn-success mb-2 mb-md-0 me-md-2" id="batchGenerateInventoryQR">
                                 <i class="bi bi-qr-code-scan"></i> Batch Generate QR
                             </button>
-                            <a href="<?= base_url('warehouse-manager/inventory/low-stock') ?>" class="btn btn-warning mb-2 mb-md-0 me-md-2">
-                                <i class="bi bi-exclamation-triangle"></i> Low Stock
-                            </a>
-                            <a href="<?= base_url('warehouse-manager/inventory/expiring') ?>" class="btn btn-danger mb-2 mb-md-0 me-md-2">
-                                <i class="bi bi-calendar-x"></i> Expiring Items
-                            </a>
                             <a href="<?= base_url('warehouse-manager/inventory/recalculate-available') ?>" class="btn btn-info" onclick="return confirm('This will recalculate all available quantities. Continue?');">
                                 <i class="bi bi-calculator"></i> Recalculate Available
                             </a>

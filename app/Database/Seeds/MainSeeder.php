@@ -16,6 +16,7 @@ class MainSeeder extends Seeder
         $this->call('MaterialCategorySeeder');
         $this->call('MaterialSeeder');
         $this->call('InventorySeeder');
+        $this->call('WarehouseLocationSeeder');
         
         echo "\n WeBuild WITMS database seeding completed successfully!\n";
         echo "You can now test the login system with the provided credentials.\n\n";

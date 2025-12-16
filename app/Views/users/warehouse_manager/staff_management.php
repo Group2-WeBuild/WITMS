@@ -57,8 +57,8 @@
     <div class="main-content">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
-                <h2><i class="bi bi-people"></i> Staff Management</h2>
-                <p class="text-muted">Manage warehouse personnel and assign work tasks</p>
+                <h2><i class="bi bi-clipboard-check"></i> Assign Staff to Work</h2>
+                <p class="text-muted">Assign work tasks to warehouse personnel</p>
             </div>
         </div>
 
@@ -329,7 +329,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" onclick="submitWorkAssignment()">
+                    <button type="button" class="btn btn-primary" id="submitWorkBtn" onclick="submitWorkAssignment(event)">
                         <i class="bi bi-check-circle"></i> Assign Work
                     </button>
                 </div>
@@ -396,30 +396,66 @@
             document.getElementById('taskDeadline').value = tomorrow.toISOString().slice(0, 16);
         }
 
-        function submitWorkAssignment() {
+        function submitWorkAssignment(event) {
+            event.preventDefault();
             const form = document.getElementById('assignWorkForm');
-            if (form.checkValidity()) {
-                const formData = new FormData(form);
-                const id = document.getElementById('assignStaffId').value;
-                
-                // For now, just show success message
-                const taskType = document.getElementById('taskType').value;
-                const taskDescription = document.getElementById('taskDescription').value;
-                const staffName = document.getElementById('assignStaffName').textContent;
-                
-                alert(`Work assignment sent to ${staffName}!\n\nTask: ${taskType}\nDescription: ${taskDescription}`);
-                
-                bootstrap.Modal.getInstance(document.getElementById('assignWorkModal')).hide();
-                form.reset();
-                
-                // In a real implementation, you would send this to the server:
-                // fetch(`/warehouse-manager/assign-work/${id}`, {
-                //     method: 'POST',
-                //     body: formData
-                // });
-            } else {
+            if (!form.checkValidity()) {
                 form.reportValidity();
+                return;
             }
+
+            const id = document.getElementById('assignStaffId').value;
+            const staffName = document.getElementById('assignStaffName').textContent;
+            
+            // Get form values
+            const formData = {
+                taskType: document.getElementById('taskType').value,
+                taskDescription: document.getElementById('taskDescription').value,
+                taskLocation: document.getElementById('taskLocation').value,
+                taskPriority: document.getElementById('taskPriority').value,
+                taskDeadline: document.getElementById('taskDeadline').value
+            };
+
+            // Show loading state
+            const submitBtn = document.getElementById('submitWorkBtn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Assigning...';
+
+            // Get CSRF token from meta tag or form
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || 
+                             document.querySelector('input[name="<?= csrf_token() ?>"]')?.value || '';
+
+            // Send to server
+            fetch(`<?= base_url('warehouse-manager/staff/assign/') ?>${id}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    '<?= csrf_header() ?>': csrfToken
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`Work assignment sent to ${staffName}!\n\n${data.message}`);
+                    bootstrap.Modal.getInstance(document.getElementById('assignWorkModal')).hide();
+                    form.reset();
+                    // Optionally reload the page to show updated assignments
+                    // location.reload();
+                } else {
+                    alert('Error: ' + (data.message || 'Failed to assign work'));
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while assigning work. Please try again.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            });
         }
 
         function showAddStaffModal() {

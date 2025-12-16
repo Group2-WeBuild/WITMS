@@ -20,50 +20,50 @@ class CreateUserWarehouseAssignmentsTable extends Migration
                 'constraint' => 11,
                 'unsigned'   => true,
                 'null'       => false,
-                'comment'    => 'Foreign key to users table',
+                
             ],
             'warehouse_id' => [
                 'type'       => 'INT',
                 'constraint' => 11,
                 'unsigned'   => true,
                 'null'       => false,
-                'comment'    => 'Foreign key to warehouses table',
+                
             ],
             'role_id' => [
                 'type'       => 'INT',
                 'constraint' => 11,
                 'unsigned'   => true,
                 'null'       => true,
-                'comment'    => 'Optional: Specific role for this warehouse assignment',
+                
             ],
             'is_primary' => [
                 'type'       => 'BOOLEAN',
                 'default'    => false,
                 'null'       => false,
-                'comment'    => 'True if this is the primary warehouse for this user',
+                
             ],
             'assigned_by' => [
                 'type'       => 'INT',
                 'constraint' => 11,
                 'unsigned'   => true,
                 'null'       => true,
-                'comment'    => 'User who assigned this warehouse (usually Warehouse Manager or IT Admin)',
+                
             ],
             'assigned_at' => [
                 'type'       => 'DATETIME',
                 'null'       => true,
-                'comment'    => 'Date when assignment was made',
+                
             ],
             'is_active' => [
                 'type'       => 'BOOLEAN',
                 'default'    => true,
                 'null'       => false,
-                'comment'    => 'Whether this assignment is currently active',
+                
             ],
             'notes' => [
                 'type'       => 'TEXT',
                 'null'       => true,
-                'comment'    => 'Optional notes about this assignment',
+                
             ],
             'created_at' => [
                 'type'       => 'DATETIME',

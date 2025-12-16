@@ -49,6 +49,11 @@
             transition: all 0.3s ease;
             border-left: 4px solid;
             background: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 120px;
+            position: relative;
         }
         .stat-card:hover {
             transform: translateY(-3px);
@@ -59,6 +64,19 @@
         .stat-card.warning { border-left-color: #ffc107; }
         .stat-card.danger { border-left-color: #dc3545; }
         .stat-card.info { border-left-color: #0dcaf0; }
+        .stat-card p {
+            margin: 0 0 8px 0;
+            font-size: 0.9rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+        .stat-card h3 {
+            margin: 0;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #212529;
+            line-height: 1.2;
+        }
         .stat-card .icon {
             width: 50px;
             height: 50px;
@@ -67,7 +85,9 @@
             align-items: center;
             justify-content: center;
             font-size: 24px;
-            float: right;
+            position: absolute;
+            top: 20px;
+            right: 20px;
         }
         .role-badge {
             font-size: 0.85rem;
@@ -258,27 +278,46 @@
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="createFirstName" class="form-label">First Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="createFirstName" required>
+                                <input type="text" class="form-control" id="createFirstName" 
+                                       pattern="^[A-Za-z\s]+$" 
+                                       title="Only letters and spaces are allowed"
+                                       required>
+                                <small class="form-text text-muted">Letters and spaces only, no special characters</small>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="createMiddleName" class="form-label">Middle Name</label>
-                                <input type="text" class="form-control" id="createMiddleName">
+                                <input type="text" class="form-control" id="createMiddleName"
+                                       pattern="^[A-Za-z\s]*$"
+                                       title="Only letters and spaces are allowed">
+                                <small class="form-text text-muted">Letters and spaces only, no special characters</small>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="createLastName" class="form-label">Last Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="createLastName" required>
+                                <input type="text" class="form-control" id="createLastName" 
+                                       pattern="^[A-Za-z\s]+$"
+                                       title="Only letters and spaces are allowed"
+                                       required>
+                                <small class="form-text text-muted">Letters and spaces only, no special characters</small>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="createEmail" class="form-label">Email <span class="text-danger">*</span></label>
-                                <input type="email" class="form-control" id="createEmail" required>
+                                <input type="email" class="form-control" id="createEmail" 
+                                       pattern="^[a-zA-Z0-9.]+@[a-zA-Z0-9.]+\.[a-zA-Z]{2,}$"
+                                       title="Valid email format only (e.g., user@example.com). Only letters, numbers, and dots allowed."
+                                       required>
+                                <small class="form-text text-muted">Letters, numbers, and dots only (e.g., user123@example.com)</small>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="createPhone" class="form-label">Phone Number</label>
-                                <input type="tel" class="form-control" id="createPhone">
+                                <input type="tel" class="form-control" id="createPhone"
+                                       pattern="^(\+63|0)?9\d{9}$"
+                                       title="Philippine mobile number format: +639123456789 or 09123456789"
+                                       placeholder="+639123456789 or 09123456789">
+                                <small class="form-text text-muted">Philippine mobile format: +639XXXXXXXXX or 09XXXXXXXXX (11 digits)</small>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="createRole" class="form-label">Role <span class="text-danger">*</span></label>
@@ -370,17 +409,60 @@
 
         function submitCreateUser() {
             const form = document.getElementById('createUserForm');
+            
+            // Validate names (letters and spaces only)
+            const firstName = document.getElementById('createFirstName').value.trim();
+            const middleName = document.getElementById('createMiddleName').value.trim();
+            const lastName = document.getElementById('createLastName').value.trim();
+            const namePattern = /^[A-Za-z\s]+$/;
+            
+            if (!namePattern.test(firstName)) {
+                alert('First Name: Only letters and spaces are allowed. No special characters or numbers.');
+                document.getElementById('createFirstName').focus();
+                return;
+            }
+            if (middleName && !namePattern.test(middleName)) {
+                alert('Middle Name: Only letters and spaces are allowed. No special characters or numbers.');
+                document.getElementById('createMiddleName').focus();
+                return;
+            }
+            if (!namePattern.test(lastName)) {
+                alert('Last Name: Only letters and spaces are allowed. No special characters or numbers.');
+                document.getElementById('createLastName').focus();
+                return;
+            }
+            
+            // Validate email (letters, numbers, and dots only)
+            const email = document.getElementById('createEmail').value.trim();
+            const emailPattern = /^[a-zA-Z0-9.]+@[a-zA-Z0-9.]+\.[a-zA-Z]{2,}$/;
+            if (!emailPattern.test(email)) {
+                alert('Email: Please enter a valid email address. Only letters, numbers, and dots are allowed (e.g., user123@example.com)');
+                document.getElementById('createEmail').focus();
+                return;
+            }
+            
+            // Validate phone number (Philippine format)
+            const phone = document.getElementById('createPhone').value.trim();
+            if (phone) {
+                const phonePattern = /^(\+63|0)?9\d{9}$/;
+                if (!phonePattern.test(phone)) {
+                    alert('Phone Number: Please enter a valid Philippine mobile number.\nFormat: +639123456789 or 09123456789 (11 digits, starting with +63 or 0, followed by 9)');
+                    document.getElementById('createPhone').focus();
+                    return;
+                }
+            }
+            
             if (!form.checkValidity()) {
                 form.reportValidity();
                 return;
             }
 
             const formData = {
-                first_name: document.getElementById('createFirstName').value,
-                middle_name: document.getElementById('createMiddleName').value,
-                last_name: document.getElementById('createLastName').value,
-                email: document.getElementById('createEmail').value,
-                phone_number: document.getElementById('createPhone').value,
+                first_name: firstName,
+                middle_name: middleName || null,
+                last_name: lastName,
+                email: email,
+                phone_number: phone || null,
                 role_id: document.getElementById('createRole').value,
                 department_id: document.getElementById('createDepartment').value || null,
                 password: document.getElementById('createPassword').value,
@@ -447,33 +529,66 @@
                             departmentsOptions += `<option value="${dept.id}" ${dept.id == user.department_id ? 'selected' : ''}>${dept.name}</option>`;
                         });
 
+                        // Show warning if user has warehouse assignments
+                        const hasAssignments = user.has_warehouse_assignments || false;
+                        const assignmentsCount = user.warehouse_assignments_count || 0;
+                        const warningHtml = hasAssignments ? `
+                            <div class="alert alert-warning mb-3">
+                                <i class="bi bi-exclamation-triangle"></i> 
+                                <strong>Note:</strong> This user has ${assignmentsCount} active warehouse assignment(s). 
+                                Changing the role will automatically update the role in all warehouse assignments.
+                            </div>
+                        ` : '';
+
                         document.getElementById('editUserContent').innerHTML = `
                             <form id="editUserForm">
                                 <input type="hidden" id="editUserId" value="${user.id}">
+                                ${warningHtml}
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label for="editFirstName" class="form-label">First Name <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="editFirstName" value="${user.first_name || ''}" required>
+                                        <input type="text" class="form-control" id="editFirstName" 
+                                               pattern="^[A-Za-z\s]+$"
+                                               title="Only letters and spaces are allowed"
+                                               value="${user.first_name || ''}" required>
+                                        <small class="form-text text-muted">Letters and spaces only, no special characters</small>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="editMiddleName" class="form-label">Middle Name</label>
-                                        <input type="text" class="form-control" id="editMiddleName" value="${user.middle_name || ''}">
+                                        <input type="text" class="form-control" id="editMiddleName"
+                                               pattern="^[A-Za-z\s]*$"
+                                               title="Only letters and spaces are allowed"
+                                               value="${user.middle_name || ''}">
+                                        <small class="form-text text-muted">Letters and spaces only, no special characters</small>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label for="editLastName" class="form-label">Last Name <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="editLastName" value="${user.last_name || ''}" required>
+                                        <input type="text" class="form-control" id="editLastName" 
+                                               pattern="^[A-Za-z\s]+$"
+                                               title="Only letters and spaces are allowed"
+                                               value="${user.last_name || ''}" required>
+                                        <small class="form-text text-muted">Letters and spaces only, no special characters</small>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="editEmail" class="form-label">Email <span class="text-danger">*</span></label>
-                                        <input type="email" class="form-control" id="editEmail" value="${user.email || ''}" required>
+                                        <input type="email" class="form-control" id="editEmail" 
+                                               pattern="^[a-zA-Z0-9.]+@[a-zA-Z0-9.]+\.[a-zA-Z]{2,}$"
+                                               title="Valid email format only (e.g., user@example.com). Only letters, numbers, and dots allowed."
+                                               value="${user.email || ''}" required>
+                                        <small class="form-text text-muted">Letters, numbers, and dots only (e.g., user123@example.com)</small>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label for="editPhone" class="form-label">Phone Number</label>
-                                        <input type="tel" class="form-control" id="editPhone" value="${user.phone_number || ''}">
+                                        <input type="tel" class="form-control" id="editPhone"
+                                               pattern="^(\+63|0)?9\d{9}$"
+                                               title="Philippine mobile number format: +639123456789 or 09123456789"
+                                               placeholder="+639123456789 or 09123456789"
+                                               value="${user.phone_number || ''}">
+                                        <small class="form-text text-muted">Philippine mobile format: +639XXXXXXXXX or 09XXXXXXXXX (11 digits)</small>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label for="editRole" class="form-label">Role <span class="text-danger">*</span></label>
@@ -526,6 +641,49 @@
 
         function submitEditUser() {
             const form = document.getElementById('editUserForm');
+            
+            // Validate names (letters and spaces only)
+            const firstName = document.getElementById('editFirstName').value.trim();
+            const middleName = document.getElementById('editMiddleName').value.trim();
+            const lastName = document.getElementById('editLastName').value.trim();
+            const namePattern = /^[A-Za-z\s]+$/;
+            
+            if (!namePattern.test(firstName)) {
+                alert('First Name: Only letters and spaces are allowed. No special characters or numbers.');
+                document.getElementById('editFirstName').focus();
+                return;
+            }
+            if (middleName && !namePattern.test(middleName)) {
+                alert('Middle Name: Only letters and spaces are allowed. No special characters or numbers.');
+                document.getElementById('editMiddleName').focus();
+                return;
+            }
+            if (!namePattern.test(lastName)) {
+                alert('Last Name: Only letters and spaces are allowed. No special characters or numbers.');
+                document.getElementById('editLastName').focus();
+                return;
+            }
+            
+            // Validate email (letters, numbers, and dots only)
+            const email = document.getElementById('editEmail').value.trim();
+            const emailPattern = /^[a-zA-Z0-9.]+@[a-zA-Z0-9.]+\.[a-zA-Z]{2,}$/;
+            if (!emailPattern.test(email)) {
+                alert('Email: Please enter a valid email address. Only letters, numbers, and dots are allowed (e.g., user123@example.com)');
+                document.getElementById('editEmail').focus();
+                return;
+            }
+            
+            // Validate phone number (Philippine format)
+            const phone = document.getElementById('editPhone').value.trim();
+            if (phone) {
+                const phonePattern = /^(\+63|0)?9\d{9}$/;
+                if (!phonePattern.test(phone)) {
+                    alert('Phone Number: Please enter a valid Philippine mobile number.\nFormat: +639123456789 or 09123456789 (11 digits, starting with +63 or 0, followed by 9)');
+                    document.getElementById('editPhone').focus();
+                    return;
+                }
+            }
+            
             if (!form.checkValidity()) {
                 form.reportValidity();
                 return;
@@ -533,11 +691,11 @@
 
             const formData = {
                 user_id: document.getElementById('editUserId').value,
-                first_name: document.getElementById('editFirstName').value,
-                middle_name: document.getElementById('editMiddleName').value,
-                last_name: document.getElementById('editLastName').value,
-                email: document.getElementById('editEmail').value,
-                phone_number: document.getElementById('editPhone').value,
+                first_name: firstName,
+                middle_name: middleName || null,
+                last_name: lastName,
+                email: email,
+                phone_number: phone || null,
                 role_id: document.getElementById('editRole').value,
                 department_id: document.getElementById('editDepartment').value || null,
                 password: document.getElementById('editPassword').value,
