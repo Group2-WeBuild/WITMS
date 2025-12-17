@@ -162,8 +162,8 @@
                 <a href='mailto:<?= esc($requestData['email']) ?>?subject=WeBuild WITMS Account - Follow Up' class='btn btn-primary'>
                     📧 Contact Requester
                 </a>
-                <a href='<?= base_url('dashboard/it-administrator') ?>' class='btn btn-success'>
-                    🏗️ Access Admin Panel
+                <a href='<?= base_url('it-administrator/users') ?>' class='btn btn-success'>
+                    👥 Go to User Management
                 </a>
             </div>
 

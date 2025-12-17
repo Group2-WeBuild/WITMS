@@ -54,7 +54,7 @@ class WarehouseModel extends Model
         ],
         'manager_id' => [
             'label' => 'Manager',
-            'rules' => 'permit_empty|is_natural_no_zero'
+            'rules' => 'required|is_natural_no_zero|is_not_unique[users.id]'
         ],
         'is_active' => [
             'label' => 'Active Status',
@@ -74,6 +74,11 @@ class WarehouseModel extends Model
         'capacity' => [
             'numeric' => 'Capacity must be a number.',
             'greater_than_equal_to' => 'Capacity must be a positive number or zero.'
+        ],
+        'manager_id' => [
+            'required' => 'A Warehouse Manager is required.',
+            'is_natural_no_zero' => 'Please select a valid manager.',
+            'is_not_unique' => 'The selected manager does not exist in the system.'
         ]
     ];
     
@@ -167,12 +172,9 @@ class WarehouseModel extends Model
     }
 
     /**
-     * Remove manager from warehouse
+     * Change manager for warehouse (manager_id is required, cannot be removed)
+     * Use assignManager() to change the manager instead
      */
-    public function removeManager(int $warehouseId): bool
-    {
-        return $this->update($warehouseId, ['manager_id' => null]);
-    }
 
     /**
      * Activate/Deactivate warehouse
